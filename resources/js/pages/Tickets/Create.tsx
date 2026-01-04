@@ -1,0 +1,151 @@
+import AppLayout from '@/layouts/app-layout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { router, useForm } from '@inertiajs/react';
+import { type BreadcrumbItem } from '@/types';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Create Ticket', href: '/tickets/create' },
+];
+
+interface Category {
+    id: number;
+    name: string;
+    description: string;
+}
+
+interface Sla {
+    id: number;
+    priority: string;
+    response_time_minutes: number;
+    resolution_time_minutes: number;
+}
+
+interface Props {
+    categories: Category[];
+    slas: Sla[];
+}
+
+export default function Create({ categories, slas }: Props) {
+    const { data, setData, post, processing, errors } = useForm({
+        category_id: '',
+        title: '',
+        description: '',
+        location: '',
+        priority: 'medium',
+        attachments: [] as File[],
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        post('/tickets', {
+            forceFormData: true,
+        });
+    };
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <h1 className="text-2xl font-bold">Create New Ticket</h1>
+
+                <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
+                    <div>
+                        <Label htmlFor="category_id">Category</Label>
+                        <Select value={data.category_id} onValueChange={(value) => setData('category_id', value)}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {categories.map((category) => (
+                                    <SelectItem key={category.id} value={category.id.toString()}>
+                                        {category.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.category_id && <p className="text-red-500">{errors.category_id}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="title">Title</Label>
+                        <Input
+                            id="title"
+                            value={data.title}
+                            onChange={(e) => setData('title', e.target.value)}
+                            required
+                            placeholder="Brief description of the issue"
+                        />
+                        {errors.title && <p className="text-red-500">{errors.title}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="description">Description</Label>
+                        <textarea
+                            id="description"
+                            value={data.description}
+                            onChange={(e) => setData('description', e.target.value)}
+                            required
+                            placeholder="Detailed description of the issue"
+                            rows={4}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        {errors.description && <p className="text-red-500">{errors.description}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="attachments">Attachments (optional)</Label>
+                        <Input
+                            id="attachments"
+                            type="file"
+                            multiple
+                            onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setData('attachments', files);
+                            }}
+                            accept="image/*,.pdf,.doc,.docx,.txt"
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                            You can upload multiple files (images, PDF, documents)
+                        </p>
+                        {errors.attachments && <p className="text-red-500">{errors.attachments}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="location">Location</Label>
+                        <Input
+                            id="location"
+                            value={data.location}
+                            onChange={(e) => setData('location', e.target.value)}
+                            required
+                            placeholder="Where is the issue located?"
+                        />
+                        {errors.location && <p className="text-red-500">{errors.location}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="priority">Priority</Label>
+                        <Select value={data.priority} onValueChange={(value) => setData('priority', value)}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="low">Low</SelectItem>
+                                <SelectItem value="medium">Medium</SelectItem>
+                                <SelectItem value="high">High</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        {errors.priority && <p className="text-red-500">{errors.priority}</p>}
+                    </div>
+
+                    <Button type="submit" disabled={processing}>
+                        Create Ticket
+                    </Button>
+                </form>
+            </div>
+        </AppLayout>
+    );
+}

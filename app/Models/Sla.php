@@ -9,6 +9,8 @@ class Sla extends Model
 {
     use HasFactory;
 
+    protected $table = 'sla';
+
     protected $fillable = [
         'priority',
         'response_time_minutes',

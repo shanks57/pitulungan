@@ -25,7 +25,7 @@ export default function Login({
     return (
         <AuthLayout
             title="Log in to your account"
-            description="Enter your email and password below to log in"
+            description="Enter your username and password below to log in"
         >
             <Head title="Log in" />
 

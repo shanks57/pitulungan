@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { router, useForm } from '@inertiajs/react';
+import { router, useForm, Link } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,6 +25,11 @@ interface Ticket {
     assigned_user: { name: string } | null;
 }
 
+interface User {
+    id: number;
+    name: string;
+}
+
 interface Props {
     tickets: {
         data: Ticket[];
@@ -34,7 +39,9 @@ interface Props {
         search: string;
         status: string;
         priority: string;
+        assigned_to: string;
     };
+    users: User[];
     counts: {
         open: number;
         in_progress: number;
@@ -43,11 +50,12 @@ interface Props {
     };
 }
 
-export default function Index({ tickets, filters, counts }: Props) {
+export default function Index({ tickets, filters, users, counts }: Props) {
     const { data, setData, get, processing } = useForm({
         search: filters.search || '',
         status: filters.status || '',
         priority: filters.priority || '',
+        assigned_to: filters.assigned_to || '',
     });
 
     const handleFilter = () => {
@@ -79,7 +87,7 @@ export default function Index({ tickets, filters, counts }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Maintenance Tasks</h1>
+                <h1 className="text-2xl font-bold">Maintenance Tickets</h1>
 
                 {/* Counts */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -128,69 +136,92 @@ export default function Index({ tickets, filters, counts }: Props) {
                         <SelectTrigger className="w-40">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
-                        {/* <SelectContent>
-                            <SelectItem value="">All Status</SelectItem>
+                        <SelectContent>
+                            <SelectItem value="all">All Status</SelectItem>
                             <SelectItem value="submitted">Submitted</SelectItem>
                             <SelectItem value="processed">Processed</SelectItem>
                             <SelectItem value="repairing">Repairing</SelectItem>
                             <SelectItem value="done">Done</SelectItem>
                             <SelectItem value="rejected">Rejected</SelectItem>
-                        </SelectContent> */}
+                        </SelectContent>
                     </Select>
                     <Select value={data.priority} onValueChange={(value) => setData('priority', value)}>
                         <SelectTrigger className="w-40">
                             <SelectValue placeholder="Priority" />
                         </SelectTrigger>
-                        {/* <SelectContent>
-                            <SelectItem value="">All Priority</SelectItem>
+                        <SelectContent>
+                            <SelectItem value="all">All Priority</SelectItem>
                             <SelectItem value="low">Low</SelectItem>
                             <SelectItem value="medium">Medium</SelectItem>
                             <SelectItem value="high">High</SelectItem>
-                        </SelectContent> */}
+                        </SelectContent>
+                    </Select>
+                    <Select value={data.assigned_to} onValueChange={(value) => setData('assigned_to', value)}>
+                        <SelectTrigger className="w-40">
+                            <SelectValue placeholder="Assigned To" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Users</SelectItem>
+                            <SelectItem value="me">Assigned to Me</SelectItem>
+                            {users.map((user) => (
+                                <SelectItem key={user.id} value={user.id.toString()}>
+                                    {user.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
                     </Select>
                     <Button onClick={handleFilter} disabled={processing}>
                         Filter
                     </Button>
                 </div>
 
+                {/* Create New Ticket Button */}
+                <div className="flex justify-end">
+                    <Link href="/tickets/create">
+                        <Button>Create New Ticket</Button>
+                    </Link>
+                </div>
+
                 {/* Tickets */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {tickets.data.map((ticket) => (
-                        <Card key={ticket.id}>
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <CardTitle className="text-lg">{ticket.title}</CardTitle>
-                                    <Badge className={getStatusColor(ticket.status)}>
-                                        {ticket.status}
-                                    </Badge>
-                                </div>
-                                <div className="text-sm text-gray-600">
-                                    #{ticket.ticket_number} • {ticket.category.name}
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm mb-2">
-                                    {ticket.description.length > 100
-                                        ? ticket.description.substring(0, 100) + '...'
-                                        : ticket.description}
-                                </p>
-                                <div className="flex justify-between items-center">
-                                    <div className="text-sm">
-                                        <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
-                                            {ticket.priority}
+                        <Link key={ticket.id} href={`/admin/tickets/${ticket.id}`} className="block">
+                            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                                <CardHeader>
+                                    <div className="flex justify-between items-start">
+                                        <CardTitle className="text-lg">{ticket.title}</CardTitle>
+                                        <Badge className={getStatusColor(ticket.status)}>
+                                            {ticket.status}
                                         </Badge>
                                     </div>
-                                    <div className="text-xs text-gray-500">
-                                        {ticket.user.name}
+                                    <div className="text-sm text-gray-600">
+                                        #{ticket.ticket_number} • {ticket.category.name}
                                     </div>
-                                </div>
-                                {ticket.assigned_user && (
-                                    <div className="text-xs text-gray-500 mt-1">
-                                        Assigned to: {ticket.assigned_user.name}
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-sm mb-2">
+                                        {ticket.description.length > 100
+                                            ? ticket.description.substring(0, 100) + '...'
+                                            : ticket.description}
+                                    </p>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <div className="text-sm">
+                                            <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
+                                                {ticket.priority}
+                                            </Badge>
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {ticket.user.name}
+                                        </div>
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
+                                    {ticket.assigned_user && (
+                                        <div className="text-xs text-gray-500">
+                                            Assigned to: {ticket.assigned_user.name}
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </Link>
                     ))}
                 </div>
 

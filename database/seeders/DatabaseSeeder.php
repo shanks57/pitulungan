@@ -35,5 +35,10 @@ class DatabaseSeeder extends Seeder
                 'role' => 'admin',
             ]
         );
+
+        $this->call([
+            TicketCategorySeeder::class,
+            SlaSeeder::class,
+        ]);
     }
 }

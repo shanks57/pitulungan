@@ -13,31 +13,91 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { usePage } from '@inertiajs/react';
+import { type SharedData } from '@/types';
+import { BookOpen, Folder, LayoutGrid, Settings, Tickets, Users2, Wrench, User } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
-
 export function AppSidebar() {
+    const { auth } = usePage<SharedData>().props;
+    const userRole = auth.user.role;
+
+    // Base navigation items for all users
+    const baseNavItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ];
+
+    // Role-specific navigation items
+    const getRoleSpecificNavItems = (): NavItem[] => {
+        switch (userRole) {
+            case 'admin':
+                return [
+                    {
+                        title: 'All Tickets',
+                        href: '/admin/tickets',
+                        icon: Tickets,
+                    },
+                    {
+                        title: 'Users',
+                        href: '/admin/users',
+                        icon: Users2,
+                    },
+                ];
+            case 'technician':
+                return [
+                    {
+                        title: 'My Tickets',
+                        href: '/admin/tickets?assigned_to=me',
+                        icon: Wrench,
+                    },
+                ];
+            case 'user':
+            default:
+                return [
+                    {
+                        title: 'My Tickets',
+                        href: '/user/tickets',
+                        icon: User,
+                    },
+                    {
+                        title: 'Create Ticket',
+                        href: '/tickets/create',
+                        icon: Tickets,
+                    },
+                ];
+        }
+    };
+
+    // Settings is available for all users
+    const settingsNavItem: NavItem = {
+        title: 'Settings',
+        href: '/settings/profile',
+        icon: Settings,
+    };
+
+    const mainNavItems: NavItem[] = [
+        ...baseNavItems,
+        ...getRoleSpecificNavItems(),
+        settingsNavItem,
+    ];
+
+    const footerNavItems: NavItem[] = [
+        {
+            title: 'Repository',
+            href: 'https://github.com/laravel/react-starter-kit',
+            icon: Folder,
+        },
+        {
+            title: 'Documentation',
+            href: 'https://laravel.com/docs/starter-kits#react',
+            icon: BookOpen,
+        },
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -57,7 +117,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+                {/* <NavFooter items={footerNavItems} className="mt-auto" /> */}
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
