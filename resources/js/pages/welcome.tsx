@@ -2,6 +2,7 @@ import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import { PWAInstallButton } from '@/components/pwa-install-button';
 
 export default function Welcome({
     canRegister = true,
@@ -123,6 +124,10 @@ export default function Welcome({
                                         </Link>
                                     </>
                                 )}
+                                <PWAInstallButton
+                                    variant="outline"
+                                    className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 bg-white hover:text-white"
+                                />
                             </div>
 
                             {/* Stats */}
