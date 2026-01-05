@@ -11,8 +11,8 @@ import { router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Tickets', href: '/admin/tickets' },
+    { title: 'Dasbor', href: '/dashboard' },
+    { title: 'Tiket', href: '/admin/tickets' },
     { title: 'Detail', href: '/admin/tickets/detail' },
 ];
 
@@ -79,7 +79,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
 
     const { data: commentData, setData: setCommentData, post: postComment, processing: commentProcessing, reset: resetComment } = useForm({
         comment: '',
-        attachments: null as FileList | null,
+        attachments: [] as File[],
     });
 
     const handleUpdate = (e: React.FormEvent) => {
@@ -93,14 +93,14 @@ export default function Show({ ticket, progress, attachments, comments, categori
         const formData = new FormData();
         formData.append('comment', commentData.comment);
 
-        if (commentData.attachments) {
-            Array.from(commentData.attachments).forEach((file, index) => {
+        if (commentData.attachments && commentData.attachments.length > 0) {
+            commentData.attachments.forEach((file, index) => {
                 formData.append(`attachments[${index}]`, file);
             });
         }
 
         postComment(`/tickets/${ticket.id}/comments`, {
-            data: formData,
+            forceFormData: true,
             onSuccess: () => {
                 resetComment();
             },
@@ -142,13 +142,13 @@ export default function Show({ ticket, progress, attachments, comments, categori
                     <div className="lg:col-span-2">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Ticket Details</CardTitle>
+                                <CardTitle>Detail Tiket</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <form onSubmit={handleUpdate} className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <Label htmlFor="title">Title</Label>
+                                            <Label htmlFor="title">Judul</Label>
                                             <Input
                                                 id="title"
                                                 value={data.title}
@@ -159,7 +159,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="category_id">Category</Label>
+                                            <Label htmlFor="category_id">Kategori</Label>
                                             <Select value={data.category_id} onValueChange={(value) => setData('category_id', value)}>
                                                 <SelectTrigger>
                                                     <SelectValue />
@@ -176,15 +176,15 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="priority">Priority</Label>
+                                            <Label htmlFor="priority">Prioritas</Label>
                                             <Select value={data.priority} onValueChange={(value) => setData('priority', value)}>
                                                 <SelectTrigger>
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="low">Low</SelectItem>
-                                                    <SelectItem value="medium">Medium</SelectItem>
-                                                    <SelectItem value="high">High</SelectItem>
+                                                    <SelectItem value="low">Rendah</SelectItem>
+                                                    <SelectItem value="medium">Sedang</SelectItem>
+                                                    <SelectItem value="high">Tinggi</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             {errors.priority && <p className="text-red-500 text-sm mt-1">{errors.priority}</p>}
@@ -197,18 +197,18 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="submitted">Submitted</SelectItem>
-                                                    <SelectItem value="processed">Processed</SelectItem>
-                                                    <SelectItem value="repairing">Repairing</SelectItem>
-                                                    <SelectItem value="done">Done</SelectItem>
-                                                    <SelectItem value="rejected">Rejected</SelectItem>
+                                                    <SelectItem value="submitted">Diajukan</SelectItem>
+                                                    <SelectItem value="processed">Diproses</SelectItem>
+                                                    <SelectItem value="repairing">Diperbaiki</SelectItem>
+                                                    <SelectItem value="done">Selesai</SelectItem>
+                                                    <SelectItem value="rejected">Ditolak</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status}</p>}
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="location">Location</Label>
+                                            <Label htmlFor="location">Lokasi</Label>
                                             <Input
                                                 id="location"
                                                 value={data.location}
@@ -219,13 +219,13 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="assigned_to">Assigned To</Label>
+                                            <Label htmlFor="assigned_to">Ditugaskan Ke</Label>
                                             <Select value={data.assigned_to} onValueChange={(value) => setData('assigned_to', value)}>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select user" />
+                                                    <SelectValue placeholder="Pilih pengguna" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="unassigned">Unassigned</SelectItem>
+                                                    <SelectItem value="unassigned">Tidak ditugaskan</SelectItem>
                                                     {users.map((user) => (
                                                         <SelectItem key={user.id} value={user.id.toString()}>
                                                             {user.name}
@@ -238,7 +238,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                     </div>
 
                                     <div>
-                                        <Label htmlFor="description">Description</Label>
+                                        <Label htmlFor="description">Deskripsi</Label>
                                         <textarea
                                             id="description"
                                             value={data.description}
@@ -251,7 +251,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                     </div>
 
                                     <Button type="submit" disabled={processing}>
-                                        Update Ticket
+                                        Perbarui Tiket
                                     </Button>
                                 </form>
                             </CardContent>
@@ -263,7 +263,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                         {/* Progress Timeline */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Progress Timeline</CardTitle>
+                                <CardTitle>Timeline Progress</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
@@ -279,7 +279,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                         {item.status}
                                                     </Badge>
                                                     <span className="text-sm text-gray-500">
-                                                        by {item.updated_by.name}
+                                                        oleh {item.updated_by.name}
                                                     </span>
                                                 </div>
                                                 {item.note && (
@@ -298,38 +298,38 @@ export default function Show({ ticket, progress, attachments, comments, categori
                         {/* Comments Section */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Comments</CardTitle>
+                                <CardTitle>Komentar</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 {/* Add Comment Form */}
                                 <form onSubmit={handleCommentSubmit} className="mb-6">
                                     <div className="space-y-4">
                                         <div>
-                                            <Label htmlFor="comment">Add Comment</Label>
+                                            <Label htmlFor="comment">Tambah Komentar</Label>
                                             <Textarea
                                                 id="comment"
                                                 value={commentData.comment}
                                                 onChange={(e) => setCommentData('comment', e.target.value)}
-                                                placeholder="Add a comment..."
+                                                placeholder="Tambah komentar..."
                                                 rows={3}
                                                 required
                                             />
                                         </div>
                                         <div>
-                                            <Label htmlFor="comment-attachments">Attachments (optional)</Label>
+                                            <Label htmlFor="comment-attachments">Lampiran (opsional)</Label>
                                             <Input
                                                 id="comment-attachments"
                                                 type="file"
                                                 multiple
                                                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov"
-                                                onChange={(e) => setCommentData('attachments', e.target.files)}
+                                                onChange={(e) => setCommentData('attachments', e.target.files ? Array.from(e.target.files) : [])}
                                             />
                                             <p className="text-xs text-gray-500 mt-1">
-                                                Max 10MB per file. Supported: PDF, DOC, DOCX, JPG, PNG, GIF, MP4, AVI, MOV
+                                                Maksimal 10MB per file. Didukung: PDF, DOC, DOCX, JPG, PNG, GIF, MP4, AVI, MOV
                                             </p>
                                         </div>
                                         <Button type="submit" disabled={commentProcessing}>
-                                            {commentProcessing ? 'Adding...' : 'Add Comment'}
+                                            {commentProcessing ? 'Menambah...' : 'Tambah Komentar'}
                                         </Button>
                                     </div>
                                 </form>
@@ -356,7 +356,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                             </p>
                                             {comment.attachments && comment.attachments.length > 0 && (
                                                 <div className="space-y-2">
-                                                    <p className="text-sm font-medium">Attachments:</p>
+                                                    <p className="text-sm font-medium">Lampiran:</p>
                                                     {comment.attachments.map((attachment) => (
                                                         <div key={attachment.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                                                             <div className="flex-1 min-w-0">
@@ -364,12 +364,12 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                                     {attachment.file_path.split('/').pop()}
                                                                 </p>
                                                                 <p className="text-xs text-gray-500">
-                                                                    Uploaded by {attachment.uploaded_by.name}
+                                                                    Diupload oleh {attachment.uploaded_by.name}
                                                                 </p>
                                                             </div>
                                                             <Button variant="outline" size="sm" asChild>
                                                                 <a href={`/storage/${attachment.file_path}`} target="_blank" rel="noopener noreferrer">
-                                                                    View
+                                                                    Lihat
                                                                 </a>
                                                             </Button>
                                                         </div>
@@ -379,7 +379,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                         </div>
                                     ))}
                                     {comments.length === 0 && (
-                                        <p className="text-center text-gray-500 py-4">No comments yet.</p>
+                                        <p className="text-center text-gray-500 py-4">Belum ada komentar.</p>
                                     )}
                                 </div>
                             </CardContent>
@@ -388,23 +388,23 @@ export default function Show({ ticket, progress, attachments, comments, categori
                         {/* Activity Log */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Activity Log</CardTitle>
+                                <CardTitle>Log Aktivitas</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
                                     <div className="text-sm">
-                                        <span className="font-medium">Created:</span> {new Date(ticket.created_at).toLocaleString()}
+                                        <span className="font-medium">Dibuat:</span> {new Date(ticket.created_at).toLocaleString()}
                                         <br />
-                                        <span className="text-gray-600">by {ticket.user.name}</span>
+                                        <span className="text-gray-600">oleh {ticket.user.name}</span>
                                     </div>
                                     {ticket.responded_at && (
                                         <div className="text-sm">
-                                            <span className="font-medium">Responded:</span> {new Date(ticket.responded_at).toLocaleString()}
+                                            <span className="font-medium">Direspons:</span> {new Date(ticket.responded_at).toLocaleString()}
                                         </div>
                                     )}
                                     {ticket.resolved_at && (
                                         <div className="text-sm">
-                                            <span className="font-medium">Resolved:</span> {new Date(ticket.resolved_at).toLocaleString()}
+                                            <span className="font-medium">Diselesaikan:</span> {new Date(ticket.resolved_at).toLocaleString()}
                                         </div>
                                     )}
                                 </div>
@@ -414,7 +414,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                         {/* Attachments */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Attachments</CardTitle>
+                                <CardTitle>Lampiran</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 {attachments.length > 0 ? (
@@ -424,17 +424,17 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                 <div>
                                                     <p className="text-sm font-medium">{attachment.file_path.split('/').pop()}</p>
                                                     <p className="text-xs text-gray-500">
-                                                        Uploaded by {attachment.uploaded_by.name} on {new Date(attachment.created_at).toLocaleDateString()}
+                                                        Diupload oleh {attachment.uploaded_by.name} pada {new Date(attachment.created_at).toLocaleDateString()}
                                                     </p>
                                                 </div>
                                                 <Button variant="outline" size="sm">
-                                                    Download
+                                                    Unduh
                                                 </Button>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-sm text-gray-500">No attachments</p>
+                                    <p className="text-sm text-gray-500">Tidak ada lampiran</p>
                                 )}
                             </CardContent>
                         </Card>

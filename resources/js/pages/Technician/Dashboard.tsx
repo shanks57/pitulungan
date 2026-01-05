@@ -10,7 +10,7 @@ import { CheckCircle, Clock, Wrench, AlertTriangle, TrendingUp, FileText, Upload
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Technician Dashboard',
+        title: 'Dasbor Teknisi',
         href: '/dashboard',
     },
 ];
@@ -93,12 +93,12 @@ export default function Dashboard({ stats, recentTickets }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Technician Dashboard" />
+            <Head title="Dasbor Teknisi" />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-3xl font-bold">Technician Dashboard</h1>
+                    <h1 className="text-3xl font-bold">Dasbor Teknisi</h1>
                     <Button onClick={() => router.visit('/admin/tickets?assigned_to=me')} variant="outline">
-                        View All My Tickets
+                        Lihat Semua Tiket Saya
                     </Button>
                 </div>
 
@@ -106,45 +106,45 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Assigned</CardTitle>
+                            <CardTitle className="text-sm font-medium">Total Ditugaskan</CardTitle>
                             <FileText className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.total_assigned}</div>
-                            <p className="text-xs text-muted-foreground">Tickets assigned to you</p>
+                            <p className="text-xs text-muted-foreground">Tiket yang ditugaskan kepada Anda</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+                            <CardTitle className="text-sm font-medium">Menunggu</CardTitle>
                             <Clock className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.pending}</div>
-                            <p className="text-xs text-muted-foreground">Waiting to start</p>
+                            <p className="text-xs text-muted-foreground">Menunggu untuk memulai</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                            <CardTitle className="text-sm font-medium">Sedang Dikerjakan</CardTitle>
                             <Wrench className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.in_progress}</div>
-                            <p className="text-xs text-muted-foreground">Currently repairing</p>
+                            <p className="text-xs text-muted-foreground">Sedang diperbaiki</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Completed Today</CardTitle>
+                            <CardTitle className="text-sm font-medium">Selesai Hari Ini</CardTitle>
                             <CheckCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.completed_today}</div>
-                            <p className="text-xs text-muted-foreground">Finished today</p>
+                            <p className="text-xs text-muted-foreground">Selesai hari ini</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -153,29 +153,29 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">This Week</CardTitle>
+                            <CardTitle className="text-sm font-medium">Minggu Ini</CardTitle>
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.completed_this_week}</div>
-                            <p className="text-xs text-muted-foreground">Completed this week</p>
+                            <p className="text-xs text-muted-foreground">Selesai minggu ini</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Overdue</CardTitle>
+                            <CardTitle className="text-sm font-medium">Terlambat</CardTitle>
                             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
-                            <p className="text-xs text-muted-foreground">Past SLA deadline</p>
+                            <p className="text-xs text-muted-foreground">Melewati batas waktu SLA</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+                            <CardTitle className="text-sm font-medium">Tingkat Keberhasilan</CardTitle>
                             <CheckCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
@@ -195,13 +195,13 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                 {/* Recent Tickets */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Recent Assigned Tickets</CardTitle>
+                        <CardTitle>Tiket Ditugaskan Terbaru</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
                             {recentTickets.length === 0 ? (
                                 <p className="text-center text-muted-foreground py-8">
-                                    No tickets assigned yet.
+                                    Belum ada tiket yang ditugaskan.
                                 </p>
                             ) : (
                                 recentTickets.map((ticket) => (
@@ -228,14 +228,14 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                                     variant="outline"
                                                     onClick={() => router.visit(`/technician/tickets/${ticket.id}`)}
                                                 >
-                                                    View Details
+                                                    Lihat Detail
                                                 </Button>
                                                 {ticket.status === 'processed' && (
                                                     <Button
                                                         size="sm"
                                                         onClick={() => handleQuickAction(ticket.id, 'start_repair')}
                                                     >
-                                                        Start Repair
+                                                        Mulai Perbaikan
                                                     </Button>
                                                 )}
                                                 {ticket.status === 'repairing' && (
@@ -243,7 +243,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                                         size="sm"
                                                         onClick={() => handleQuickAction(ticket.id, 'complete')}
                                                     >
-                                                        Mark Complete
+                                                        Tandai Selesai
                                                     </Button>
                                                 )}
                                             </div>
@@ -252,7 +252,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                         {ticket.progress && ticket.progress.length > 0 && (
                                             <div className="mt-3 p-3 bg-gray-50 rounded-md">
                                                 <p className="text-sm">
-                                                    <strong>Last Update:</strong> {ticket.progress[0].note || `Status changed to ${ticket.progress[0].status}`}
+                                                    <strong>Pembaruan Terakhir:</strong> {ticket.progress[0].note || `Status diubah menjadi ${ticket.progress[0].status}`}
                                                 </p>
                                                 <p className="text-xs text-muted-foreground mt-1">
                                                     {new Date(ticket.progress[0].created_at).toLocaleString()}

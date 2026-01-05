@@ -10,8 +10,8 @@ import { Head } from '@inertiajs/react';
 import { CheckCircle, Clock, Wrench, AlertTriangle, Plus, Eye } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'My Tickets', href: '/user/tickets' },
+    { title: 'Dasbor', href: '/dashboard' },
+    { title: 'Tiket Saya', href: '/user/tickets' },
 ];
 
 interface Ticket {
@@ -85,14 +85,14 @@ export default function Index({ tickets, filters, stats }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="My Tickets" />
+            <Head title="Tiket Saya" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-3xl font-bold">My Tickets</h1>
+                    <h1 className="text-3xl font-bold">Tiket Saya</h1>
                     <Link href="/tickets/create">
                         <Button>
                             <Plus className="mr-2 h-4 w-4" />
-                            Create New Ticket
+                            Buat Tiket Baru
                         </Button>
                     </Link>
                 </div>
@@ -101,41 +101,41 @@ export default function Index({ tickets, filters, stats }: Props) {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Total Tickets</CardTitle>
+                            <CardTitle className="text-sm font-medium">Total Tiket</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.total}</div>
-                            <p className="text-xs text-muted-foreground">All my tickets</p>
+                            <p className="text-xs text-muted-foreground">Semua tiket saya</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Open</CardTitle>
+                            <CardTitle className="text-sm font-medium">Terbuka</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.open}</div>
-                            <p className="text-xs text-muted-foreground">Awaiting response</p>
+                            <p className="text-xs text-muted-foreground">Menunggu respons</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                            <CardTitle className="text-sm font-medium">Sedang Dikerjakan</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.in_progress}</div>
-                            <p className="text-xs text-muted-foreground">Being worked on</p>
+                            <p className="text-xs text-muted-foreground">Sedang dikerjakan</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Resolved</CardTitle>
+                            <CardTitle className="text-sm font-medium">Diselesaikan</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.resolved}</div>
-                            <p className="text-xs text-muted-foreground">Completed tickets</p>
+                            <p className="text-xs text-muted-foreground">Tiket selesai</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -143,7 +143,7 @@ export default function Index({ tickets, filters, stats }: Props) {
                 {/* Filters */}
                 <div className="flex gap-4">
                     <Input
-                        placeholder="Search tickets..."
+                        placeholder="Cari tiket..."
                         value={filters.search}
                         onChange={(e) => router.get('/user/tickets', {
                             ...filters,
@@ -161,12 +161,12 @@ export default function Index({ tickets, filters, stats }: Props) {
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Status</SelectItem>
-                            <SelectItem value="submitted">Submitted</SelectItem>
-                            <SelectItem value="processed">Processed</SelectItem>
-                            <SelectItem value="repairing">Repairing</SelectItem>
-                            <SelectItem value="done">Done</SelectItem>
-                            <SelectItem value="rejected">Rejected</SelectItem>
+                            <SelectItem value="all">Semua Status</SelectItem>
+                            <SelectItem value="submitted">Diajukan</SelectItem>
+                            <SelectItem value="processed">Diproses</SelectItem>
+                            <SelectItem value="repairing">Diperbaiki</SelectItem>
+                            <SelectItem value="done">Selesai</SelectItem>
+                            <SelectItem value="rejected">Ditolak</SelectItem>
                         </SelectContent>
                     </Select>
                     <Select
@@ -177,13 +177,13 @@ export default function Index({ tickets, filters, stats }: Props) {
                         }, { preserveState: true, replace: true })}
                     >
                         <SelectTrigger className="w-40">
-                            <SelectValue placeholder="Priority" />
+                            <SelectValue placeholder="Prioritas" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Priority</SelectItem>
-                            <SelectItem value="low">Low</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="high">High</SelectItem>
+                            <SelectItem value="all">Semua Prioritas</SelectItem>
+                            <SelectItem value="low">Rendah</SelectItem>
+                            <SelectItem value="medium">Sedang</SelectItem>
+                            <SelectItem value="high">Tinggi</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -194,14 +194,14 @@ export default function Index({ tickets, filters, stats }: Props) {
                         <Card>
                             <CardContent className="flex flex-col items-center justify-center py-12">
                                 <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-                                <h3 className="text-lg font-semibold mb-2">No tickets found</h3>
+                                <h3 className="text-lg font-semibold mb-2">Tidak ada tiket ditemukan</h3>
                                 <p className="text-muted-foreground text-center mb-4">
-                                    You haven't created any tickets yet, or no tickets match your filters.
+                                    Anda belum membuat tiket apapun, atau tidak ada tiket yang cocok dengan filter Anda.
                                 </p>
                                 <Link href="/tickets/create">
                                     <Button>
                                         <Plus className="mr-2 h-4 w-4" />
-                                        Create Your First Ticket
+                                        Buat Tiket Pertama Anda
                                     </Button>
                                 </Link>
                             </CardContent>
@@ -229,22 +229,22 @@ export default function Index({ tickets, filters, stats }: Props) {
                                         <Link href={`/user/tickets/${ticket.id}`}>
                                             <Button variant="outline" size="sm">
                                                 <Eye className="mr-2 h-4 w-4" />
-                                                View Details
+                                                Lihat Detail
                                             </Button>
                                         </Link>
                                     </div>
 
                                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                                         <div className="flex items-center gap-4">
-                                            <span>Created: {new Date(ticket.created_at).toLocaleDateString()}</span>
+                                            <span>Dibuat: {new Date(ticket.created_at).toLocaleDateString()}</span>
                                             {ticket.assigned_user && (
-                                                <span>Assigned to: {ticket.assigned_user.name}</span>
+                                                <span>Ditugaskan ke: {ticket.assigned_user.name}</span>
                                             )}
                                         </div>
                                         {ticket.progress && ticket.progress.length > 0 && (
                                             <div className="text-right">
                                                 <p className="text-xs">
-                                                    Last update: {new Date(ticket.progress[0].created_at).toLocaleDateString()}
+                                                    Pembaruan terakhir: {new Date(ticket.progress[0].created_at).toLocaleDateString()}
                                                 </p>
                                             </div>
                                         )}
@@ -253,7 +253,7 @@ export default function Index({ tickets, filters, stats }: Props) {
                                     {ticket.progress && ticket.progress.length > 0 && (
                                         <div className="mt-4 p-3 bg-gray-50 rounded-md">
                                             <p className="text-sm">
-                                                <strong>Last Update:</strong> {ticket.progress[0].note || `Status changed to ${ticket.progress[0].status}`}
+                                                <strong>Pembaruan Terakhir:</strong> {ticket.progress[0].note || `Status diubah menjadi ${ticket.progress[0].status}`}
                                             </p>
                                         </div>
                                     )}

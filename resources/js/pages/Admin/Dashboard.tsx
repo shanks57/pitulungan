@@ -19,7 +19,7 @@ import {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Admin Dashboard',
+        title: 'Dasbor Admin',
         href: dashboard().url,
     },
 ];
@@ -87,39 +87,39 @@ export default function Dashboard({ stats, recentTickets }: Props) {
 
     // Calculate percentages for status distribution
     const statusData = [
-        { status: 'Submitted', count: stats.submitted, color: 'bg-gray-500' },
-        { status: 'Processed', count: stats.processed, color: 'bg-blue-500' },
-        { status: 'Repairing', count: stats.repairing, color: 'bg-yellow-500' },
-        { status: 'Done', count: stats.done, color: 'bg-green-500' },
-        { status: 'Rejected', count: stats.rejected, color: 'bg-red-500' },
+        { status: 'Dikirim', count: stats.submitted, color: 'bg-gray-500' },
+        { status: 'Diproses', count: stats.processed, color: 'bg-blue-500' },
+        { status: 'Diperbaiki', count: stats.repairing, color: 'bg-yellow-500' },
+        { status: 'Selesai', count: stats.done, color: 'bg-green-500' },
+        { status: 'Ditolak', count: stats.rejected, color: 'bg-red-500' },
     ];
 
     const priorityData = [
-        { priority: 'High', count: stats.high_priority, color: 'bg-red-500' },
-        { priority: 'Medium', count: stats.medium_priority, color: 'bg-yellow-500' },
-        { priority: 'Low', count: stats.low_priority, color: 'bg-green-500' },
+        { priority: 'Tinggi', count: stats.high_priority, color: 'bg-red-500' },
+        { priority: 'Sedang', count: stats.medium_priority, color: 'bg-yellow-500' },
+        { priority: 'Rendah', count: stats.low_priority, color: 'bg-green-500' },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Admin Dashboard" />
+            <Head title="Dasbor Admin" />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                        <p className="text-muted-foreground">Welcome back! Here's an overview of your helpdesk system.</p>
+                        <h1 className="text-3xl font-bold">Dasbor Admin</h1>
+                        <p className="text-muted-foreground">Selamat datang kembali! Berikut ringkasan sistem helpdesk Anda.</p>
                     </div>
                     <div className="flex gap-2">
                         <Link href="/admin/tickets">
                             <Button variant="outline">
                                 <FileText className="mr-2 h-4 w-4" />
-                                View All Tickets
+                                Lihat Semua Tiket
                             </Button>
                         </Link>
                         <Link href="/admin/users">
                             <Button variant="outline">
                                 <Users className="mr-2 h-4 w-4" />
-                                Manage Users
+                                Kelola Pengguna
                             </Button>
                         </Link>
                     </div>
@@ -129,18 +129,18 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Tickets</CardTitle>
+                            <CardTitle className="text-sm font-medium">Total Tiket</CardTitle>
                             <FileText className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.total_tickets}</div>
-                            <p className="text-xs text-muted-foreground">All time tickets</p>
+                            <p className="text-xs text-muted-foreground">Total tiket sepanjang waktu</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Resolution Rate</CardTitle>
+                            <CardTitle className="text-sm font-medium">Tingkat Penyelesaian</CardTitle>
                             <Target className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
@@ -151,23 +151,23 @@ export default function Dashboard({ stats, recentTickets }: Props) {
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Completed Today</CardTitle>
+                            <CardTitle className="text-sm font-medium">Selesai Hari Ini</CardTitle>
                             <CheckCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.completed_today}</div>
-                            <p className="text-xs text-muted-foreground">Tickets resolved today</p>
+                            <p className="text-xs text-muted-foreground">Tiket diselesaikan hari ini</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Overdue</CardTitle>
+                            <CardTitle className="text-sm font-medium">Terlambat</CardTitle>
                             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
-                            <p className="text-xs text-muted-foreground">Past SLA deadline</p>
+                            <p className="text-xs text-muted-foreground">Melewati batas waktu SLA</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -178,7 +178,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <BarChart3 className="h-5 w-5" />
-                                Ticket Status Distribution
+                                Distribusi Status Tiket
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -210,7 +210,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <AlertTriangle className="h-5 w-5" />
-                                Priority Distribution
+                                Distribusi Prioritas
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -245,12 +245,12 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <TrendingUp className="h-5 w-5" />
-                                This Week
+                                Minggu Ini
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-green-600">{stats.completed_this_week}</div>
-                            <p className="text-sm text-muted-foreground">Tickets completed this week</p>
+                            <p className="text-sm text-muted-foreground">Tiket diselesaikan minggu ini</p>
                             <div className="mt-4">
                                 <Progress
                                     value={stats.total_tickets > 0 ? (stats.completed_this_week / Math.max(stats.total_tickets * 0.1, 1)) * 100 : 0}
@@ -264,13 +264,13 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <CheckCircle className="h-5 w-5" />
-                                System Health
+                                Kesehatan Sistem
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
-                                    <span>Active Tickets</span>
+                                    <span>Tiket Aktif</span>
                                     <span>{stats.submitted + stats.processed + stats.repairing}</span>
                                 </div>
                                 <Progress
@@ -278,7 +278,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                     className="h-2"
                                 />
                                 <div className="flex justify-between text-sm">
-                                    <span>Resolution Rate</span>
+                                    <span>Tingkat Penyelesaian</span>
                                     <span>{stats.resolution_rate}%</span>
                                 </div>
                                 <Progress value={stats.resolution_rate} className="h-2" />
@@ -290,7 +290,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Target className="h-5 w-5" />
-                                Achievements
+                                Pencapaian
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -298,19 +298,19 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                 <div className="flex items-center gap-2">
                                     <CheckCircle className="h-4 w-4 text-green-500" />
                                     <span className="text-sm">
-                                        {stats.completed_today >= 5 ? 'High Performer' : 'On Track'} Today
+                                        {stats.completed_today >= 5 ? 'Performa Tinggi' : 'Dalam Jalur'} Hari Ini
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <CheckCircle className="h-4 w-4 text-green-500" />
                                     <span className="text-sm">
-                                        {stats.resolution_rate >= 80 ? 'Excellent' : 'Good'} Resolution Rate
+                                        Tingkat Penyelesaian {stats.resolution_rate >= 80 ? 'Sangat Baik' : 'Baik'}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <CheckCircle className={`h-4 w-4 ${stats.overdue === 0 ? 'text-green-500' : 'text-yellow-500'}`} />
                                     <span className="text-sm">
-                                        {stats.overdue === 0 ? 'No Overdue' : `${stats.overdue} Overdue`} Tickets
+                                        {stats.overdue === 0 ? 'Tidak Ada Terlambat' : `${stats.overdue} Tiket Terlambat`}
                                     </span>
                                 </div>
                             </div>
@@ -323,7 +323,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Calendar className="h-5 w-5" />
-                            Recent Tickets
+                            Tiket Terbaru
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -342,10 +342,10 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-1">{ticket.title}</p>
                                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                            <span>By {ticket.user.name}</span>
-                                            <span>Category: {ticket.category.name}</span>
+                                            <span>Oleh {ticket.user.name}</span>
+                                            <span>Kategori: {ticket.category.name}</span>
                                             {ticket.assignedUser && (
-                                                <span>Assigned: {ticket.assignedUser.name}</span>
+                                                <span>Ditugaskan: {ticket.assignedUser.name}</span>
                                             )}
                                         </div>
                                     </div>
@@ -355,7 +355,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                         </p>
                                         <Link href={`/admin/tickets/${ticket.id}`}>
                                             <Button variant="outline" size="sm" className="mt-2">
-                                                View
+                                                Lihat
                                             </Button>
                                         </Link>
                                     </div>
@@ -363,7 +363,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                             ))}
                         </div>
                         {recentTickets.length === 0 && (
-                            <p className="text-center text-muted-foreground py-8">No tickets found.</p>
+                            <p className="text-center text-muted-foreground py-8">Tidak ada tiket ditemukan.</p>
                         )}
                     </CardContent>
                 </Card>

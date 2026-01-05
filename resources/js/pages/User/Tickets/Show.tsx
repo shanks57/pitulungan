@@ -12,9 +12,9 @@ import { Head } from '@inertiajs/react';
 import { ArrowLeft, Clock, User, MapPin, FileText, MessageSquare, Wrench, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'My Tickets', href: '/user/tickets' },
-    { title: 'Ticket Details', href: '#' },
+    { title: 'Dasbor', href: '/dashboard' },
+    { title: 'Tiket Saya', href: '/user/tickets' },
+    { title: 'Detail Tiket', href: '#' },
 ];
 
 interface Ticket {
@@ -69,7 +69,7 @@ interface Props {
 export default function Show({ ticket, progress, attachments, comments }: Props) {
     const { data: commentData, setData: setCommentData, post: postComment, processing: commentProcessing, reset: resetComment } = useForm({
         comment: '',
-        attachments: null as FileList | null,
+        attachments: [] as File[],
     });
 
     const handleCommentSubmit = (e: React.FormEvent) => {
@@ -78,14 +78,13 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
         const formData = new FormData();
         formData.append('comment', commentData.comment);
 
-        if (commentData.attachments) {
-            Array.from(commentData.attachments).forEach((file, index) => {
+        if (commentData.attachments && commentData.attachments.length > 0) {
+            commentData.attachments.forEach((file, index) => {
                 formData.append(`attachments[${index}]`, file);
             });
         }
 
         postComment(`/tickets/${ticket.id}/comments`, {
-            data: formData,
             onSuccess: () => {
                 resetComment();
             },
@@ -132,7 +131,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                 <div className="flex items-center gap-4">
                     <Button variant="outline" onClick={() => router.visit('/user/tickets')}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to My Tickets
+                        Kembali ke Tiket Saya
                     </Button>
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold">Ticket #{ticket.ticket_number}</h1>
@@ -148,7 +147,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <FileText className="h-5 w-5" />
-                                    Ticket Details
+                                    Detail Tiket
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -157,12 +156,12 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                         {getStatusIcon(ticket.status)} {ticket.status}
                                     </Badge>
                                     <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
-                                        {ticket.priority} priority
+                                        Prioritas {ticket.priority}
                                     </Badge>
                                 </div>
 
                                 <div>
-                                    <h3 className="font-semibold mb-2">Description</h3>
+                                    <h3 className="font-semibold mb-2">Deskripsi</h3>
                                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                                         {ticket.description}
                                     </p>
@@ -173,23 +172,23 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div className="flex items-center gap-2">
                                         <MapPin className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-muted-foreground">Location:</span>
+                                        <span className="text-muted-foreground">Lokasi:</span>
                                         <span>{ticket.location}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <User className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-muted-foreground">Category:</span>
+                                        <span className="text-muted-foreground">Kategori:</span>
                                         <span>{ticket.category.name}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Clock className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-muted-foreground">Created:</span>
+                                        <span className="text-muted-foreground">Dibuat:</span>
                                         <span>{new Date(ticket.created_at).toLocaleString()}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <User className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-muted-foreground">Assigned to:</span>
-                                        <span>{ticket.assigned_user?.name || 'Not assigned'}</span>
+                                        <span className="text-muted-foreground">Ditugaskan ke:</span>
+                                        <span>{ticket.assigned_user?.name || 'Belum ditugaskan'}</span>
                                     </div>
                                 </div>
 
@@ -197,10 +196,10 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                     <>
                                         <Separator />
                                         <div>
-                                            <h4 className="font-semibold mb-2">SLA Information</h4>
+                                            <h4 className="font-semibold mb-2">Informasi SLA</h4>
                                             <div className="text-sm space-y-1">
-                                                <p>Response Time: {Math.floor(ticket.sla.response_time_minutes / 60)}h {ticket.sla.response_time_minutes % 60}m</p>
-                                                <p>Resolution Time: {Math.floor(ticket.sla.resolution_time_minutes / 60)}h {ticket.sla.resolution_time_minutes % 60}m</p>
+                                                <p>Waktu Respons: {Math.floor(ticket.sla.response_time_minutes / 60)}j {ticket.sla.response_time_minutes % 60}m</p>
+                                                <p>Waktu Penyelesaian: {Math.floor(ticket.sla.resolution_time_minutes / 60)}j {ticket.sla.resolution_time_minutes % 60}m</p>
                                             </div>
                                         </div>
                                     </>
@@ -213,13 +212,13 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <MessageSquare className="h-5 w-5" />
-                                    Progress Timeline
+                                    Timeline Progress
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 {progress.length === 0 ? (
                                     <p className="text-muted-foreground text-center py-4">
-                                        No progress updates yet.
+                                        Belum ada pembaruan progress.
                                     </p>
                                 ) : (
                                     <div className="space-y-4">
@@ -236,7 +235,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                                 <div className="flex-1 pb-4">
                                                     <div className="flex items-center justify-between mb-1">
                                                         <h4 className="font-semibold">
-                                                            Status changed to {item.status}
+                                                            Status diubah menjadi {item.status}
                                                         </h4>
                                                         <span className="text-sm text-muted-foreground">
                                                             {new Date(item.created_at).toLocaleString()}
@@ -248,7 +247,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-muted-foreground mt-1">
-                                                        Updated by {item.updated_by.name}
+                                                        Diperbarui oleh {item.updated_by.name}
                                                     </p>
                                                 </div>
                                             </div>
@@ -263,7 +262,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <MessageSquare className="h-5 w-5" />
-                                    Comments
+                                    Komentar
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -271,31 +270,31 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                 <form onSubmit={handleCommentSubmit} className="mb-6">
                                     <div className="space-y-4">
                                         <div>
-                                            <Label htmlFor="comment">Add Comment</Label>
+                                            <Label htmlFor="comment">Tambah Komentar</Label>
                                             <Textarea
                                                 id="comment"
                                                 value={commentData.comment}
                                                 onChange={(e) => setCommentData('comment', e.target.value)}
-                                                placeholder="Add a comment..."
+                                                placeholder="Tambah komentar..."
                                                 rows={3}
                                                 required
                                             />
                                         </div>
                                         <div>
-                                            <Label htmlFor="comment-attachments">Attachments (optional)</Label>
+                                            <Label htmlFor="comment-attachments">Lampiran (opsional)</Label>
                                             <Input
                                                 id="comment-attachments"
                                                 type="file"
                                                 multiple
                                                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov"
-                                                onChange={(e) => setCommentData('attachments', e.target.files)}
+                                                onChange={(e) => setCommentData('attachments', e.target.files ? Array.from(e.target.files) : [])}
                                             />
                                             <p className="text-xs text-muted-foreground mt-1">
-                                                Max 10MB per file. Supported: PDF, DOC, DOCX, JPG, PNG, GIF, MP4, AVI, MOV
+                                                Maksimal 10MB per file. Didukung: PDF, DOC, DOCX, JPG, PNG, GIF, MP4, AVI, MOV
                                             </p>
                                         </div>
                                         <Button type="submit" disabled={commentProcessing}>
-                                            {commentProcessing ? 'Adding...' : 'Add Comment'}
+                                            {commentProcessing ? 'Menambah...' : 'Tambah Komentar'}
                                         </Button>
                                     </div>
                                 </form>
@@ -322,7 +321,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                             </p>
                                             {comment.attachments && comment.attachments.length > 0 && (
                                                 <div className="space-y-2">
-                                                    <p className="text-sm font-medium">Attachments:</p>
+                                                    <p className="text-sm font-medium">Lampiran:</p>
                                                     {comment.attachments.map((attachment) => (
                                                         <div key={attachment.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                                                             <div className="flex-1 min-w-0">
@@ -330,12 +329,12 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                                                     {attachment.file_path.split('/').pop()}
                                                                 </p>
                                                                 <p className="text-xs text-muted-foreground">
-                                                                    Uploaded by {attachment.uploaded_by.name}
+                                                                    Diupload oleh {attachment.uploaded_by.name}
                                                                 </p>
                                                             </div>
                                                             <Button variant="outline" size="sm" asChild>
                                                                 <a href={`/storage/${attachment.file_path}`} target="_blank" rel="noopener noreferrer">
-                                                                    View
+                                                                    Lihat
                                                                 </a>
                                                             </Button>
                                                         </div>
@@ -345,7 +344,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                         </div>
                                     ))}
                                     {comments.length === 0 && (
-                                        <p className="text-center text-muted-foreground py-4">No comments yet.</p>
+                                        <p className="text-center text-muted-foreground py-4">Belum ada komentar.</p>
                                     )}
                                 </div>
                             </CardContent>
@@ -357,12 +356,12 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                         {/* Attachments */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Attachments</CardTitle>
+                                <CardTitle>Lampiran</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 {attachments.length === 0 ? (
                                     <p className="text-muted-foreground text-center py-4">
-                                        No attachments uploaded.
+                                        Tidak ada lampiran yang diupload.
                                     </p>
                                 ) : (
                                     <div className="space-y-2">
@@ -391,7 +390,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                         {/* Quick Stats */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Ticket Status</CardTitle>
+                                <CardTitle>Status Tiket</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 <div className="flex justify-between text-sm">
@@ -401,20 +400,20 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                     </Badge>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span>Priority:</span>
+                                    <span>Prioritas:</span>
                                     <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
                                         {ticket.priority}
                                     </Badge>
                                 </div>
                                 {ticket.responded_at && (
                                     <div className="flex justify-between text-sm">
-                                        <span>Responded:</span>
+                                        <span>Direspons:</span>
                                         <span>{new Date(ticket.responded_at).toLocaleString()}</span>
                                     </div>
                                 )}
                                 {ticket.resolved_at && (
                                     <div className="flex justify-between text-sm">
-                                        <span>Resolved:</span>
+                                        <span>Diselesaikan:</span>
                                         <span>{new Date(ticket.resolved_at).toLocaleString()}</span>
                                     </div>
                                 )}

@@ -25,7 +25,7 @@ export function AppSidebar() {
     // Base navigation items for all users
     const baseNavItems: NavItem[] = [
         {
-            title: 'Dashboard',
+            title: 'Dasbor',
             href: dashboard(),
             icon: LayoutGrid,
         },
@@ -37,12 +37,12 @@ export function AppSidebar() {
             case 'admin':
                 return [
                     {
-                        title: 'All Tickets',
+                        title: 'Semua Tiket',
                         href: '/admin/tickets',
                         icon: Tickets,
                     },
                     {
-                        title: 'Users',
+                        title: 'Pengguna',
                         href: '/admin/users',
                         icon: Users2,
                     },
@@ -50,7 +50,7 @@ export function AppSidebar() {
             case 'technician':
                 return [
                     {
-                        title: 'My Tickets',
+                        title: 'Tiket Saya',
                         href: '/admin/tickets?assigned_to=me',
                         icon: Wrench,
                     },
@@ -59,12 +59,12 @@ export function AppSidebar() {
             default:
                 return [
                     {
-                        title: 'My Tickets',
+                        title: 'Tiket Saya',
                         href: '/user/tickets',
                         icon: User,
                     },
                     {
-                        title: 'Create Ticket',
+                        title: 'Buat Tiket',
                         href: '/tickets/create',
                         icon: Tickets,
                     },
@@ -74,7 +74,7 @@ export function AppSidebar() {
 
     // Settings is available for all users
     const settingsNavItem: NavItem = {
-        title: 'Settings',
+        title: 'Pengaturan',
         href: '/settings/profile',
         icon: Settings,
     };

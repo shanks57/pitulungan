@@ -8,8 +8,8 @@ import { router, useForm, Link } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Tickets', href: '/admin/tickets' },
+    { title: 'Dasbor', href: '/dashboard' },
+    { title: 'Tiket', href: '/admin/tickets' },
 ];
 
 interface Ticket {
@@ -87,13 +87,13 @@ export default function Index({ tickets, filters, users, counts }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Maintenance Tickets</h1>
+                <h1 className="text-2xl font-bold">Tiket Pemeliharaan</h1>
 
                 {/* Counts */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Open Tickets</CardTitle>
+                            <CardTitle className="text-sm font-medium">Tiket Terbuka</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{counts.open}</div>
@@ -101,7 +101,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                     </Card>
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                            <CardTitle className="text-sm font-medium">Sedang Dikerjakan</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{counts.in_progress}</div>
@@ -109,7 +109,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                     </Card>
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Resolved Today</CardTitle>
+                            <CardTitle className="text-sm font-medium">Diselesaikan Hari Ini</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{counts.resolved_today}</div>
@@ -117,7 +117,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                     </Card>
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Total Tickets</CardTitle>
+                            <CardTitle className="text-sm font-medium">Total Tiket</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{counts.total}</div>
@@ -128,7 +128,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                 {/* Filters */}
                 <div className="flex gap-4">
                     <Input
-                        placeholder="Search tickets..."
+                        placeholder="Cari tiket..."
                         value={data.search}
                         onChange={(e) => setData('search', e.target.value)}
                     />
@@ -137,32 +137,32 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Status</SelectItem>
-                            <SelectItem value="submitted">Submitted</SelectItem>
-                            <SelectItem value="processed">Processed</SelectItem>
-                            <SelectItem value="repairing">Repairing</SelectItem>
-                            <SelectItem value="done">Done</SelectItem>
-                            <SelectItem value="rejected">Rejected</SelectItem>
+                            <SelectItem value="all">Semua Status</SelectItem>
+                            <SelectItem value="submitted">Diajukan</SelectItem>
+                            <SelectItem value="processed">Diproses</SelectItem>
+                            <SelectItem value="repairing">Diperbaiki</SelectItem>
+                            <SelectItem value="done">Selesai</SelectItem>
+                            <SelectItem value="rejected">Ditolak</SelectItem>
                         </SelectContent>
                     </Select>
                     <Select value={data.priority} onValueChange={(value) => setData('priority', value)}>
                         <SelectTrigger className="w-40">
-                            <SelectValue placeholder="Priority" />
+                            <SelectValue placeholder="Prioritas" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Priority</SelectItem>
-                            <SelectItem value="low">Low</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="high">High</SelectItem>
+                            <SelectItem value="all">Semua Prioritas</SelectItem>
+                            <SelectItem value="low">Rendah</SelectItem>
+                            <SelectItem value="medium">Sedang</SelectItem>
+                            <SelectItem value="high">Tinggi</SelectItem>
                         </SelectContent>
                     </Select>
                     <Select value={data.assigned_to} onValueChange={(value) => setData('assigned_to', value)}>
                         <SelectTrigger className="w-40">
-                            <SelectValue placeholder="Assigned To" />
+                            <SelectValue placeholder="Ditugaskan Ke" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Users</SelectItem>
-                            <SelectItem value="me">Assigned to Me</SelectItem>
+                            <SelectItem value="all">Semua Pengguna</SelectItem>
+                            <SelectItem value="me">Ditugaskan kepada Saya</SelectItem>
                             {users.map((user) => (
                                 <SelectItem key={user.id} value={user.id.toString()}>
                                     {user.name}
@@ -178,7 +178,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                 {/* Create New Ticket Button */}
                 <div className="flex justify-end">
                     <Link href="/tickets/create">
-                        <Button>Create New Ticket</Button>
+                        <Button>Buat Tiket Baru</Button>
                     </Link>
                 </div>
 
@@ -216,7 +216,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                                     </div>
                                     {ticket.assigned_user && (
                                         <div className="text-xs text-gray-500">
-                                            Assigned to: {ticket.assigned_user.name}
+                                            Ditugaskan ke: {ticket.assigned_user.name}
                                         </div>
                                     )}
                                 </CardContent>

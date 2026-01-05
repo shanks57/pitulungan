@@ -17,13 +17,13 @@ export default function Welcome({
 
     return (
         <>
-            <Head title="HospitalHelp - Hospital Helpdesk System">
+            <Head title="HospitalHelp - Sistem Helpdesk Rumah Sakit">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
                     href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
                     rel="stylesheet"
                 />
-                <meta name="description" content="Streamline hospital operations with our comprehensive helpdesk system. Manage tickets, track progress, and ensure efficient patient care coordination." />
+                <meta name="description" content="Sederhanakan operasi rumah sakit dengan sistem helpdesk komprehensif kami. Kelola tiket, lacak kemajuan, dan pastikan koordinasi perawatan pasien yang efisien." />
             </Head>
 
             {/* Navigation */}
@@ -45,7 +45,7 @@ export default function Welcome({
                                     href={dashboard()}
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
                                 >
-                                    Dashboard
+                                    Dasbor
                                 </Link>
                             ) : (
                                 <>
@@ -53,14 +53,14 @@ export default function Welcome({
                                         href={login()}
                                         className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                                     >
-                                        Sign In
+                                        Masuk
                                     </Link>
                                     {canRegister && (
                                         <Link
                                             href={register()}
                                             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
                                         >
-                                            Get Started
+                                            Mulai
                                         </Link>
                                     )}
                                 </>
@@ -88,14 +88,14 @@ export default function Welcome({
                                     <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                     </svg>
-                                    Healthcare Excellence
+                                    Kecemerlangan Layanan Kesehatan
                                 </div>
                                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                                    Streamline Hospital
-                                    <span className="text-blue-600 block">Operations</span>
+                                    Sederhanakan Operasi
+                                    <span className="text-blue-600 block">Rumah Sakit</span>
                                 </h1>
                                 <p className="text-xl text-gray-600 max-w-lg">
-                                    Comprehensive helpdesk system designed for hospitals. Manage patient tickets, coordinate care teams, and ensure efficient healthcare delivery.
+                                    Sistem helpdesk komprehensif yang dirancang untuk rumah sakit. Kelola tiket pasien, koordinasikan tim perawatan, dan pastikan penyampaian layanan kesehatan yang efisien.
                                 </p>
                             </div>
 
@@ -105,7 +105,7 @@ export default function Welcome({
                                         href={dashboard()}
                                         className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                                     >
-                                        Go to Dashboard
+                                        Ke Dasbor
                                     </Link>
                                 ) : (
                                     <>
@@ -113,13 +113,13 @@ export default function Welcome({
                                             href={register()}
                                             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                                         >
-                                            Start Free Trial
+                                            Mulai Uji Coba Gratis
                                         </Link>
                                         <Link
                                             href={login()}
                                             className="border-2 border-gray-300 hover:border-blue-600 text-gray-700 hover:text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200"
                                         >
-                                            Sign In
+                                            Masuk
                                         </Link>
                                     </>
                                 )}
@@ -129,15 +129,15 @@ export default function Welcome({
                             <div className="grid grid-cols-3 gap-8 pt-8">
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-blue-600">500+</div>
-                                    <div className="text-sm text-gray-600">Hospitals</div>
+                                    <div className="text-sm text-gray-600">Rumah Sakit</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-blue-600">10K+</div>
-                                    <div className="text-sm text-gray-600">Tickets Resolved</div>
+                                    <div className="text-sm text-gray-600">Tiket Diselesaikan</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-blue-600">99.9%</div>
-                                    <div className="text-sm text-gray-600">Uptime</div>
+                                    <div className="text-sm text-gray-600">Waktu Aktif</div>
                                 </div>
                             </div>
                         </div>
@@ -156,8 +156,8 @@ export default function Welcome({
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h3 className="font-semibold text-gray-900">HospitalHelp Dashboard</h3>
-                                                <p className="text-sm text-gray-500">Real-time ticket management</p>
+                                                <h3 className="font-semibold text-gray-900">Dasbor HospitalHelp</h3>
+                                                <p className="text-sm text-gray-500">Manajemen tiket real-time</p>
                                             </div>
                                         </div>
                                         <div className="flex space-x-2">
@@ -171,21 +171,21 @@ export default function Welcome({
                                     <div className="grid grid-cols-3 gap-4 mb-6">
                                         <div className="bg-blue-50 p-4 rounded-lg">
                                             <div className="text-2xl font-bold text-blue-600">24</div>
-                                            <div className="text-sm text-blue-600">Active Tickets</div>
+                                            <div className="text-sm text-blue-600">Tiket Aktif</div>
                                         </div>
                                         <div className="bg-green-50 p-4 rounded-lg">
                                             <div className="text-2xl font-bold text-green-600">156</div>
-                                            <div className="text-sm text-green-600">Resolved Today</div>
+                                            <div className="text-sm text-green-600">Diselesaikan Hari Ini</div>
                                         </div>
                                         <div className="bg-orange-50 p-4 rounded-lg">
                                             <div className="text-2xl font-bold text-orange-600">8</div>
-                                            <div className="text-sm text-orange-600">High Priority</div>
+                                            <div className="text-sm text-orange-600">Prioritas Tinggi</div>
                                         </div>
                                     </div>
 
                                     {/* Recent Tickets */}
                                     <div className="space-y-3">
-                                        <h4 className="font-medium text-gray-900">Recent Tickets</h4>
+                                        <h4 className="font-medium text-gray-900">Tiket Terbaru</h4>
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                                 <div className="flex items-center space-x-3">
@@ -193,11 +193,11 @@ export default function Welcome({
                                                         <span className="text-xs font-medium text-red-600">HP</span>
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-medium text-gray-900">Patient room maintenance</p>
-                                                        <p className="text-xs text-gray-500">Room 302 - AC not working</p>
+                                                        <p className="text-sm font-medium text-gray-900">Pemeliharaan kamar pasien</p>
+                                                        <p className="text-xs text-gray-500">Kamar 302 - AC tidak berfungsi</p>
                                                     </div>
                                                 </div>
-                                                <span className="px-2 py-1 text-xs bg-red-100 text-red-600 rounded-full">High</span>
+                                                <span className="px-2 py-1 text-xs bg-red-100 text-red-600 rounded-full">Tinggi</span>
                                             </div>
                                             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                                 <div className="flex items-center space-x-3">
@@ -205,11 +205,11 @@ export default function Welcome({
                                                         <span className="text-xs font-medium text-blue-600">MD</span>
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-medium text-gray-900">Medication request</p>
-                                                        <p className="text-xs text-gray-500">Patient ID: 12345</p>
+                                                        <p className="text-sm font-medium text-gray-900">Permintaan obat</p>
+                                                        <p className="text-xs text-gray-500">ID Pasien: 12345</p>
                                                     </div>
                                                 </div>
-                                                <span className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full">Medium</span>
+                                                <span className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full">Sedang</span>
                                             </div>
                                         </div>
                                     </div>
@@ -236,10 +236,10 @@ export default function Welcome({
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                            Everything you need for efficient hospital management
+                            Semua yang Anda butuhkan untuk manajemen rumah sakit yang efisien
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Our comprehensive helpdesk system streamlines hospital operations, improves patient care coordination, and enhances communication across all departments.
+                            Sistem helpdesk komprehensif kami menyederhanakan operasi rumah sakit, meningkatkan koordinasi perawatan pasien, dan meningkatkan komunikasi di semua departemen.
                         </p>
                     </div>
 
@@ -251,9 +251,9 @@ export default function Welcome({
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Smart Ticket Management</h3>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Manajemen Tiket Cerdas</h3>
                             <p className="text-gray-600">
-                                Intelligent ticket routing, priority assignment, and automated escalation ensure critical issues are addressed promptly.
+                                Perutean tiket cerdas, penugasan prioritas, dan eskalasi otomatis memastikan masalah kritis ditangani dengan segera.
                             </p>
                         </div>
 
@@ -264,9 +264,9 @@ export default function Welcome({
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Role-Based Access</h3>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Akses Berbasis Peran</h3>
                             <p className="text-gray-600">
-                                Secure role-based permissions for administrators, technicians, and users with granular access controls.
+                                Izin berbasis peran yang aman untuk administrator, teknisi, dan pengguna dengan kontrol akses granular.
                             </p>
                         </div>
 
@@ -277,9 +277,9 @@ export default function Welcome({
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Real-Time Analytics</h3>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Analitik Real-Time</h3>
                             <p className="text-gray-600">
-                                Comprehensive dashboards with real-time metrics, performance tracking, and insightful reporting tools.
+                                Dasbor komprehensif dengan metrik real-time, pelacakan performa, dan alat pelaporan yang insightful.
                             </p>
                         </div>
 
@@ -290,9 +290,9 @@ export default function Welcome({
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-9 0V1m10 3V1m0 3l1 1v16a2 2 0 01-2 2H6a2 2 0 01-2-2V5l1-1z" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-3">File Attachments</h3>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Lampiran File</h3>
                             <p className="text-gray-600">
-                                Secure file upload system for medical documents, images, and important patient-related materials.
+                                Sistem upload file aman untuk dokumen medis, gambar, dan materi penting terkait pasien.
                             </p>
                         </div>
 
@@ -303,9 +303,9 @@ export default function Welcome({
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Progress Tracking</h3>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Pelacakan Kemajuan</h3>
                             <p className="text-gray-600">
-                                Detailed progress tracking with status updates, comments, and comprehensive audit trails for all tickets.
+                                Pelacakan kemajuan detail dengan pembaruan status, komentar, dan jejak audit komprehensif untuk semua tiket.
                             </p>
                         </div>
 
@@ -316,9 +316,9 @@ export default function Welcome({
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Mobile Responsive</h3>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Responsif Mobile</h3>
                             <p className="text-gray-600">
-                                Fully responsive design that works seamlessly across desktop, tablet, and mobile devices for healthcare professionals on the go.
+                                Desain yang sepenuhnya responsif yang bekerja dengan lancar di desktop, tablet, dan perangkat mobile untuk tenaga kesehatan yang sedang bergerak.
                             </p>
                         </div>
                     </div>
@@ -329,10 +329,10 @@ export default function Welcome({
             <section className="py-24 bg-gradient-to-r from-blue-600 to-blue-700">
                 <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                        Ready to transform your hospital operations?
+                        Siap untuk mentransformasi operasi rumah sakit Anda?
                     </h2>
                     <p className="text-xl text-blue-100 mb-8">
-                        Join hundreds of hospitals already using HospitalHelp to streamline their operations and improve patient care.
+                        Bergabunglah dengan ratusan rumah sakit yang sudah menggunakan HospitalHelp untuk menyederhanakan operasi mereka dan meningkatkan perawatan pasien.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         {auth.user ? (
@@ -340,7 +340,7 @@ export default function Welcome({
                                 href={dashboard()}
                                 className="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
                             >
-                                Access Your Dashboard
+                                Akses Dasbor Anda
                             </Link>
                         ) : (
                             <>
@@ -348,13 +348,13 @@ export default function Welcome({
                                     href={register()}
                                     className="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
                                 >
-                                    Start Free Trial
+                                    Mulai Uji Coba Gratis
                                 </Link>
                                 <Link
                                     href={login()}
                                     className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200"
                                 >
-                                    Sign In
+                                    Masuk
                                 </Link>
                             </>
                         )}
@@ -376,26 +376,26 @@ export default function Welcome({
                                 <span className="text-xl font-bold">HospitalHelp</span>
                             </div>
                             <p className="text-gray-400 mb-4">
-                                Streamlining hospital operations with intelligent helpdesk management. Built for healthcare professionals, designed for efficiency.
+                                Mempermudah operasi rumah sakit dengan manajemen helpdesk cerdas. Dibuat untuk tenaga kesehatan, dirancang untuk efisiensi.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-4">Product</h3>
+                            <h3 className="font-semibold mb-4">Produk</h3>
                             <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Fitur</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Harga</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Keamanan</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Integrasi</a></li>
                             </ul>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-4">Support</h3>
+                            <h3 className="font-semibold mb-4">Dukungan</h3>
                             <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Dokumentasi</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Pusat Bantuan</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Hubungi Kami</a></li>
                                 <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
                             </ul>
                         </div>

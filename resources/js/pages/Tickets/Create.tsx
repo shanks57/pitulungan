@@ -7,8 +7,8 @@ import { router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Create Ticket', href: '/tickets/create' },
+    { title: 'Dasbor', href: '/dashboard' },
+    { title: 'Buat Tiket', href: '/tickets/create' },
 ];
 
 interface Category {
@@ -50,14 +50,14 @@ export default function Create({ categories, slas }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Create New Ticket</h1>
+                <h1 className="text-2xl font-bold">Buat Tiket Baru</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
                     <div>
-                        <Label htmlFor="category_id">Category</Label>
+                        <Label htmlFor="category_id">Kategori</Label>
                         <Select value={data.category_id} onValueChange={(value) => setData('category_id', value)}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
+                                <SelectValue placeholder="Pilih kategori" />
                             </SelectTrigger>
                             <SelectContent>
                                 {categories.map((category) => (
@@ -71,25 +71,25 @@ export default function Create({ categories, slas }: Props) {
                     </div>
 
                     <div>
-                        <Label htmlFor="title">Title</Label>
+                        <Label htmlFor="title">Judul</Label>
                         <Input
                             id="title"
                             value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
                             required
-                            placeholder="Brief description of the issue"
+                            placeholder="Deskripsi singkat masalah"
                         />
                         {errors.title && <p className="text-red-500">{errors.title}</p>}
                     </div>
 
                     <div>
-                        <Label htmlFor="description">Description</Label>
+                        <Label htmlFor="description">Deskripsi</Label>
                         <textarea
                             id="description"
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
                             required
-                            placeholder="Detailed description of the issue"
+                            placeholder="Deskripsi detail masalah"
                             rows={4}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
@@ -97,7 +97,7 @@ export default function Create({ categories, slas }: Props) {
                     </div>
 
                     <div>
-                        <Label htmlFor="attachments">Attachments (optional)</Label>
+                        <Label htmlFor="attachments">Lampiran (opsional)</Label>
                         <Input
                             id="attachments"
                             type="file"
@@ -109,40 +109,40 @@ export default function Create({ categories, slas }: Props) {
                             accept="image/*,.pdf,.doc,.docx,.txt"
                         />
                         <p className="text-sm text-gray-500 mt-1">
-                            You can upload multiple files (images, PDF, documents)
+                            Anda dapat mengupload beberapa file (gambar, PDF, dokumen)
                         </p>
                         {errors.attachments && <p className="text-red-500">{errors.attachments}</p>}
                     </div>
 
                     <div>
-                        <Label htmlFor="location">Location</Label>
+                        <Label htmlFor="location">Lokasi</Label>
                         <Input
                             id="location"
                             value={data.location}
                             onChange={(e) => setData('location', e.target.value)}
                             required
-                            placeholder="Where is the issue located?"
+                            placeholder="Di mana lokasi masalah?"
                         />
                         {errors.location && <p className="text-red-500">{errors.location}</p>}
                     </div>
 
                     <div>
-                        <Label htmlFor="priority">Priority</Label>
+                        <Label htmlFor="priority">Prioritas</Label>
                         <Select value={data.priority} onValueChange={(value) => setData('priority', value)}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="low">Low</SelectItem>
-                                <SelectItem value="medium">Medium</SelectItem>
-                                <SelectItem value="high">High</SelectItem>
+                                <SelectItem value="low">Rendah</SelectItem>
+                                <SelectItem value="medium">Sedang</SelectItem>
+                                <SelectItem value="high">Tinggi</SelectItem>
                             </SelectContent>
                         </Select>
                         {errors.priority && <p className="text-red-500">{errors.priority}</p>}
                     </div>
 
                     <Button type="submit" disabled={processing}>
-                        Create Ticket
+                        Buat Tiket
                     </Button>
                 </form>
             </div>

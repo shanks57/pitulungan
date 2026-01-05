@@ -23,7 +23,7 @@ import {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'User Dashboard',
+        title: 'Dasbor Pengguna',
         href: dashboard().url,
     },
 ];
@@ -103,26 +103,26 @@ export default function Dashboard({ stats, recentTickets }: Props) {
 
     // Calculate percentages for status distribution
     const statusData = [
-        { status: 'Submitted', count: stats.submitted, color: 'bg-gray-500', icon: Clock },
-        { status: 'Processed', count: stats.processed, color: 'bg-blue-500', icon: Clock },
-        { status: 'Repairing', count: stats.repairing, color: 'bg-yellow-500', icon: Wrench },
-        { status: 'Done', count: stats.done, color: 'bg-green-500', icon: CheckCircle },
-        { status: 'Rejected', count: stats.rejected, color: 'bg-red-500', icon: XCircle },
+        { status: 'Dikirim', count: stats.submitted, color: 'bg-gray-500', icon: Clock },
+        { status: 'Diproses', count: stats.processed, color: 'bg-blue-500', icon: Clock },
+        { status: 'Diperbaiki', count: stats.repairing, color: 'bg-yellow-500', icon: Wrench },
+        { status: 'Selesai', count: stats.done, color: 'bg-green-500', icon: CheckCircle },
+        { status: 'Ditolak', count: stats.rejected, color: 'bg-red-500', icon: XCircle },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="User Dashboard" />
+            <Head title="Dasbor Pengguna" />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold">My Dashboard</h1>
-                        <p className="text-muted-foreground">Welcome back! Track your tickets and submit new requests.</p>
+                        <h1 className="text-3xl font-bold">Dasbor Saya</h1>
+                        <p className="text-muted-foreground">Selamat datang kembali! Lacak tiket Anda dan ajukan permintaan baru.</p>
                     </div>
                     <Link href="/tickets/create">
                         <Button className="flex items-center gap-2">
                             <Plus className="h-4 w-4" />
-                            Create Ticket
+                            Buat Tiket
                         </Button>
                     </Link>
                 </div>
@@ -131,18 +131,18 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Tickets</CardTitle>
+                            <CardTitle className="text-sm font-medium">Total Tiket</CardTitle>
                             <FileText className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.total_tickets}</div>
-                            <p className="text-xs text-muted-foreground">Tickets submitted</p>
+                            <p className="text-xs text-muted-foreground">Tiket yang diajukan</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Resolution Rate</CardTitle>
+                            <CardTitle className="text-sm font-medium">Tingkat Penyelesaian</CardTitle>
                             <Target className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
@@ -153,23 +153,23 @@ export default function Dashboard({ stats, recentTickets }: Props) {
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                            <CardTitle className="text-sm font-medium">Sedang Dikerjakan</CardTitle>
                             <Clock className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.pending_response}</div>
-                            <p className="text-xs text-muted-foreground">Being worked on</p>
+                            <p className="text-xs text-muted-foreground">Sedang dikerjakan</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                            <CardTitle className="text-sm font-medium">Selesai</CardTitle>
                             <CheckCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-green-600">{stats.done}</div>
-                            <p className="text-xs text-muted-foreground">Successfully resolved</p>
+                            <p className="text-xs text-muted-foreground">Berhasil diselesaikan</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -180,7 +180,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <BarChart3 className="h-5 w-5" />
-                                Ticket Status Overview
+                                Ringkasan Status Tiket
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -212,7 +212,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <TrendingUp className="h-5 w-5" />
-                                Recent Activity
+                                Aktivitas Terbaru
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -220,28 +220,28 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <CheckCircle className="h-4 w-4 text-green-500" />
-                                        <span className="text-sm">Completed this week</span>
+                                        <span className="text-sm">Selesai minggu ini</span>
                                     </div>
                                     <span className="text-sm font-medium">{stats.completed_this_week}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Clock className="h-4 w-4 text-blue-500" />
-                                        <span className="text-sm">Pending response</span>
+                                        <span className="text-sm">Menunggu respon</span>
                                     </div>
                                     <span className="text-sm font-medium">{stats.pending_response}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                                        <span className="text-sm">High priority</span>
+                                        <span className="text-sm">Prioritas tinggi</span>
                                     </div>
                                     <span className="text-sm font-medium">{stats.high_priority}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <XCircle className="h-4 w-4 text-red-500" />
-                                        <span className="text-sm">Rejected</span>
+                                        <span className="text-sm">Ditolak</span>
                                     </div>
                                     <span className="text-sm font-medium">{stats.rejected}</span>
                                 </div>
@@ -255,7 +255,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Calendar className="h-5 w-5" />
-                            Recent Tickets
+                            Tiket Terbaru
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -275,12 +275,12 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-1">{ticket.title}</p>
                                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                            <span>Category: {ticket.category.name}</span>
+                                            <span>Kategori: {ticket.category.name}</span>
                                             {ticket.assignedUser && (
-                                                <span>Assigned: {ticket.assignedUser.name}</span>
+                                                <span>Ditugaskan: {ticket.assignedUser.name}</span>
                                             )}
                                             {ticket.progress && ticket.progress.length > 0 && (
-                                                <span>Last update: {new Date(ticket.progress[0].created_at).toLocaleDateString()}</span>
+                                                <span>Pembaruan terakhir: {new Date(ticket.progress[0].created_at).toLocaleDateString()}</span>
                                             )}
                                         </div>
                                     </div>
@@ -288,7 +288,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                         <Link href={`/user/tickets/${ticket.id}`}>
                                             <Button variant="outline" size="sm">
                                                 <Eye className="h-4 w-4 mr-1" />
-                                                View
+                                                Lihat
                                             </Button>
                                         </Link>
                                     </div>
@@ -298,11 +298,11 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         {recentTickets.length === 0 && (
                             <div className="text-center py-8">
                                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                <p className="text-muted-foreground">No tickets found.</p>
+                                <p className="text-muted-foreground">Tidak ada tiket ditemukan.</p>
                                 <Link href="/tickets/create">
                                     <Button className="mt-4">
                                         <Plus className="h-4 w-4 mr-2" />
-                                        Create Your First Ticket
+                                        Buat Tiket Pertama Anda
                                     </Button>
                                 </Link>
                             </div>
