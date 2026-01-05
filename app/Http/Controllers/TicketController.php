@@ -332,7 +332,17 @@ class TicketController extends Controller
             abort(403, 'You can only view tickets assigned to you.');
         }
 
-        $ticket->load(['user', 'category', 'assignedUser', 'sla', 'progress.updatedBy', 'attachments.uploadedBy']);
+        $ticket->load([
+            'user',
+            'category',
+            'assignedUser',
+            'sla',
+            'progress.updatedBy',
+            'attachments.uploadedBy',
+            'comments' => function ($query) {
+                $query->with(['user', 'attachments.uploadedBy'])->orderBy('created_at', 'asc');
+            }
+        ]);
 
         // Return different views based on user role
         if ($user->role === 'user') {
@@ -340,12 +350,14 @@ class TicketController extends Controller
                 'ticket' => $ticket,
                 'progress' => $ticket->progress,
                 'attachments' => $ticket->attachments,
+                'comments' => $ticket->comments,
             ]);
         } elseif ($user->role === 'technician') {
             return Inertia::render('Admin/Tickets/Show', [
                 'ticket' => $ticket,
                 'progress' => $ticket->progress,
                 'attachments' => $ticket->attachments,
+                'comments' => $ticket->comments,
                 'categories' => TicketCategory::all(),
                 'users' => User::whereIn('role', ['admin', 'technician'])->get(),
             ]);
@@ -355,6 +367,7 @@ class TicketController extends Controller
                 'ticket' => $ticket,
                 'progress' => $ticket->progress,
                 'attachments' => $ticket->attachments,
+                'comments' => $ticket->comments,
                 'categories' => TicketCategory::all(),
                 'users' => User::whereIn('role', ['admin', 'technician'])->get(),
             ]);

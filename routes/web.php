@@ -6,6 +6,7 @@ use Laravel\Fortify\Features;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TicketCommentController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -19,6 +20,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Ticket routes for all authenticated users
     Route::get('tickets/create', [TicketController::class, 'create'])->name('tickets.create');
     Route::post('tickets', [TicketController::class, 'store'])->name('tickets.store');
+
+    // Comment routes (accessible by users and technicians)
+    Route::middleware(['role:user|technician'])->group(function () {
+        Route::post('tickets/{ticket}/comments', [TicketCommentController::class, 'store'])->name('tickets.comments.store');
+    });
 
     // User routes
     Route::middleware(['role:user'])->prefix('user')->name('user.')->group(function () {

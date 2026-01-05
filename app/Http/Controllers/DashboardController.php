@@ -15,7 +15,42 @@ class DashboardController extends Controller
         $user = $request->user();
 
         if ($user->role === 'admin') {
-            return Inertia::render('Admin/Dashboard');
+            // Get overall system statistics
+            $allTickets = Ticket::query();
+
+            $stats = [
+                'total_tickets' => $allTickets->count(),
+                'submitted' => (clone $allTickets)->where('status', 'submitted')->count(),
+                'processed' => (clone $allTickets)->where('status', 'processed')->count(),
+                'repairing' => (clone $allTickets)->where('status', 'repairing')->count(),
+                'done' => (clone $allTickets)->where('status', 'done')->count(),
+                'rejected' => (clone $allTickets)->where('status', 'rejected')->count(),
+                'high_priority' => (clone $allTickets)->where('priority', 'high')->count(),
+                'medium_priority' => (clone $allTickets)->where('priority', 'medium')->count(),
+                'low_priority' => (clone $allTickets)->where('priority', 'low')->count(),
+                'completed_today' => (clone $allTickets)->where('status', 'done')
+                    ->whereDate('updated_at', Carbon::today())->count(),
+                'completed_this_week' => (clone $allTickets)->where('status', 'done')
+                    ->whereBetween('updated_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count(),
+                'overdue' => (clone $allTickets)->where('status', '!=', 'done')
+                    ->whereHas('sla', function ($query) {
+                        $query->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, NOW()) > sla.resolution_time_minutes / 60');
+                    })->count(),
+                'resolution_rate' => $allTickets->count() > 0
+                    ? round(((clone $allTickets)->where('status', 'done')->count() / $allTickets->count()) * 100, 1)
+                    : 0,
+            ];
+
+            // Get recent tickets with relationships
+            $recentTickets = Ticket::with(['user', 'category', 'assignedUser'])
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get();
+
+            return Inertia::render('Admin/Dashboard', [
+                'stats' => $stats,
+                'recentTickets' => $recentTickets,
+            ]);
         } elseif ($user->role === 'technician') {
             // Get technician's assigned tickets statistics
             $assignedTickets = Ticket::where('assigned_to', $user->id);
@@ -48,7 +83,40 @@ class DashboardController extends Controller
                 'recentTickets' => $recentTickets,
             ]);
         } else {
-            return Inertia::render('User/Dashboard');
+            // Get user's own tickets statistics
+            $userTickets = Ticket::where('user_id', $user->id);
+
+            $stats = [
+                'total_tickets' => $userTickets->count(),
+                'submitted' => (clone $userTickets)->where('status', 'submitted')->count(),
+                'processed' => (clone $userTickets)->where('status', 'processed')->count(),
+                'repairing' => (clone $userTickets)->where('status', 'repairing')->count(),
+                'done' => (clone $userTickets)->where('status', 'done')->count(),
+                'rejected' => (clone $userTickets)->where('status', 'rejected')->count(),
+                'high_priority' => (clone $userTickets)->where('priority', 'high')->count(),
+                'medium_priority' => (clone $userTickets)->where('priority', 'medium')->count(),
+                'low_priority' => (clone $userTickets)->where('priority', 'low')->count(),
+                'completed_this_week' => (clone $userTickets)->where('status', 'done')
+                    ->whereBetween('updated_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count(),
+                'pending_response' => (clone $userTickets)->whereIn('status', ['processed', 'repairing'])->count(),
+                'resolution_rate' => $userTickets->count() > 0
+                    ? round(((clone $userTickets)->where('status', 'done')->count() / $userTickets->count()) * 100, 1)
+                    : 0,
+            ];
+
+            // Get user's recent tickets with relationships
+            $recentTickets = Ticket::with(['category', 'assignedUser', 'progress' => function ($query) {
+                $query->latest()->limit(1);
+            }])
+                ->where('user_id', $user->id)
+                ->orderBy('updated_at', 'desc')
+                ->limit(10)
+                ->get();
+
+            return Inertia::render('User/Dashboard', [
+                'stats' => $stats,
+                'recentTickets' => $recentTickets,
+            ]);
         }
     }
 }

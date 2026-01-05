@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -48,15 +49,24 @@ interface Attachment {
     created_at: string;
 }
 
+interface Comment {
+    id: number;
+    comment: string;
+    user: { name: string; role: string };
+    attachments: Attachment[];
+    created_at: string;
+}
+
 interface Props {
     ticket: Ticket;
     progress: Progress[];
     attachments: Attachment[];
+    comments: Comment[];
     categories: { id: number; name: string }[];
     users: { id: number; name: string }[];
 }
 
-export default function Show({ ticket, progress, attachments, categories, users }: Props) {
+export default function Show({ ticket, progress, attachments, comments, categories, users }: Props) {
     const { data, setData, put, processing, errors } = useForm({
         title: ticket.title,
         description: ticket.description,
@@ -67,9 +77,34 @@ export default function Show({ ticket, progress, attachments, categories, users 
         status: ticket.status,
     });
 
+    const { data: commentData, setData: setCommentData, post: postComment, processing: commentProcessing, reset: resetComment } = useForm({
+        comment: '',
+        attachments: null as FileList | null,
+    });
+
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
         put(`/admin/tickets/${ticket.id}`);
+    };
+
+    const handleCommentSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('comment', commentData.comment);
+
+        if (commentData.attachments) {
+            Array.from(commentData.attachments).forEach((file, index) => {
+                formData.append(`attachments[${index}]`, file);
+            });
+        }
+
+        postComment(`/tickets/${ticket.id}/comments`, {
+            data: formData,
+            onSuccess: () => {
+                resetComment();
+            },
+        });
     };
 
     const getStatusColor = (status: string) => {
@@ -256,6 +291,96 @@ export default function Show({ ticket, progress, attachments, categories, users 
                                             </div>
                                         </div>
                                     ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Comments Section */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Comments</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {/* Add Comment Form */}
+                                <form onSubmit={handleCommentSubmit} className="mb-6">
+                                    <div className="space-y-4">
+                                        <div>
+                                            <Label htmlFor="comment">Add Comment</Label>
+                                            <Textarea
+                                                id="comment"
+                                                value={commentData.comment}
+                                                onChange={(e) => setCommentData('comment', e.target.value)}
+                                                placeholder="Add a comment..."
+                                                rows={3}
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="comment-attachments">Attachments (optional)</Label>
+                                            <Input
+                                                id="comment-attachments"
+                                                type="file"
+                                                multiple
+                                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov"
+                                                onChange={(e) => setCommentData('attachments', e.target.files)}
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Max 10MB per file. Supported: PDF, DOC, DOCX, JPG, PNG, GIF, MP4, AVI, MOV
+                                            </p>
+                                        </div>
+                                        <Button type="submit" disabled={commentProcessing}>
+                                            {commentProcessing ? 'Adding...' : 'Add Comment'}
+                                        </Button>
+                                    </div>
+                                </form>
+
+                                {/* Comments List */}
+                                <div className="space-y-4">
+                                    {comments.map((comment) => (
+                                        <div key={comment.id} className="border rounded-lg p-4">
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                                        {comment.user.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium">{comment.user.name}</p>
+                                                        <p className="text-xs text-gray-500">
+                                                            {comment.user.role} • {new Date(comment.created_at).toLocaleString()}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-gray-700 mb-3 whitespace-pre-wrap">
+                                                {comment.comment}
+                                            </p>
+                                            {comment.attachments && comment.attachments.length > 0 && (
+                                                <div className="space-y-2">
+                                                    <p className="text-sm font-medium">Attachments:</p>
+                                                    {comment.attachments.map((attachment) => (
+                                                        <div key={attachment.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-sm font-medium truncate">
+                                                                    {attachment.file_path.split('/').pop()}
+                                                                </p>
+                                                                <p className="text-xs text-gray-500">
+                                                                    Uploaded by {attachment.uploaded_by.name}
+                                                                </p>
+                                                            </div>
+                                                            <Button variant="outline" size="sm" asChild>
+                                                                <a href={`/storage/${attachment.file_path}`} target="_blank" rel="noopener noreferrer">
+                                                                    View
+                                                                </a>
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                    {comments.length === 0 && (
+                                        <p className="text-center text-gray-500 py-4">No comments yet.</p>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
