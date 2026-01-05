@@ -23,6 +23,8 @@ export function PWAInstallButton({
         return null; // Don't show if not installable
     }
 
+    console.log(isInstallable, "isInstallable", isInstalled, "isInstalled")
+
     return (
         <Button
             variant={variant}
