@@ -39,6 +39,11 @@ class DashboardController extends Controller
                 'resolution_rate' => $allTickets->count() > 0
                     ? round(((clone $allTickets)->where('status', 'done')->count() / $allTickets->count()) * 100, 1)
                     : 0,
+                // Time-based statistics
+                'tickets_today' => (clone $allTickets)->whereDate('created_at', Carbon::today())->count(),
+                'tickets_7days' => (clone $allTickets)->where('created_at', '>=', Carbon::now()->subDays(7))->count(),
+                'tickets_14days' => (clone $allTickets)->where('created_at', '>=', Carbon::now()->subDays(14))->count(),
+                'tickets_30days' => (clone $allTickets)->where('created_at', '>=', Carbon::now()->subDays(30))->count(),
             ];
 
             // Get recent tickets with relationships

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     FileText,
     CheckCircle,
@@ -38,6 +38,10 @@ interface Stats {
     completed_this_week: number;
     overdue: number;
     resolution_rate: number;
+    tickets_today: number;
+    tickets_7days: number;
+    tickets_14days: number;
+    tickets_30days: number;
 }
 
 interface Ticket {
@@ -124,10 +128,14 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         </Link>
                     </div>
                 </div>
+                
 
                 {/* Key Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Card>
+                    <Card 
+                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                        onClick={() => router.visit('/admin/tickets')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total Tiket</CardTitle>
                             <FileText className="h-4 w-4 text-muted-foreground" />
@@ -138,7 +146,10 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                        onClick={() => router.visit('/admin/tickets?status=done')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Tingkat Penyelesaian</CardTitle>
                             <Target className="h-4 w-4 text-muted-foreground" />
@@ -149,7 +160,10 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                        onClick={() => router.visit('/admin/tickets?status=done&date=today')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Selesai Hari Ini</CardTitle>
                             <CheckCircle className="h-4 w-4 text-muted-foreground" />
@@ -160,7 +174,10 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-red-500 transition-all"
+                        onClick={() => router.visit('/admin/tickets?status=overdue')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Terlambat</CardTitle>
                             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
@@ -172,6 +189,64 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                     </Card>
                 </div>
 
+                {/* Time-Based Statistics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-green-500 transition-all"
+                        onClick={() => router.visit('/admin/tickets?date_from=today')}
+                    >
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Tiket Hari Ini</CardTitle>
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.tickets_today}</div>
+                            <p className="text-xs text-muted-foreground">Dibuat hari ini</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                        onClick={() => router.visit('/admin/tickets?date_from=7days')}
+                    >
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Tiket 7 Hari</CardTitle>
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.tickets_7days}</div>
+                            <p className="text-xs text-muted-foreground">Dalam 7 hari terakhir</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-yellow-500 transition-all"
+                        onClick={() => router.visit('/admin/tickets?date_from=14days')}
+                    >
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Tiket 14 Hari</CardTitle>
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.tickets_14days}</div>
+                            <p className="text-xs text-muted-foreground">Dalam 14 hari terakhir</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-purple-500 transition-all"
+                        onClick={() => router.visit('/admin/tickets?date_from=30days')}
+                    >
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Tiket 30 Hari</CardTitle>
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.tickets_30days}</div>
+                            <p className="text-xs text-muted-foreground">Dalam 30 hari terakhir</p>
+                        </CardContent>
+                    </Card>
+                </div>
                 {/* Status Distribution */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <Card>
@@ -184,7 +259,20 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardContent>
                             <div className="space-y-4">
                                 {statusData.map((item) => (
-                                    <div key={item.status} className="flex items-center justify-between">
+                                    <div 
+                                        key={item.status} 
+                                        className="flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity"
+                                        onClick={() => {
+                                            const statusMap: { [key: string]: string } = {
+                                                'Dikirim': 'submitted',
+                                                'Diproses': 'processed',
+                                                'Diperbaiki': 'repairing',
+                                                'Selesai': 'done',
+                                                'Ditolak': 'rejected',
+                                            };
+                                            router.visit(`/admin/tickets?status=${statusMap[item.status]}`);
+                                        }}
+                                    >
                                         <div className="flex items-center gap-2">
                                             <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
                                             <span className="text-sm font-medium">{item.status}</span>
@@ -216,7 +304,18 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardContent>
                             <div className="space-y-4">
                                 {priorityData.map((item) => (
-                                    <div key={item.priority} className="flex items-center justify-between">
+                                    <div 
+                                        key={item.priority} 
+                                        className="flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity"
+                                        onClick={() => {
+                                            const priorityMap: { [key: string]: string } = {
+                                                'Tinggi': 'high',
+                                                'Sedang': 'medium',
+                                                'Rendah': 'low',
+                                            };
+                                            router.visit(`/admin/tickets?priority=${priorityMap[item.priority]}`);
+                                        }}
+                                    >
                                         <div className="flex items-center gap-2">
                                             <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
                                             <span className="text-sm font-medium">{item.priority} Priority</span>

@@ -89,4 +89,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(TicketAttachment::class, 'uploaded_by');
     }
+
+    public function categories()
+    {
+        return $this->belongsToMany(TicketCategory::class, 'technician_ticket_categories', 'user_id', 'category_id');
+    }
 }

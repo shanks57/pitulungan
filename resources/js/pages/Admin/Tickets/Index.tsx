@@ -40,6 +40,7 @@ interface Props {
         status: string;
         priority: string;
         assigned_to: string;
+        date_from: string;
     };
     users: User[];
     counts: {
@@ -56,6 +57,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
         status: filters.status || '',
         priority: filters.priority || '',
         assigned_to: filters.assigned_to || '',
+        date_from: filters.date_from || '',
     });
 
     const handleFilter = () => {
@@ -126,7 +128,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                 </div>
 
                 {/* Filters */}
-                <div className="flex gap-4">
+                <div className="flex gap-4 flex-wrap">
                     <Input
                         placeholder="Cari tiket..."
                         value={data.search}
@@ -168,6 +170,18 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                                     {user.name}
                                 </SelectItem>
                             ))}
+                        </SelectContent>
+                    </Select>
+                    <Select value={data.date_from} onValueChange={(value) => setData('date_from', value)}>
+                        <SelectTrigger className="w-40">
+                            <SelectValue placeholder="Periode" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Semua Waktu</SelectItem>
+                            <SelectItem value="today">Hari Ini</SelectItem>
+                            <SelectItem value="7days">7 Hari Terakhir</SelectItem>
+                            <SelectItem value="14days">14 Hari Terakhir</SelectItem>
+                            <SelectItem value="30days">30 Hari Terakhir</SelectItem>
                         </SelectContent>
                     </Select>
                     <Button onClick={handleFilter} disabled={processing}>

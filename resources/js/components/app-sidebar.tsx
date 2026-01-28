@@ -46,6 +46,11 @@ export function AppSidebar() {
                         href: '/admin/users',
                         icon: Users2,
                     },
+                    {
+                        title: 'Kategori',
+                        href: '/admin/categories',
+                        icon: Folder,
+                    },
                 ];
             case 'technician':
                 return [

@@ -13,6 +13,7 @@ class Ticket extends Model
         'ticket_number',
         'user_id',
         'category_id',
+        'subcategory_id',
         'sla_id',
         'title',
         'description',
@@ -41,6 +42,11 @@ class Ticket extends Model
     public function category()
     {
         return $this->belongsTo(TicketCategory::class, 'category_id');
+    }
+
+    public function subcategory()
+    {
+        return $this->belongsTo(TicketSubcategory::class, 'subcategory_id');
     }
 
     public function sla()

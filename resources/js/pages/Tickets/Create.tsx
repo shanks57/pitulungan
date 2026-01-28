@@ -15,6 +15,13 @@ interface Category {
     id: number;
     name: string;
     description: string;
+    subcategories?: Subcategory[];
+}
+
+interface Subcategory {
+    id: number;
+    name: string;
+    description: string;
 }
 
 interface Sla {
@@ -32,12 +39,16 @@ interface Props {
 export default function Create({ categories, slas }: Props) {
     const { data, setData, post, processing, errors } = useForm({
         category_id: '',
+        subcategory_id: '',
         title: '',
         description: '',
         location: '',
         priority: 'medium',
         attachments: [] as File[],
     });
+
+    const selectedCategory = categories.find(c => c.id === parseInt(data.category_id));
+    const subcategories = selectedCategory?.subcategories || [];
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -55,7 +66,10 @@ export default function Create({ categories, slas }: Props) {
                 <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
                     <div>
                         <Label htmlFor="category_id">Kategori</Label>
-                        <Select value={data.category_id} onValueChange={(value) => setData('category_id', value)}>
+                        <Select value={data.category_id} onValueChange={(value) => {
+                            setData('category_id', value);
+                            setData('subcategory_id', ''); // Reset subcategory when category changes
+                        }}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Pilih kategori" />
                             </SelectTrigger>
@@ -68,6 +82,32 @@ export default function Create({ categories, slas }: Props) {
                             </SelectContent>
                         </Select>
                         {errors.category_id && <p className="text-red-500">{errors.category_id}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="subcategory_id">Subkategori (opsional)</Label>
+                        {subcategories.length > 0 ? (
+                            <>
+                                <Select value={data.subcategory_id} onValueChange={(value) => setData('subcategory_id', value)}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Pilih subkategori" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="">Tidak ada subkategori</SelectItem>
+                                        {subcategories.map((subcategory) => (
+                                            <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
+                                                {subcategory.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.subcategory_id && <p className="text-red-500 text-sm mt-1">{errors.subcategory_id}</p>}
+                            </>
+                        ) : (
+                            <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500">
+                                Tidak ada subkategori untuk kategori ini
+                            </div>
+                        )}
                     </div>
 
                     <div>

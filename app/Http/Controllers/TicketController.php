@@ -52,6 +52,25 @@ class TicketController extends Controller
             }
         }
 
+        // Filter by date range
+        if ($request->has('date_from') && $request->date_from) {
+            $dateFrom = $request->date_from;
+            switch ($dateFrom) {
+                case 'today':
+                    $query->whereDate('created_at', Carbon::today());
+                    break;
+                case '7days':
+                    $query->where('created_at', '>=', Carbon::now()->subDays(7));
+                    break;
+                case '14days':
+                    $query->where('created_at', '>=', Carbon::now()->subDays(14));
+                    break;
+                case '30days':
+                    $query->where('created_at', '>=', Carbon::now()->subDays(30));
+                    break;
+            }
+        }
+
         $tickets = $query->paginate(10);
 
         // Counts
@@ -64,7 +83,7 @@ class TicketController extends Controller
 
         return Inertia::render('Admin/Tickets/Index', [
             'tickets' => $tickets,
-            'filters' => $request->only(['search', 'status', 'priority', 'assigned_to']),
+            'filters' => $request->only(['search', 'status', 'priority', 'assigned_to', 'date_from']),
             'users' => User::whereIn('role', ['admin', 'technician'])->select('id', 'name')->get(),
             'counts' => [
                 'open' => $openCount,
@@ -77,7 +96,7 @@ class TicketController extends Controller
 
     public function create()
     {
-        $categories = TicketCategory::all();
+        $categories = TicketCategory::with('subcategories')->get();
         $slas = Sla::all();
 
         return Inertia::render('Tickets/Create', [
@@ -94,6 +113,7 @@ class TicketController extends Controller
         try {
             $request->validate([
                 'category_id' => 'required|exists:ticket_categories,id',
+                'subcategory_id' => 'nullable|exists:ticket_subcategories,id',
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
                 'location' => 'required|string|max:255',
@@ -120,21 +140,37 @@ class TicketController extends Controller
         // Get SLA based on priority
         $sla = Sla::where('priority', $request->priority)->first();
 
+        // Find a technician assigned to this category
+        $assignedTechnician = null;
+        $categoryId = $request->category_id;
+
+        // Get a technician who handles this category (round-robin or first available)
+        $techniciansForCategory = User::whereHas('categories', function ($query) use ($categoryId) {
+            $query->where('category_id', $categoryId);
+        })->where('role', 'technician')->get();
+
+        if ($techniciansForCategory->count() > 0) {
+            // Get the first technician (can be improved with load balancing)
+            $assignedTechnician = $techniciansForCategory->first();
+        }
+
         try {
             $ticket = Ticket::create([
                 'ticket_number' => 'TICK-' . strtoupper(uniqid()),
                 'user_id' => $user->id,
                 'category_id' => $request->category_id,
+                'subcategory_id' => $request->subcategory_id ? (int)$request->subcategory_id : null,
                 'sla_id' => $sla ? $sla->id : null,
                 'title' => $request->title,
                 'description' => $request->description,
                 'location' => $request->location,
                 'priority' => $request->priority,
                 'status' => 'submitted',
+                'assigned_to' => $assignedTechnician ? $assignedTechnician->id : null,
             ]);
 
             // Debug: Log ticket creation
-            Log::info('Ticket created:', ['id' => $ticket->id, 'ticket_number' => $ticket->ticket_number]);
+            Log::info('Ticket created:', ['id' => $ticket->id, 'ticket_number' => $ticket->ticket_number, 'assigned_to' => $assignedTechnician ? $assignedTechnician->id : null]);
         } catch (\Exception $e) {
             Log::error('Ticket creation failed:', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Failed to create ticket: ' . $e->getMessage());
