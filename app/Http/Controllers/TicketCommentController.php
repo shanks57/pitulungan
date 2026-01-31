@@ -41,6 +41,13 @@ class TicketCommentController extends Controller
             }
         }
 
+        // Notify ticket owner & assignee (except the comment author)
+        $participants = collect([$ticket->user, $ticket->assignedUser])->filter();
+        $participants->each(function ($participant) use ($request, $ticket) {
+            if ($participant->id === $request->user()->id) return;
+            $participant->notify(new \App\Notifications\TicketUpdatedWebPush($ticket, 'Komentar baru: ' . \Illuminate\Support\Str::limit($request->comment, 120)));
+        });
+
         return back()->with('success', 'Comment added successfully.');
     }
 }

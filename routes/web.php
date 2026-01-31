@@ -19,9 +19,8 @@ Route::get('/', function () {
     if (Auth::check()) {
         $user = Auth::user();
 
-        // Get active tickets
-        $activeTickets = \App\Models\Ticket::where('user_id', $user->id)
-            ->whereIn('status', ['submitted', 'processed', 'repairing'])
+        // Get active tickets — show site-wide active (not-done) tickets to regular users
+        $activeTickets = \App\Models\Ticket::whereIn('status', ['submitted', 'processed', 'repairing'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get([
@@ -76,6 +75,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('tickets/{ticket}/comments', [TicketCommentController::class, 'store'])->name('tickets.comments.store');
     });
 
+    // Web-push subscription endpoints (authenticated users)
+    Route::post('/web-push/subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('webpush.subscribe');
+    Route::post('/web-push/unsubscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'destroy'])->name('webpush.unsubscribe');
+
+    // Mobile device registration for FCM (mobile app)
+    Route::post('/mobile/devices', [\App\Http\Controllers\MobileDeviceController::class, 'store'])->name('mobile.devices.store');
+    Route::post('/mobile/devices/unregister', [\App\Http\Controllers\MobileDeviceController::class, 'destroy'])->name('mobile.devices.destroy');
+
     // User routes
     Route::middleware(['role:user'])->prefix('user')->name('user.')->group(function () {
         Route::get('tickets', [TicketController::class, 'userTickets'])->name('tickets.index');
@@ -96,6 +103,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('tickets', TicketController::class)->except(['create', 'store']);
         Route::post('tickets/{ticket}/assign', [TicketController::class, 'assign'])->name('tickets.assign');
         Route::post('tickets/{ticket}/status', [TicketController::class, 'updateStatus'])->name('tickets.update-status');
+
+        // Reports
+        Route::get('reports/performance', [\App\Http\Controllers\ReportController::class, 'performanceReport'])->name('admin.reports.performance');
     });
 
     // Category routes (admin only)

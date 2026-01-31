@@ -94,4 +94,40 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(TicketCategory::class, 'technician_ticket_categories', 'user_id', 'category_id');
     }
+
+    /**
+     * Push subscription relationship
+     */
+    public function pushSubscriptions()
+    {
+        return $this->hasMany(\App\Models\PushSubscription::class);
+    }
+
+    public function mobileDevices()
+    {
+        return $this->hasMany(\App\Models\MobileDevice::class);
+    }
+
+    /**
+     * Provide subscriptions to the webpush channel (laravel-notification-channels/webpush)
+     */
+    public function routeNotificationForWebPush()
+    {
+        return $this->pushSubscriptions()->get()->map(function ($sub) {
+            return [
+                'endpoint' => $sub->endpoint,
+                'publicKey' => $sub->public_key,
+                'authToken' => $sub->auth_token,
+                'contentEncoding' => $sub->content_encoding,
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Return FCM device tokens for the 'fcm' channel
+     */
+    public function routeNotificationForFcm()
+    {
+        return $this->mobileDevices()->pluck('token')->toArray();
+    }
 }

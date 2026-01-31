@@ -23,6 +23,19 @@ createInertiaApp({
                 <App {...props} />
             </StrictMode>,
         );
+
+        // register service worker for PWA (works on localhost & production)
+        try {
+            if ('serviceWorker' in navigator && (import.meta.env.PROD || window.location.hostname === 'localhost')) {
+                navigator.serviceWorker.register('/sw.js').then(() => {
+                    // registration succeeded
+                }).catch(() => {
+                    /* ignore registration failures in dev */
+                });
+            }
+        } catch (err) {
+            // noop
+        }
     },
     progress: {
         color: '#4B5563',

@@ -7,12 +7,14 @@ use App\Models\TicketProgress;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Container\Attributes\Auth;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
+        $user = FacadesAuth::user();
 
         if ($user->role === 'admin') {
             // Get overall system statistics
@@ -51,7 +53,6 @@ class DashboardController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->limit(10)
                 ->get();
-
             return Inertia::render('Admin/Dashboard', [
                 'stats' => $stats,
                 'recentTickets' => $recentTickets,

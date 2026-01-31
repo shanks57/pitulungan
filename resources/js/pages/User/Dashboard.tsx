@@ -261,34 +261,36 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                     <CardContent>
                         <div className="space-y-4">
                             {recentTickets.map((ticket) => (
-                                <div key={ticket.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="font-medium">{ticket.ticket_number}</span>
-                                            <Badge className={getStatusColor(ticket.status)}>
-                                                {getStatusIcon(ticket.status)}
-                                                <span className="ml-1">{ticket.status}</span>
-                                            </Badge>
-                                            <Badge className={getPriorityColor(ticket.priority)}>
-                                                {ticket.priority}
-                                            </Badge>
+                                <div key={ticket.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-3">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-2 mb-3">
+                                            <span className="font-medium mr-2">{ticket.ticket_number}</span>
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <Badge className={`${getStatusColor(ticket.status)} whitespace-nowrap`}>
+                                                    {getStatusIcon(ticket.status)}
+                                                    <span className="ml-1">{ticket.status}</span>
+                                                </Badge>
+                                                <Badge className={`${getPriorityColor(ticket.priority)} whitespace-nowrap`}>
+                                                    {ticket.priority}
+                                                </Badge>
+                                            </div>
                                         </div>
-                                        <p className="text-sm text-muted-foreground mb-1">{ticket.title}</p>
-                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                            <span>Kategori: {ticket.category.name}</span>
+                                        <p className="text-sm text-muted-foreground mb-1 break-words">{ticket.title}</p>
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 text-xs text-muted-foreground">
+                                            <span className="truncate">Kategori: {ticket.category.name}</span>
                                             {ticket.assignedUser && (
-                                                <span>Ditugaskan: {ticket.assignedUser.name}</span>
+                                                <span className="truncate">Ditugaskan: {ticket.assignedUser.name}</span>
                                             )}
                                             {ticket.progress && ticket.progress.length > 0 && (
-                                                <span>Pembaruan terakhir: {new Date(ticket.progress[0].created_at).toLocaleDateString()}</span>
+                                                <span className="truncate">Pembaruan terakhir: {new Date(ticket.progress[0].created_at).toLocaleDateString()}</span>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex-shrink-0 w-full md:w-auto mt-3 md:mt-0 md:ml-4">
                                         <Link href={`/user/tickets/${ticket.id}`}>
-                                            <Button variant="outline" size="sm">
-                                                <Eye className="h-4 w-4 mr-1" />
-                                                Lihat
+                                            <Button variant="outline" size="sm" className="w-full md:w-auto justify-center">
+                                                <Eye className="h-4 w-4" />
+                                                <span className="sr-only sm:not-sr-only ml-2">Lihat</span>
                                             </Button>
                                         </Link>
                                     </div>

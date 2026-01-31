@@ -101,9 +101,71 @@ Aplikasi ini telah dikonfigurasi sebagai PWA yang dapat diinstal di perangkat mo
 ### Hook dan Komponen PWA:
 
 - `resources/js/hooks/use-pwa-install.ts` - Hook untuk mendeteksi instalasi PWA
+- `resources/js/hooks/use-push-subscription.ts` - Hook untuk subscribe/unsubscribe push
 - `resources/js/components/pwa-install-button.tsx` - Komponen tombol instal PWA
+- `resources/js/components/PushSubscribeButton.tsx` - Tombol subscribe notifikasi (web-push)
+
+### Push notifications (web-push) — setup cepat
+
+1. Install package web-push (server-side):
+
+```bash
+composer require laravel-notification-channels/webpush
+```
+
+2. Publish config (opsional) dan generate VAPID keys:
+
+```bash
+php artisan vendor:publish --provider="NotificationChannels\WebPush\WebPushServiceProvider" --tag="config"
+php artisan webpush:vapid --show
+```
+
+3. Tambahkan ke `.env` (gunakan nilai dari perintah di atas):
+
+```
+VAPID_PUBLIC_KEY=your_public_key_here
+VAPID_PRIVATE_KEY=your_private_key_here
+VITE_VAPID_PUBLIC_KEY=your_public_key_here
+```
+
+4. Migrasi tabel (membuat `push_subscriptions`):
+
+```bash
+php artisan migrate
+```
+
+5. Jalankan queue worker (direkomendasikan untuk pengiriman queued notifications):
+
+```bash
+php artisan queue:work --tries=3
+```
+
+6. Cara uji cepat:
+
+- Login sebagai teknisi → tekan `Aktifkan Notifikasi`
+- Buat tiket dan assign ke teknisi tersebut → teknisi akan menerima push
+- Tambah komentar / ubah status → pembuat tiket yang subscribe akan menerima push
+
+Mobile push (Android / iOS) — cepat
+
+- Backend: tambahkan `FCM_SERVER_KEY` ke `.env` (lihat README bagian "Mobile push (FCM)" di bawah untuk detail).
+- Mobile app: kirim device token ke endpoint `POST /mobile/devices` (authed) — server akan mengirim notifikasi via FCM ketika ada event.
+
+Catatan: push hanya bekerja pada HTTPS (atau localhost). Jika Anda menggunakan staging/production, pastikan domain memiliki sertifikat SSL.
 
 ## 🌐 Browser Support
+
+### Reports — Performance (PDF)
+
+Admin/technician can download a performance report (response time created→resolved).
+
+- Endpoint (admin): `GET /admin/reports/performance?date_from=YYYY-MM-DD&date_to=YYYY-MM-DD&format=pdf`
+- HTML preview: `format=html` (useful for debugging / CI tests)
+- To enable PDF export install:
+
+    composer require barryvdh/laravel-dompdf
+
+- Configure FQDN + queue worker for large reports.
 
 PWA didukung oleh browser modern berikut:
 

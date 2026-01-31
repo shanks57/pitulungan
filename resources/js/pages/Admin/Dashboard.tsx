@@ -126,6 +126,14 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                 Kelola Pengguna
                             </Button>
                         </Link>
+                        <div>
+                            <a href="/admin/reports/performance?format=pdf" target="_blank" rel="noopener noreferrer">
+                                <Button>
+                                    <BarChart3 className="mr-2 h-4 w-4" />
+                                    Download Performance (PDF)
+                                </Button>
+                            </a>
+                        </div>
                     </div>
                 </div>
                 

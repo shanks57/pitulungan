@@ -14,6 +14,8 @@ use Carbon\Carbon;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\TicketCreatedWebPush;
+use App\Notifications\TicketUpdatedWebPush;
 
 class TicketController extends Controller
 {
@@ -171,6 +173,14 @@ class TicketController extends Controller
 
             // Debug: Log ticket creation
             Log::info('Ticket created:', ['id' => $ticket->id, 'ticket_number' => $ticket->ticket_number, 'assigned_to' => $assignedTechnician ? $assignedTechnician->id : null]);
+
+            // Notify assigned technician (if any)
+            if ($ticket->assigned_to) {
+                $assigned = User::find($ticket->assigned_to);
+                if ($assigned) {
+                    $assigned->notify(new TicketCreatedWebPush($ticket));
+                }
+            }
         } catch (\Exception $e) {
             Log::error('Ticket creation failed:', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Failed to create ticket: ' . $e->getMessage());
@@ -209,6 +219,16 @@ class TicketController extends Controller
             'status' => 'processed',
             'responded_at' => now(),
         ]);
+
+        // Notify the newly assigned technician and ticket owner
+        $assignee = User::find($request->assigned_to);
+        if ($assignee) {
+            $assignee->notify(new TicketUpdatedWebPush($ticket, 'Anda ditugaskan ke tiket ini.'));
+        }
+
+        if ($ticket->user && $ticket->user->id !== $assignee->id) {
+            $ticket->user->notify(new TicketUpdatedWebPush($ticket, 'Tiket Anda telah ditugaskan.'));
+        }
 
         return redirect()->back()->with('success', 'Ticket assigned successfully.');
     }
@@ -249,6 +269,16 @@ class TicketController extends Controller
             ]);
         }
 
+        // Notify ticket owner & assignee (if different from actor)
+        if ($ticket->user && $ticket->user->id !== $user->id) {
+            $ticket->user->notify(new TicketUpdatedWebPush($ticket, 'Tiket Anda diperbarui'));
+        }
+
+        if ($ticket->assigned_to && $ticket->assigned_to !== $user->id) {
+            $assigned = User::find($ticket->assigned_to);
+            $assigned?->notify(new TicketUpdatedWebPush($ticket, 'Tiket yang Anda tangani diperbarui'));
+        }
+
         return redirect()->back()->with('success', 'Ticket updated successfully.');
     }
 
@@ -281,6 +311,17 @@ class TicketController extends Controller
             'updated_by' => $user->id,
         ]);
 
+        // Notify ticket owner (if they didn't perform the action)
+        if ($ticket->user && $ticket->user->id !== $user->id) {
+            $ticket->user->notify(new TicketUpdatedWebPush($ticket, 'Status tiket: ' . $ticket->status));
+        }
+
+        // Notify assignee (if exists and not the actor)
+        if ($ticket->assigned_to && $ticket->assigned_to !== $user->id) {
+            $assignee = User::find($ticket->assigned_to);
+            $assignee?->notify(new TicketUpdatedWebPush($ticket, 'Status tiket: ' . $ticket->status));
+        }
+
         return redirect()->back()->with('success', 'Ticket status updated successfully.');
     }
 
@@ -304,6 +345,13 @@ class TicketController extends Controller
             'updated_by' => $user->id,
         ]);
 
+        // Notify ticket owner & assignee (except the actor)
+        $participants = collect([$ticket->user, $ticket->assignedUser])->filter();
+        $participants->each(function ($participant) use ($user, $ticket) {
+            if ($participant->id === $user->id) return;
+            $participant->notify(new TicketUpdatedWebPush($ticket, 'Pembaharuan kemajuan: ' . \Illuminate\Support\Str::limit($ticket->title, 80)));
+        });
+
         return redirect()->back()->with('success', 'Progress note added successfully.');
     }
 
@@ -313,8 +361,18 @@ class TicketController extends Controller
 
         $query = Ticket::with(['category', 'assignedUser', 'progress' => function ($query) {
             $query->latest()->limit(1);
-        }])
-            ->where('user_id', $user->id);
+        }]);
+
+        // Visibility rules:
+        // - admin/technician: see all tickets (handled elsewhere / via admin UI)
+        // - regular user: see site-wide active (not-done) tickets + any tickets they created (including done)
+        if ($user->role === 'user') {
+            $query->where(function ($q) use ($user) {
+                $q->whereIn('status', ['submitted', 'processed', 'repairing'])
+                    ->orWhere('user_id', $user->id);
+            });
+        }
+
 
         // Search
         if ($request->has('search') && $request->search) {
@@ -362,11 +420,15 @@ class TicketController extends Controller
         $user = $request->user();
 
         // Check permissions based on role
-        if ($user->role === 'user' && $ticket->user_id !== $user->id) {
-            abort(403, 'You can only view your own tickets.');
-        } elseif ($user->role === 'technician' && $ticket->assigned_to !== $user->id && $user->role !== 'admin') {
-            abort(403, 'You can only view tickets assigned to you.');
+        if ($user->role === 'user') {
+            // Regular users may view:
+            // - any ticket they created
+            // - any ticket that is still active (not 'done')
+            if ($ticket->user_id !== $user->id && $ticket->status === 'done') {
+                abort(403, 'You can only view this ticket.');
+            }
         }
+        // Note: technicians and admins may view any ticket (technician update actions remain restricted elsewhere).
 
         $ticket->load([
             'user',

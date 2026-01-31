@@ -16,10 +16,13 @@ return new class extends Migration
             $table->string('username')->nullable()->after('name');
         });
 
-        // Generate usernames for existing users
-        DB::table('users')->whereNull('username')->update([
-            'username' => DB::raw("CONCAT('user_', id)")
-        ]);
+        // Generate usernames for existing users (use PHP concat so migration is DB-agnostic)
+        $users = DB::table('users')->whereNull('username')->get(['id']);
+        foreach ($users as $u) {
+            DB::table('users')->where('id', $u->id)->update([
+                'username' => 'user_' . $u->id,
+            ]);
+        };
 
         Schema::table('users', function (Blueprint $table) {
             $table->string('username')->unique()->change();

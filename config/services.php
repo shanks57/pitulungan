@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'fcm' => [
+        // Server key from Firebase project (FCM legacy API). Prefer setting this in .env
+        'server_key' => env('FCM_SERVER_KEY'),
+    ],
+
 ];

@@ -10,6 +10,14 @@ const prefersDark = () => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
 };
 
+const prefersLight = () => {
+    if (typeof window === 'undefined') {
+        return false;
+    }
+
+    return window.matchMedia('(prefers-color-scheme: light)').matches;
+};
+
 const setCookie = (name: string, value: string, days = 365) => {
     if (typeof document === 'undefined') {
         return;
@@ -21,7 +29,7 @@ const setCookie = (name: string, value: string, days = 365) => {
 
 const applyTheme = (appearance: Appearance) => {
     const isDark =
-        appearance === 'dark' || (appearance === 'system' && prefersDark());
+        appearance === 'dark' || (appearance === 'system' && prefersLight());
 
     document.documentElement.classList.toggle('dark', isDark);
     document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
