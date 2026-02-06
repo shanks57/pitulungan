@@ -1,4 +1,4 @@
-# HospitalHelp - Sistem Helpdesk Rumah Sakit
+# SIPERKASA - Sistem Laporan Perbaikan Sarana Rumah Sakit
 
 Sistem helpdesk komprehensif untuk manajemen tiket rumah sakit dengan Progressive Web App (PWA) yang dapat diinstal di perangkat mobile seperti aplikasi native Android/iOS.
 
@@ -55,7 +55,7 @@ Aplikasi ini telah dikonfigurasi sebagai PWA yang dapat diinstal di perangkat mo
 
     ```bash
     git clone <repository-url>
-    cd hospitalhelp
+    cd siperkasa
     ```
 
 2. **Install dependencies**:
@@ -220,4 +220,4 @@ Untuk dukungan teknis atau pertanyaan:
 
 ---
 
-**HospitalHelp** - Mempermudah operasi rumah sakit dengan manajemen helpdesk cerdas. Dibuat untuk tenaga kesehatan, dirancang untuk efisiensi.
+**SIPERKASA** - Sistem Laporan Perbaikan Sarana Rumah Sakit. Mempermudah operasi rumah sakit dengan manajemen helpdesk cerdas. Dibuat untuk tenaga kesehatan, dirancang untuk efisiensi.

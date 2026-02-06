@@ -60,10 +60,10 @@ export default function Create({ categories, slas }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Buat Tiket Baru</h1>
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Buat Tiket Baru</h1>
 
-                <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
+                <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border-0 shadow-md">
                     <div>
                         <Label htmlFor="category_id">Kategori</Label>
                         <Select value={data.category_id} onValueChange={(value) => {

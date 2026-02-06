@@ -45,7 +45,7 @@ export default function Welcome({
     if (auth.user) {
         return (
             <>
-                <Head title="HospitalHelp - Aplikasi Tiket">
+                <Head title="SIPERKASA - Aplikasi Tiket">
                     <meta name="description" content="Kelola tiket dan laporan Anda dengan mudah." />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
                 </Head>
@@ -252,7 +252,7 @@ export default function Welcome({
     // For unauthenticated users, show the landing page
     return (
         <>
-            <Head title="HospitalHelp - Sistem Helpdesk Rumah Sakit">
+            <Head title="SIPERKASA - Sistem Laporan Perbaikan Sarana Rumah Sakit">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
                     href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
@@ -271,7 +271,7 @@ export default function Welcome({
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                             </div>
-                            <span className="text-xl font-bold text-gray-900">HospitalHelp</span>
+                            <span className="text-xl font-bold text-gray-900">SIPERKASA</span>
                         </div>
 
                         <div className="flex items-center space-x-4">
@@ -310,29 +310,23 @@ export default function Welcome({
                                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
-                                Platform Helpdesk Modern
+                                Sistem Informasi Pelaporan
                             </div>
                             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                                Kelola Tiket Rumah Sakit
-                                <span className="text-blue-600 block">Dengan Mudah</span>
+                                SIPERKASA
+                                <span className="text-blue-600 block">Sistem Laporan Perbaikan Sarana</span>
                             </h1>
                             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                                Sistem helpdesk komprehensif yang dirancang untuk rumah sakit. Kelola tiket pasien, koordinasikan tim perawatan, dan tingkatkan efisiensi operasional.
+                                Platform terintegrasi untuk manajemen laporan perbaikan sarana rumah sakit. Kelola tiket dengan efisien, koordinasikan tim, dan optimalkan operasional fasilitas kesehatan.
                             </p>
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
-                                href={register()}
+                                href={login()}
                                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                             >
-                                Mulai Gratis
-                            </Link>
-                            <Link
-                                href={login()}
-                                className="border-2 border-gray-300 hover:border-blue-600 text-gray-700 hover:text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200"
-                            >
-                                Masuk
+                                Masuk ke Sistem
                             </Link>
                         </div>
 
@@ -342,24 +336,24 @@ export default function Welcome({
                                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                     <FileText className="w-6 h-6 text-blue-600" />
                                 </div>
-                                <h3 className="font-semibold text-gray-900 mb-2">Manajemen Tiket</h3>
-                                <p className="text-sm text-gray-600">Buat, lacak, dan kelola tiket dengan mudah</p>
+                                <h3 className="font-semibold text-gray-900 mb-2">Manajemen Laporan</h3>
+                                <p className="text-sm text-gray-600">Buat, lacak, dan kelola laporan perbaikan dengan mudah</p>
                             </div>
 
                             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
                                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                     <BarChart3 className="w-6 h-6 text-blue-600" />
                                 </div>
-                                <h3 className="font-semibold text-gray-900 mb-2">Analitik Real-time</h3>
-                                <p className="text-sm text-gray-600">Pantau metrik dan kinerja secara langsung</p>
+                                <h3 className="font-semibold text-gray-900 mb-2">Monitoring Status</h3>
+                                <p className="text-sm text-gray-600">Pantau progres perbaikan secara real-time</p>
                             </div>
 
                             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
                                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
                                     <User className="w-6 h-6 text-blue-600" />
                                 </div>
-                                <h3 className="font-semibold text-gray-900 mb-2">Kolaborasi Tim</h3>
-                                <p className="text-sm text-gray-600">Kelola team dan sebarkan tugas dengan efisien</p>
+                                <h3 className="font-semibold text-gray-900 mb-2">Koordinasi Tim</h3>
+                                <p className="text-sm text-gray-600">Delegasikan tugas dan kelola tim dengan efisien</p>
                             </div>
                         </div>
                     </div>
@@ -369,13 +363,13 @@ export default function Welcome({
             {/* CTA Section */}
             <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-700 text-center">
                 <div className="max-w-2xl mx-auto px-4">
-                    <h2 className="text-3xl font-bold text-white mb-4">Siap memulai?</h2>
-                    <p className="text-blue-100 mb-8">Bergabunglah dengan ratusan rumah sakit yang telah mempercayai HospitalHelp</p>
+                    <h2 className="text-3xl font-bold text-white mb-4">Siap mulai melaporkan?</h2>
+                    <p className="text-blue-100 mb-8">Gunakan SIPERKASA untuk melaporkan dan mengelola perbaikan sarana rumah sakit dengan efisien</p>
                     <Link
-                        href={register()}
+                        href={login()}
                         className="bg-white text-blue-600 hover:bg-gray-50 px-8 py-3 rounded-lg font-semibold transition-all duration-200 inline-block"
                     >
-                        Mulai Uji Coba Gratis
+                        Masuk Sekarang
                     </Link>
                 </div>
             </section>

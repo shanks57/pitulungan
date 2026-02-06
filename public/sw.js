@@ -1,6 +1,6 @@
-const CACHE_NAME = 'hospitalhelp-v1.0.0';
-const STATIC_CACHE = 'hospitalhelp-static-v1.0.0';
-const DYNAMIC_CACHE = 'hospitalhelp-dynamic-v1.0.0';
+const CACHE_NAME = 'siperkasa-v1.0.0';
+const STATIC_CACHE = 'siperkasa-static-v1.0.0';
+const DYNAMIC_CACHE = 'siperkasa-dynamic-v1.0.0';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [

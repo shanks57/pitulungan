@@ -94,99 +94,120 @@ export default function Dashboard({ stats, recentTickets }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dasbor Teknisi" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-3xl font-bold">Dasbor Teknisi</h1>
-                    <Button onClick={() => router.visit('/admin/tickets?assigned_to=me')} variant="outline">
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl px-6 pt-6 pb-20 md:p-6 bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">Dasbor Teknisi</h1>
+                    <Button onClick={() => router.visit('/admin/tickets?assigned_to=me')} variant="outline" className="border-blue-200 hover:bg-blue-50">
                         Lihat Semua Tiket Saya
                     </Button>
                 </div>
 
                 {/* Statistics Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Card>
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all border-0 bg-gradient-to-br from-blue-50 to-blue-100"
+                        onClick={() => router.visit('/admin/tickets?assigned_to=me')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Ditugaskan</CardTitle>
-                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-blue-900">Total Ditugaskan</CardTitle>
+                            <FileText className="h-4 w-4 text-blue-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.total_assigned}</div>
-                            <p className="text-xs text-muted-foreground">Tiket yang ditugaskan kepada Anda</p>
+                            <div className="text-2xl font-bold text-blue-700">{stats.total_assigned}</div>
+                            <p className="text-xs text-blue-600">Tiket yang ditugaskan kepada Anda</p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-cyan-500 transition-all border-0 bg-gradient-to-br from-cyan-50 to-cyan-100"
+                        onClick={() => router.visit('/admin/tickets?assigned_to=me&status=processed')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Menunggu</CardTitle>
-                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-cyan-900">Menunggu</CardTitle>
+                            <Clock className="h-4 w-4 text-cyan-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.pending}</div>
-                            <p className="text-xs text-muted-foreground">Menunggu untuk memulai</p>
+                            <div className="text-2xl font-bold text-cyan-700">{stats.pending}</div>
+                            <p className="text-xs text-cyan-600">Menunggu untuk memulai</p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-amber-500 transition-all border-0 bg-gradient-to-br from-amber-50 to-amber-100"
+                        onClick={() => router.visit('/admin/tickets?assigned_to=me&status=repairing')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Sedang Dikerjakan</CardTitle>
-                            <Wrench className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-amber-900">Sedang Dikerjakan</CardTitle>
+                            <Wrench className="h-4 w-4 text-amber-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.in_progress}</div>
-                            <p className="text-xs text-muted-foreground">Sedang diperbaiki</p>
+                            <div className="text-2xl font-bold text-amber-700">{stats.in_progress}</div>
+                            <p className="text-xs text-amber-600">Sedang diperbaiki</p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-emerald-500 transition-all border-0 bg-gradient-to-br from-emerald-50 to-emerald-100"
+                        onClick={() => router.visit('/admin/tickets?assigned_to=me&status=done&date=today')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Selesai Hari Ini</CardTitle>
-                            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-emerald-900">Selesai Hari Ini</CardTitle>
+                            <CheckCircle className="h-4 w-4 text-emerald-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.completed_today}</div>
-                            <p className="text-xs text-muted-foreground">Selesai hari ini</p>
+                            <div className="text-2xl font-bold text-emerald-700">{stats.completed_today}</div>
+                            <p className="text-xs text-emerald-600">Selesai hari ini</p>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Additional Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-green-500 transition-all border-0 bg-gradient-to-br from-green-50 to-green-100"
+                        onClick={() => router.visit('/admin/tickets?assigned_to=me&status=done&date=week')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Minggu Ini</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-green-900">Minggu Ini</CardTitle>
+                            <TrendingUp className="h-4 w-4 text-green-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.completed_this_week}</div>
-                            <p className="text-xs text-muted-foreground">Selesai minggu ini</p>
+                            <div className="text-2xl font-bold text-green-700">{stats.completed_this_week}</div>
+                            <p className="text-xs text-green-600">Selesai minggu ini</p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-red-500 transition-all border-0 bg-gradient-to-br from-red-50 to-red-100"
+                        onClick={() => router.visit('/admin/tickets?assigned_to=me&overdue=true')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Terlambat</CardTitle>
-                            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-red-900">Terlambat</CardTitle>
+                            <AlertTriangle className="h-4 w-4 text-red-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
-                            <p className="text-xs text-muted-foreground">Melewati batas waktu SLA</p>
+                            <div className="text-2xl font-bold text-red-700">{stats.overdue}</div>
+                            <p className="text-xs text-red-600">Melewati batas waktu SLA</p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card
+                        className="cursor-pointer hover:shadow-lg hover:border-indigo-500 transition-all border-0 bg-gradient-to-br from-indigo-50 to-indigo-100"
+                        onClick={() => router.visit('/admin/tickets?assigned_to=me&status=done')}
+                    >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Tingkat Keberhasilan</CardTitle>
-                            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-indigo-900">Tingkat Keberhasilan</CardTitle>
+                            <CheckCircle className="h-4 w-4 text-indigo-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
+                            <div className="text-2xl font-bold text-indigo-700">
                                 {stats.total_assigned > 0
                                     ? Math.round(((stats.completed_this_week + stats.completed_today) / stats.total_assigned) * 100)
                                     : 0}%
                             </div>
                             <Progress
                                 value={stats.total_assigned > 0 ? ((stats.completed_this_week + stats.completed_today) / stats.total_assigned) * 100 : 0}
-                                className="mt-2"
+                                className="mt-2 bg-indigo-200 [&>*]:bg-indigo-600"
                             />
                         </CardContent>
                     </Card>

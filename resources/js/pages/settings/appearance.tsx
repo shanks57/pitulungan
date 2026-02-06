@@ -21,7 +21,7 @@ export default function Appearance() {
             <Head title="Appearance settings" />
 
             <SettingsLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 p-6 rounded-xl">
                     <HeadingSmall
                         title="Appearance settings"
                         description="Update your account's appearance settings"

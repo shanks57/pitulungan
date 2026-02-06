@@ -1,6 +1,6 @@
 {
-    "name": "HospitalHelp - Sistem Helpdesk Rumah Sakit",
-    "short_name": "HospitalHelp",
+    "name": "SIPERKASA - Sistem Laporan Perbaikan Sarana Rumah Sakit",
+    "short_name": "SIPERKASA",
     "description": "Sistem helpdesk komprehensif untuk manajemen tiket rumah sakit dengan fitur komunikasi real-time dan pelacakan kemajuan.",
     "start_url": "/",
     "display": "standalone",

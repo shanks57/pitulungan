@@ -86,11 +86,11 @@ export default function Index({ tickets, filters, stats }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tiket Saya" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-3xl font-bold">Tiket Saya</h1>
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Tiket Saya</h1>
                     <Link href="/tickets/create">
-                        <Button>
+                        <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
                             <Plus className="mr-2 h-4 w-4" />
                             Buat Tiket Baru
                         </Button>
@@ -98,50 +98,50 @@ export default function Index({ tickets, filters, stats }: Props) {
                 </div>
 
                 {/* Statistics Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <Card>
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                    <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 shadow-md">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Total Tiket</CardTitle>
+                            <CardTitle className="text-sm font-medium text-blue-900">Total Tiket</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.total}</div>
-                            <p className="text-xs text-muted-foreground">Semua tiket saya</p>
+                            <div className="text-2xl font-bold text-blue-700">{stats.total}</div>
+                            <p className="text-xs text-blue-600">Semua tiket saya</p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="border-0 bg-gradient-to-br from-amber-50 to-amber-100 shadow-md">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Terbuka</CardTitle>
+                            <CardTitle className="text-sm font-medium text-amber-900">Terbuka</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.open}</div>
-                            <p className="text-xs text-muted-foreground">Menunggu respons</p>
+                            <div className="text-2xl font-bold text-amber-700">{stats.open}</div>
+                            <p className="text-xs text-amber-600">Menunggu respons</p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="border-0 bg-gradient-to-br from-purple-50 to-purple-100 shadow-md">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Sedang Dikerjakan</CardTitle>
+                            <CardTitle className="text-sm font-medium text-purple-900">Sedang Dikerjakan</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.in_progress}</div>
-                            <p className="text-xs text-muted-foreground">Sedang dikerjakan</p>
+                            <div className="text-2xl font-bold text-purple-700">{stats.in_progress}</div>
+                            <p className="text-xs text-purple-600">Sedang dikerjakan</p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="border-0 bg-gradient-to-br from-green-50 to-green-100 shadow-md">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Diselesaikan</CardTitle>
+                            <CardTitle className="text-sm font-medium text-green-900">Diselesaikan</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.resolved}</div>
-                            <p className="text-xs text-muted-foreground">Tiket selesai</p>
+                            <div className="text-2xl font-bold text-green-700">{stats.resolved}</div>
+                            <p className="text-xs text-green-600">Tiket selesai</p>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Filters */}
-                <div className="flex gap-4">
+                <div className="flex flex-col md:flex-row gap-4 bg-gradient-to-r from-white to-blue-50 p-4 rounded-xl border-0 shadow-sm">
                     <Input
                         placeholder="Cari tiket..."
                         value={filters.search}

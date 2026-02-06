@@ -38,32 +38,32 @@ export default function Index({ categories }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Ticket Categories</h1>
+            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-6 px-6 pb-20 md:p-6 rounded-xl">
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Ticket Categories</h1>
                     <Link href="/admin/categories/create">
-                        <Button>Create Category</Button>
+                        <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold">Create Category</Button>
                     </Link>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {categories.data.map((category) => (
-                        <Card key={category.id}>
+                        <Card key={category.id} className="border-0 bg-gradient-to-br from-indigo-50 to-indigo-100 shadow-md">
                             <CardHeader>
-                                <CardTitle>{category.name}</CardTitle>
+                                <CardTitle className="text-indigo-900">{category.name}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm text-gray-600 mb-4">{category.description || 'No description'}</p>
+                                <p className="text-sm text-indigo-700 mb-4">{category.description || 'No description'}</p>
                                 
                                 {category.subcategories && category.subcategories.length > 0 && (
                                     <div className="mb-4">
-                                        <h4 className="text-sm font-semibold mb-2">Subcategories ({category.subcategories.length})</h4>
+                                        <h4 className="text-sm font-semibold text-indigo-900 mb-2">Subcategories ({category.subcategories.length})</h4>
                                         <ul className="text-sm space-y-1">
                                             {category.subcategories.slice(0, 3).map((sub) => (
-                                                <li key={sub.id} className="text-gray-600">• {sub.name}</li>
+                                                <li key={sub.id} className="text-indigo-700">• {sub.name}</li>
                                             ))}
                                             {category.subcategories.length > 3 && (
-                                                <li className="text-gray-600">• +{category.subcategories.length - 3} more</li>
+                                                <li className="text-indigo-700">• +{category.subcategories.length - 3} more</li>
                                             )}
                                         </ul>
                                     </div>
@@ -71,13 +71,13 @@ export default function Index({ categories }: Props) {
 
                                 <div className="mt-4 flex gap-2 flex-wrap">
                                     <Link href={`/admin/categories/${category.id}/technicians`}>
-                                        <Button variant="outline" size="sm">Assign Technicians</Button>
+                                        <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-600 hover:bg-indigo-50">Assign Technicians</Button>
                                     </Link>
                                     <Link href={`/admin/categories/${category.id}/edit`}>
-                                        <Button variant="outline" size="sm">Edit</Button>
+                                        <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-600 hover:bg-indigo-50">Edit</Button>
                                     </Link>
                                     <Button
-                                        variant="destructive"
+                                        className="bg-red-600 hover:bg-red-700 text-white font-semibold"
                                         size="sm"
                                         onClick={() => handleDelete(category.id)}
                                     >
@@ -90,8 +90,8 @@ export default function Index({ categories }: Props) {
                 </div>
 
                 {categories.data.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                        No categories found. <Link href="/admin/categories/create" className="text-blue-600 hover:underline">Create one</Link>
+                    <div className="text-center py-8 text-indigo-600">
+                        No categories found. <Link href="/admin/categories/create" className="font-semibold hover:text-indigo-700">Create one</Link>
                     </div>
                 )}
             </div>

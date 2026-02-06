@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
+import { FileText, X } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dasbor', href: '/dashboard' },
@@ -82,6 +84,8 @@ export default function Show({ ticket, progress, attachments, comments, categori
         attachments: [] as File[],
     });
 
+    const [selectedAttachment, setSelectedAttachment] = useState<Attachment | null>(null);
+
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
         put(`/admin/tickets/${ticket.id}`);
@@ -127,11 +131,21 @@ export default function Show({ ticket, progress, attachments, comments, categori
         }
     };
 
+    const isImageFile = (filePath: string) => {
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
+        return imageExtensions.some(ext => filePath.toLowerCase().endsWith(ext));
+    };
+
+    const isVideoFile = (filePath: string) => {
+        const videoExtensions = ['.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'];
+        return videoExtensions.some(ext => filePath.toLowerCase().endsWith(ext));
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Ticket #{ticket.ticket_number}</h1>
+            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-6 px-6 pb-20 md:p-6 rounded-xl">
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Ticket #{ticket.ticket_number}</h1>
                     <Badge className={getStatusColor(ticket.status)}>
                         {ticket.status}
                     </Badge>
@@ -140,28 +154,29 @@ export default function Show({ ticket, progress, attachments, comments, categori
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Ticket Details Form */}
                     <div className="lg:col-span-2">
-                        <Card>
+                        <Card className="border-0 bg-gradient-to-br from-white to-blue-50 shadow-lg">
                             <CardHeader>
-                                <CardTitle>Detail Tiket</CardTitle>
+                                <CardTitle className="text-blue-900">Detail Tiket</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <form onSubmit={handleUpdate} className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <Label htmlFor="title">Judul</Label>
+                                            <Label htmlFor="title" className="text-blue-900 font-semibold">Judul</Label>
                                             <Input
                                                 id="title"
                                                 value={data.title}
                                                 onChange={(e) => setData('title', e.target.value)}
                                                 required
+                                                className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                             />
                                             {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="category_id">Kategori</Label>
+                                            <Label htmlFor="category_id" className="text-blue-900 font-semibold">Kategori</Label>
                                             <Select value={data.category_id} onValueChange={(value) => setData('category_id', value)}>
-                                                <SelectTrigger>
+                                                <SelectTrigger className="border-blue-200 focus:border-blue-500 focus:ring-blue-500">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -176,7 +191,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="priority">Prioritas</Label>
+                                            <Label htmlFor="priority" className="text-blue-900 font-semibold">Prioritas</Label>
                                             <Select value={data.priority} onValueChange={(value) => setData('priority', value)}>
                                                 <SelectTrigger>
                                                     <SelectValue />
@@ -367,10 +382,12 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                                     Diupload oleh {attachment.uploaded_by.name}
                                                                 </p>
                                                             </div>
-                                                            <Button variant="outline" size="sm" asChild>
-                                                                <a href={`/storage/${attachment.file_path}`} target="_blank" rel="noopener noreferrer">
-                                                                    Lihat
-                                                                </a>
+                                                            <Button 
+                                                                variant="outline" 
+                                                                size="sm"
+                                                                onClick={() => setSelectedAttachment(attachment)}
+                                                            >
+                                                                Lihat
                                                             </Button>
                                                         </div>
                                                     ))}
@@ -427,8 +444,12 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                         Diupload oleh {attachment.uploaded_by.name} pada {new Date(attachment.created_at).toLocaleDateString()}
                                                     </p>
                                                 </div>
-                                                <Button variant="outline" size="sm">
-                                                    Unduh
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm"
+                                                    onClick={() => setSelectedAttachment(attachment)}
+                                                >
+                                                    Lihat
                                                 </Button>
                                             </div>
                                         ))}
@@ -441,6 +462,85 @@ export default function Show({ ticket, progress, attachments, comments, categori
                     </div>
                 </div>
             </div>
+
+            {/* Attachment Preview Modal */}
+            {selectedAttachment && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto flex flex-col">
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                {selectedAttachment.file_path.split('/').pop()}
+                            </h3>
+                            <button
+                                onClick={() => setSelectedAttachment(null)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Modal Content */}
+                        <div className="flex-1 p-6 flex items-center justify-center">
+                            {isImageFile(selectedAttachment.file_path) ? (
+                                <img
+                                    src={`/storage/${selectedAttachment.file_path}`}
+                                    alt="preview"
+                                    className="max-w-full max-h-96 object-contain"
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                    }}
+                                />
+                            ) : isVideoFile(selectedAttachment.file_path) ? (
+                                <video
+                                    controls
+                                    className="max-w-full max-h-96"
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                    }}
+                                >
+                                    <source src={`/storage/${selectedAttachment.file_path}`} />
+                                    Browser Anda tidak mendukung video preview.
+                                </video>
+                            ) : null}
+                            <div className="hidden text-center">
+                                <FileText className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+                                <p className="text-gray-600">Preview tidak tersedia untuk file ini</p>
+                                <p className="text-sm text-gray-500 mt-2">
+                                    {selectedAttachment.file_path.split('/').pop()}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="flex justify-between items-center p-6 border-t bg-gray-50">
+                            <p className="text-sm text-gray-600">
+                                Diupload oleh {selectedAttachment.uploaded_by.name} pada{' '}
+                                {new Date(selectedAttachment.created_at).toLocaleString()}
+                            </p>
+                            <div className="flex gap-3">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setSelectedAttachment(null)}
+                                >
+                                    Tutup
+                                </Button>
+                                <Button asChild>
+                                    <a
+                                        href={`/storage/${selectedAttachment.file_path}`}
+                                        download
+                                        className="flex items-center gap-2"
+                                    >
+                                        Download
+                                    </a>
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AppLayout>
     );
 }

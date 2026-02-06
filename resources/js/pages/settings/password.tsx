@@ -55,12 +55,12 @@ export default function Password() {
                                 currentPasswordInput.current?.focus();
                             }
                         }}
-                        className="space-y-6"
+                        className="space-y-6 bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl"
                     >
                         {({ errors, processing, recentlySuccessful }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="current_password">
+                                    <Label htmlFor="current_password" className="text-blue-900 font-semibold">
                                         Current password
                                     </Label>
 
@@ -69,7 +69,7 @@ export default function Password() {
                                         ref={currentPasswordInput}
                                         name="current_password"
                                         type="password"
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                         autoComplete="current-password"
                                         placeholder="Current password"
                                     />
@@ -80,7 +80,7 @@ export default function Password() {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password">
+                                    <Label htmlFor="password" className="text-blue-900 font-semibold">
                                         New password
                                     </Label>
 
@@ -89,7 +89,7 @@ export default function Password() {
                                         ref={passwordInput}
                                         name="password"
                                         type="password"
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                         autoComplete="new-password"
                                         placeholder="New password"
                                     />
@@ -98,7 +98,7 @@ export default function Password() {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password_confirmation">
+                                    <Label htmlFor="password_confirmation" className="text-blue-900 font-semibold">
                                         Confirm password
                                     </Label>
 
@@ -106,7 +106,7 @@ export default function Password() {
                                         id="password_confirmation"
                                         name="password_confirmation"
                                         type="password"
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                         autoComplete="new-password"
                                         placeholder="Confirm password"
                                     />
@@ -119,6 +119,7 @@ export default function Password() {
                                 <div className="flex items-center gap-4">
                                     <Button
                                         disabled={processing}
+                                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold"
                                         data-test="update-password-button"
                                     >
                                         Save password
@@ -131,7 +132,7 @@ export default function Password() {
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-neutral-600">
+                                        <p className="text-sm text-green-600 font-semibold">
                                             Saved
                                         </p>
                                     </Transition>

@@ -43,7 +43,7 @@
     <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="HospitalHelp">
+    <meta name="apple-mobile-web-app-title" content="SIPERKASA">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="msapplication-TileColor" content="#2563eb">
     <meta name="msapplication-config" content="/browserconfig.xml">

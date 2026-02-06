@@ -49,38 +49,41 @@ export default function Edit({ category }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Edit Category</h1>
+            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-6 px-6 pb-20 md:p-6 rounded-xl">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">Edit Category</h1>
 
-                <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
+                <form onSubmit={handleSubmit} className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl shadow-lg max-w-2xl space-y-4 mb-8">
                     <div>
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="name" className="text-blue-900 font-semibold">Name</Label>
                         <Input
                             id="name"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                             required
+                            className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                         />
-                        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                        {errors.name && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.name}</p>}
                     </div>
 
                     <div>
-                        <Label htmlFor="description">Description</Label>
+                        <Label htmlFor="description" className="text-blue-900 font-semibold">Description</Label>
                         <Textarea
                             id="description"
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
+                            className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                         />
-                        {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+                        {errors.description && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.description}</p>}
                     </div>
 
-                    <div className="flex gap-2">
-                        <Button type="submit" disabled={processing}>
+                    <div className="flex gap-2 pt-4">
+                        <Button type="submit" disabled={processing} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold">
                             {processing ? 'Updating...' : 'Update Category'}
                         </Button>
                         <Button
                             type="button"
                             variant="outline"
+                            className="border-blue-200 text-blue-600 hover:bg-blue-50"
                             onClick={() => window.history.back()}
                         >
                             Cancel
@@ -91,21 +94,21 @@ export default function Edit({ category }: Props) {
                 {/* Subcategories Section */}
                 {category.subcategories && category.subcategories.length > 0 && (
                     <div className="mt-8">
-                        <h2 className="text-xl font-bold mb-4">Subcategories</h2>
+                        <h2 className="text-2xl font-bold text-blue-900 mb-4">Subcategories</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {category.subcategories.map((subcategory) => (
-                                <Card key={subcategory.id}>
+                                <Card key={subcategory.id} className="border-0 bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-md">
                                     <CardHeader>
-                                        <CardTitle className="text-lg">{subcategory.name}</CardTitle>
+                                        <CardTitle className="text-lg text-emerald-900">{subcategory.name}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-sm text-gray-600 mb-4">{subcategory.description || 'No description'}</p>
+                                        <p className="text-sm text-emerald-700 mb-4">{subcategory.description || 'No description'}</p>
                                         <div className="flex gap-2">
                                             <Link href={`/admin/subcategories/${subcategory.id}/edit`}>
-                                                <Button variant="outline" size="sm">Edit</Button>
+                                                <Button variant="outline" size="sm" className="border-emerald-200 text-emerald-600 hover:bg-emerald-50">Edit</Button>
                                             </Link>
                                             <Button
-                                                variant="destructive"
+                                                className="bg-red-600 hover:bg-red-700 text-white font-semibold"
                                                 size="sm"
                                                 onClick={() => handleDeleteSubcategory(subcategory.id)}
                                             >
@@ -119,8 +122,8 @@ export default function Edit({ category }: Props) {
                     </div>
                 )}
 
-                <Link href="/admin/subcategories/create" className="mt-4">
-                    <Button>Add Subcategory</Button>
+                <Link href="/admin/subcategories/create" className="mt-4 block">
+                    <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold">Add Subcategory</Button>
                 </Link>
             </div>
         </AppLayout>

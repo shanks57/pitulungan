@@ -27,7 +27,7 @@ export default function Register() {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name" className="text-blue-900 font-semibold">Name</Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -37,6 +37,7 @@ export default function Register() {
                                     autoComplete="name"
                                     name="name"
                                     placeholder="Full name"
+                                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <InputError
                                     message={errors.name}
@@ -45,7 +46,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="username">Username</Label>
+                                <Label htmlFor="username" className="text-blue-900 font-semibold">Username</Label>
                                 <Input
                                     id="username"
                                     type="text"
@@ -54,6 +55,7 @@ export default function Register() {
                                     autoComplete="username"
                                     name="username"
                                     placeholder="Choose a username"
+                                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <InputError
                                     message={errors.username}
@@ -62,7 +64,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email" className="text-blue-900 font-semibold">Email address</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -71,12 +73,13 @@ export default function Register() {
                                     autoComplete="email"
                                     name="email"
                                     placeholder="email@example.com"
+                                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password" className="text-blue-900 font-semibold">Password</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -85,12 +88,13 @@ export default function Register() {
                                     autoComplete="new-password"
                                     name="password"
                                     placeholder="Password"
+                                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">
+                                <Label htmlFor="password_confirmation" className="text-blue-900 font-semibold">
                                     Confirm password
                                 </Label>
                                 <Input
@@ -101,6 +105,7 @@ export default function Register() {
                                     autoComplete="new-password"
                                     name="password_confirmation"
                                     placeholder="Confirm password"
+                                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <InputError
                                     message={errors.password_confirmation}
@@ -109,7 +114,7 @@ export default function Register() {
 
                             <Button
                                 type="submit"
-                                className="mt-2 w-full"
+                                className="mt-2 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold"
                                 tabIndex={5}
                                 data-test="register-user-button"
                             >

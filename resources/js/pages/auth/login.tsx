@@ -38,7 +38,7 @@ export default function Login({
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="username">Username</Label>
+                                <Label htmlFor="username" className="text-blue-900 font-semibold">Username</Label>
                                 <Input
                                     id="username"
                                     type="text"
@@ -48,17 +48,18 @@ export default function Login({
                                     tabIndex={1}
                                     autoComplete="username"
                                     placeholder="Enter your username"
+                                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password" className="text-blue-900 font-semibold">Password</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm"
+                                            className="ml-auto text-sm text-blue-600 hover:text-blue-700"
                                             tabIndex={5}
                                         >
                                             Forgot password?
@@ -73,6 +74,7 @@ export default function Login({
                                     tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="Password"
+                                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -83,12 +85,12 @@ export default function Login({
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember" className="text-blue-900">Remember me</Label>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-4 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"

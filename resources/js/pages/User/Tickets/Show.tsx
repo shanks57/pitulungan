@@ -9,7 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { ArrowLeft, Clock, User, MapPin, FileText, MessageSquare, Wrench, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Clock, User, MapPin, FileText, MessageSquare, Wrench, CheckCircle, XCircle, HelpCircle, X } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dasbor', href: '/dashboard' },
@@ -72,6 +73,8 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
         attachments: [] as File[],
     });
 
+    const [selectedAttachment, setSelectedAttachment] = useState<Attachment | null>(null);
+
     const handleCommentSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -123,19 +126,29 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
         }
     };
 
+    const isImageFile = (filePath: string) => {
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
+        return imageExtensions.some(ext => filePath.toLowerCase().endsWith(ext));
+    };
+
+    const isVideoFile = (filePath: string) => {
+        const videoExtensions = ['.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'];
+        return videoExtensions.some(ext => filePath.toLowerCase().endsWith(ext));
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Ticket ${ticket.ticket_number}`} />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
                 {/* Header */}
-                <div className="flex items-center gap-4">
-                    <Button variant="outline" onClick={() => router.visit('/user/tickets')}>
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <Button variant="outline" onClick={() => router.visit('/user/tickets')} className="border-blue-200 hover:bg-blue-50">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Kembali ke Tiket Saya
                     </Button>
                     <div className="flex-1">
-                        <h1 className="text-3xl font-bold">Ticket #{ticket.ticket_number}</h1>
-                        <p className="text-muted-foreground">{ticket.title}</p>
+                        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Ticket #{ticket.ticket_number}</h1>
+                        <p className="text-slate-600">{ticket.title}</p>
                     </div>
                 </div>
 
@@ -143,10 +156,10 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Ticket Details */}
-                        <Card>
+                        <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 shadow-md">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <FileText className="h-5 w-5" />
+                                <CardTitle className="flex items-center gap-2 text-blue-900">
+                                    <FileText className="h-5 w-5 text-blue-600" />
                                     Detail Tiket
                                 </CardTitle>
                             </CardHeader>
@@ -332,10 +345,12 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                                                     Diupload oleh {attachment.uploaded_by.name}
                                                                 </p>
                                                             </div>
-                                                            <Button variant="outline" size="sm" asChild>
-                                                                <a href={`/storage/${attachment.file_path}`} target="_blank" rel="noopener noreferrer">
-                                                                    Lihat
-                                                                </a>
+                                                            <Button 
+                                                                variant="outline" 
+                                                                size="sm"
+                                                                onClick={() => setSelectedAttachment(attachment)}
+                                                            >
+                                                                Lihat
                                                             </Button>
                                                         </div>
                                                     ))}
@@ -375,10 +390,12 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                                         {attachment.uploaded_by.name} • {new Date(attachment.created_at).toLocaleDateString()}
                                                     </p>
                                                 </div>
-                                                <Button variant="outline" size="sm" asChild>
-                                                    <a href={`/storage/${attachment.file_path}`} target="_blank" rel="noopener noreferrer">
-                                                        View
-                                                    </a>
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm"
+                                                    onClick={() => setSelectedAttachment(attachment)}
+                                                >
+                                                    Lihat
                                                 </Button>
                                             </div>
                                         ))}
@@ -422,6 +439,164 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                     </div>
                 </div>
             </div>
+
+            {/* Modal Preview Lampiran */}
+            {selectedAttachment && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+                        {/* Header */}
+                        <div className="flex items-center justify-between border-b p-4">
+                            <div>
+                                <h2 className="text-lg font-semibold">
+                                    {selectedAttachment.file_path.split('/').pop()}
+                                </h2>
+                                <p className="text-sm text-gray-500">
+                                    Diupload oleh {selectedAttachment.uploaded_by.name}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setSelectedAttachment(null)}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-4 flex items-center justify-center min-h-96">
+                            {isImageFile(selectedAttachment.file_path) ? (
+                                <img
+                                    src={`/storage/${selectedAttachment.file_path}`}
+                                    alt={selectedAttachment.file_path.split('/').pop()}
+                                    className="max-w-full max-h-96 object-contain"
+                                />
+                            ) : isVideoFile(selectedAttachment.file_path) ? (
+                                <video
+                                    controls
+                                    className="max-w-full max-h-96"
+                                >
+                                    <source src={`/storage/${selectedAttachment.file_path}`} />
+                                    Browser Anda tidak mendukung video player.
+                                </video>
+                            ) : (
+                                <div className="text-center">
+                                    <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                                    <p className="text-gray-600 mb-4">File tidak bisa di-preview</p>
+                                    <Button asChild>
+                                        <a
+                                            href={`/storage/${selectedAttachment.file_path}`}
+                                            download
+                                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                                        >
+                                            Download File
+                                        </a>
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="border-t p-4 flex gap-2 justify-end">
+                            <Button
+                                variant="outline"
+                                onClick={() => setSelectedAttachment(null)}
+                            >
+                                Tutup
+                            </Button>
+                            <Button
+                                asChild
+                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                                <a
+                                    href={`/storage/${selectedAttachment.file_path}`}
+                                    download
+                                >
+                                    Download
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Attachment Preview Modal */}
+            {selectedAttachment && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto flex flex-col">
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                {selectedAttachment.file_path.split('/').pop()}
+                            </h3>
+                            <button
+                                onClick={() => setSelectedAttachment(null)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Modal Content */}
+                        <div className="flex-1 p-6 flex items-center justify-center">
+                            {isImageFile(selectedAttachment.file_path) ? (
+                                <img
+                                    src={`/storage/${selectedAttachment.file_path}`}
+                                    alt="preview"
+                                    className="max-w-full max-h-96 object-contain"
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                    }}
+                                />
+                            ) : isVideoFile(selectedAttachment.file_path) ? (
+                                <video
+                                    controls
+                                    className="max-w-full max-h-96"
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                    }}
+                                >
+                                    <source src={`/storage/${selectedAttachment.file_path}`} />
+                                    Browser Anda tidak mendukung video preview.
+                                </video>
+                            ) : null}
+                            <div className="hidden text-center">
+                                <FileText className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+                                <p className="text-gray-600">Preview tidak tersedia untuk file ini</p>
+                                <p className="text-sm text-gray-500 mt-2">
+                                    {selectedAttachment.file_path.split('/').pop()}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="flex justify-between items-center p-6 border-t bg-gray-50">
+                            <p className="text-sm text-gray-600">
+                                Diupload oleh {selectedAttachment.uploaded_by.name} pada{' '}
+                                {new Date(selectedAttachment.created_at).toLocaleString()}
+                            </p>
+                            <div className="flex gap-3">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setSelectedAttachment(null)}
+                                >
+                                    Tutup
+                                </Button>
+                                <Button asChild>
+                                    <a
+                                        href={`/storage/${selectedAttachment.file_path}`}
+                                        download
+                                        className="flex items-center gap-2"
+                                    >
+                                        Download
+                                    </a>
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AppLayout>
     );
 }

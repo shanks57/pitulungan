@@ -88,54 +88,55 @@ export default function Index({ tickets, filters, users, counts }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Tiket Pemeliharaan</h1>
+            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-6 px-6 pb-20 md:p-6 rounded-xl">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">Tiket Pemeliharaan</h1>
 
                 {/* Counts */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <Card>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <Card className="border-0 bg-gradient-to-br from-blue-50 to-blue-100 shadow-md">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Tiket Terbuka</CardTitle>
+                            <CardTitle className="text-sm font-semibold text-blue-900">Tiket Terbuka</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{counts.open}</div>
+                            <div className="text-3xl font-bold text-blue-700">{counts.open}</div>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="border-0 bg-gradient-to-br from-amber-50 to-amber-100 shadow-md">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Sedang Dikerjakan</CardTitle>
+                            <CardTitle className="text-sm font-semibold text-amber-900">Sedang Dikerjakan</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{counts.in_progress}</div>
+                            <div className="text-3xl font-bold text-amber-700">{counts.in_progress}</div>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="border-0 bg-gradient-to-br from-green-50 to-emerald-100 shadow-md">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Diselesaikan Hari Ini</CardTitle>
+                            <CardTitle className="text-sm font-semibold text-green-900">Diselesaikan Hari Ini</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{counts.resolved_today}</div>
+                            <div className="text-3xl font-bold text-green-700">{counts.resolved_today}</div>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="border-0 bg-gradient-to-br from-purple-50 to-indigo-100 shadow-md">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Total Tiket</CardTitle>
+                            <CardTitle className="text-sm font-semibold text-purple-900">Total Tiket</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{counts.total}</div>
+                            <div className="text-3xl font-bold text-purple-700">{counts.total}</div>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Filters */}
-                <div className="flex gap-4 flex-wrap">
+                <div className="bg-gradient-to-r from-white to-blue-50 p-4 rounded-xl mb-6 flex gap-4 flex-wrap border border-blue-200">
                     <Input
                         placeholder="Cari tiket..."
                         value={data.search}
                         onChange={(e) => setData('search', e.target.value)}
+                        className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                     />
                     <Select value={data.status} onValueChange={(value) => setData('status', value)}>
-                        <SelectTrigger className="w-40">
+                        <SelectTrigger className="w-40 border-blue-200 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -148,7 +149,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                         </SelectContent>
                     </Select>
                     <Select value={data.priority} onValueChange={(value) => setData('priority', value)}>
-                        <SelectTrigger className="w-40">
+                        <SelectTrigger className="w-40 border-blue-200 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Prioritas" />
                         </SelectTrigger>
                         <SelectContent>
@@ -159,7 +160,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                         </SelectContent>
                     </Select>
                     <Select value={data.assigned_to} onValueChange={(value) => setData('assigned_to', value)}>
-                        <SelectTrigger className="w-40">
+                        <SelectTrigger className="w-40 border-blue-200 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Ditugaskan Ke" />
                         </SelectTrigger>
                         <SelectContent>
@@ -173,7 +174,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                         </SelectContent>
                     </Select>
                     <Select value={data.date_from} onValueChange={(value) => setData('date_from', value)}>
-                        <SelectTrigger className="w-40">
+                        <SelectTrigger className="w-40 border-blue-200 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Periode" />
                         </SelectTrigger>
                         <SelectContent>
@@ -184,15 +185,15 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                             <SelectItem value="30days">30 Hari Terakhir</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button onClick={handleFilter} disabled={processing}>
+                    <Button onClick={handleFilter} disabled={processing} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold">
                         Filter
                     </Button>
                 </div>
 
                 {/* Create New Ticket Button */}
-                <div className="flex justify-end">
+                <div className="flex justify-end mb-6">
                     <Link href="/tickets/create">
-                        <Button>Buat Tiket Baru</Button>
+                        <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold">Buat Tiket Baru</Button>
                     </Link>
                 </div>
 
@@ -200,20 +201,20 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {tickets.data.map((ticket) => (
                         <Link key={ticket.id} href={`/admin/tickets/${ticket.id}`} className="block">
-                            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                            <Card className="border-0 bg-gradient-to-br from-white to-blue-50 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
                                 <CardHeader>
                                     <div className="flex justify-between items-start">
-                                        <CardTitle className="text-lg">{ticket.title}</CardTitle>
+                                        <CardTitle className="text-lg text-blue-900">{ticket.title}</CardTitle>
                                         <Badge className={getStatusColor(ticket.status)}>
                                             {ticket.status}
                                         </Badge>
                                     </div>
-                                    <div className="text-sm text-gray-600">
+                                    <div className="text-sm text-blue-600">
                                         #{ticket.ticket_number} • {ticket.category.name}
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-sm mb-2">
+                                    <p className="text-sm mb-2 text-blue-700">
                                         {ticket.description.length > 100
                                             ? ticket.description.substring(0, 100) + '...'
                                             : ticket.description}
@@ -224,12 +225,12 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                                                 {ticket.priority}
                                             </Badge>
                                         </div>
-                                        <div className="text-xs text-gray-500">
+                                        <div className="text-xs text-blue-600">
                                             {ticket.user.name}
                                         </div>
                                     </div>
                                     {ticket.assigned_user && (
-                                        <div className="text-xs text-gray-500">
+                                        <div className="text-xs text-blue-600">
                                             Ditugaskan ke: {ticket.assigned_user.name}
                                         </div>
                                     )}

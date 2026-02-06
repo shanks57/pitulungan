@@ -35,7 +35,7 @@ export default function Profile({
             <Head title="Profile settings" />
 
             <SettingsLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 p-6 rounded-xl">
                     <HeadingSmall
                         title="Profile information"
                         description="Update your name and email address"
@@ -46,16 +46,16 @@ export default function Profile({
                         options={{
                             preserveScroll: true,
                         }}
-                        className="space-y-6"
+                        className="space-y-6 bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border-0 shadow-md"
                     >
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
+                                    <Label htmlFor="name" className="text-blue-900">Name</Label>
 
                                     <Input
                                         id="name"
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                         defaultValue={auth.user.name}
                                         name="name"
                                         required
@@ -70,12 +70,12 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email address</Label>
+                                    <Label htmlFor="email" className="text-blue-900">Email address</Label>
 
                                     <Input
                                         id="email"
                                         type="email"
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                         defaultValue={auth.user.email}
                                         name="email"
                                         required

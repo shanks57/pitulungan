@@ -50,9 +50,9 @@ export default function TwoFactor({
                         description="Manage your two-factor authentication settings"
                     />
                     {twoFactorEnabled ? (
-                        <div className="flex flex-col items-start justify-start space-y-4">
-                            <Badge variant="default">Enabled</Badge>
-                            <p className="text-muted-foreground">
+                        <div className="flex flex-col items-start justify-start space-y-4 bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
+                            <Badge className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">Enabled</Badge>
+                            <p className="text-green-700">
                                 With two-factor authentication enabled, you will
                                 be prompted for a secure, random pin during
                                 login, which you can retrieve from the
@@ -69,7 +69,7 @@ export default function TwoFactor({
                                 <Form {...disable.form()}>
                                     {({ processing }) => (
                                         <Button
-                                            variant="destructive"
+                                            className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold"
                                             type="submit"
                                             disabled={processing}
                                         >
@@ -80,9 +80,9 @@ export default function TwoFactor({
                             </div>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-start justify-start space-y-4">
-                            <Badge variant="destructive">Disabled</Badge>
-                            <p className="text-muted-foreground">
+                        <div className="flex flex-col items-start justify-start space-y-4 bg-gradient-to-br from-amber-50 to-yellow-50 p-6 rounded-xl border border-amber-200">
+                            <Badge className="bg-gradient-to-r from-amber-600 to-yellow-600 text-white">Disabled</Badge>
+                            <p className="text-amber-700">
                                 When you enable two-factor authentication, you
                                 will be prompted for a secure pin during login.
                                 This pin can be retrieved from a TOTP-supported
@@ -92,6 +92,7 @@ export default function TwoFactor({
                             <div>
                                 {hasSetupData ? (
                                     <Button
+                                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold"
                                         onClick={() => setShowSetupModal(true)}
                                     >
                                         <ShieldCheck />
@@ -106,6 +107,7 @@ export default function TwoFactor({
                                     >
                                         {({ processing }) => (
                                             <Button
+                                                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold"
                                                 type="submit"
                                                 disabled={processing}
                                             >

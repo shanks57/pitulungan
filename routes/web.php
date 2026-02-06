@@ -11,54 +11,14 @@ use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
+    // Redirect authenticated users to dashboard
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+
     $data = [
         'canRegister' => Features::enabled(Features::registration()),
     ];
-
-    // If user is authenticated, add active tickets and stats
-    if (Auth::check()) {
-        $user = Auth::user();
-
-        // Get active tickets — show site-wide active (not-done) tickets to regular users
-        $activeTickets = \App\Models\Ticket::whereIn('status', ['submitted', 'processed', 'repairing'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get([
-                'id',
-                'ticket_number',
-                'title',
-                'status',
-                'priority',
-                'category_id',
-                'created_at',
-                'updated_at'
-            ])
-            ->map(function ($ticket) {
-                return [
-                    'id' => $ticket->id,
-                    'ticket_number' => $ticket->ticket_number,
-                    'title' => $ticket->title,
-                    'status' => $ticket->status,
-                    'priority' => $ticket->priority,
-                    'category' => [
-                        'name' => $ticket->category->name,
-                    ],
-                    'created_at' => $ticket->created_at,
-                    'updated_at' => $ticket->updated_at,
-                ];
-            });
-
-        // Get stats
-        $stats = [
-            'total_tickets' => \App\Models\Ticket::where('user_id', $user->id)->count(),
-            'submitted' => \App\Models\Ticket::where('user_id', $user->id)->where('status', 'submitted')->count(),
-            'done' => \App\Models\Ticket::where('user_id', $user->id)->where('status', 'done')->count(),
-            'pending_response' => \App\Models\Ticket::where('user_id', $user->id)->whereIn('status', ['processed', 'repairing'])->count(),
-        ];
-
-        $data['activeTickets'] = $activeTickets;
-        $data['stats'] = $stats;
-    }
 
     return Inertia::render('welcome', $data);
 })->name('home');

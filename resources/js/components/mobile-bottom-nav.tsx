@@ -9,7 +9,7 @@ export default function MobileBottomNav() {
     const page = usePage();
 
     const baseNavItems: NavItem[] = [
-        { title: 'Dasbor', href: '/', icon: LayoutGrid },
+        { title: 'Dasbor', href: '/dashboard', icon: LayoutGrid },
     ];
 
     const getRoleSpecificNavItems = (): NavItem[] => {

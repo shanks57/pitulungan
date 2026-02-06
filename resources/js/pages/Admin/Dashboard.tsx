@@ -107,28 +107,28 @@ export default function Dashboard({ stats, recentTickets }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dasbor Admin" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between">
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold">Dasbor Admin</h1>
-                        <p className="text-muted-foreground">Selamat datang kembali! Berikut ringkasan sistem helpdesk Anda.</p>
+                        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Dasbor Admin</h1>
+                        <p className="text-muted-foreground text-sm md:text-base">Selamat datang kembali! Berikut ringkasan sistem helpdesk Anda.</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <Link href="/admin/tickets">
-                            <Button variant="outline">
+                            <Button variant="outline" className="border-blue-200 hover:bg-blue-50">
                                 <FileText className="mr-2 h-4 w-4" />
                                 Lihat Semua Tiket
                             </Button>
                         </Link>
                         <Link href="/admin/users">
-                            <Button variant="outline">
+                            <Button variant="outline" className="border-blue-200 hover:bg-blue-50">
                                 <Users className="mr-2 h-4 w-4" />
                                 Kelola Pengguna
                             </Button>
                         </Link>
                         <div>
                             <a href="/admin/reports/performance?format=pdf" target="_blank" rel="noopener noreferrer">
-                                <Button>
+                                <Button className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 shadow-lg">
                                     <BarChart3 className="mr-2 h-4 w-4" />
                                     Download Performance (PDF)
                                 </Button>
@@ -139,128 +139,128 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                 
 
                 {/* Key Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                     <Card 
-                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all border-0 bg-gradient-to-br from-blue-50 to-blue-100"
                         onClick={() => router.visit('/admin/tickets')}
                     >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Tiket</CardTitle>
-                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-blue-900">Total Tiket</CardTitle>
+                            <FileText className="h-4 w-4 text-blue-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.total_tickets}</div>
-                            <p className="text-xs text-muted-foreground">Total tiket sepanjang waktu</p>
+                            <div className="text-2xl font-bold text-blue-700">{stats.total_tickets}</div>
+                            <p className="text-xs text-blue-600">Total tiket sepanjang waktu</p>
                         </CardContent>
                     </Card>
 
                     <Card
-                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                        className="cursor-pointer hover:shadow-lg hover:border-emerald-500 transition-all border-0 bg-gradient-to-br from-emerald-50 to-emerald-100"
                         onClick={() => router.visit('/admin/tickets?status=done')}
                     >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Tingkat Penyelesaian</CardTitle>
-                            <Target className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-emerald-900">Tingkat Penyelesaian</CardTitle>
+                            <Target className="h-4 w-4 text-emerald-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.resolution_rate}%</div>
-                            <Progress value={stats.resolution_rate} className="mt-2" />
+                            <div className="text-2xl font-bold text-emerald-700">{stats.resolution_rate}%</div>
+                            <Progress value={stats.resolution_rate} className="mt-2 bg-emerald-200 [&>*]:bg-emerald-600" />
                         </CardContent>
                     </Card>
 
                     <Card
-                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                        className="cursor-pointer hover:shadow-lg hover:border-green-500 transition-all border-0 bg-gradient-to-br from-green-50 to-green-100"
                         onClick={() => router.visit('/admin/tickets?status=done&date=today')}
                     >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Selesai Hari Ini</CardTitle>
-                            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-green-900">Selesai Hari Ini</CardTitle>
+                            <CheckCircle className="h-4 w-4 text-green-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.completed_today}</div>
-                            <p className="text-xs text-muted-foreground">Tiket diselesaikan hari ini</p>
+                            <div className="text-2xl font-bold text-green-700">{stats.completed_today}</div>
+                            <p className="text-xs text-green-600">Tiket diselesaikan hari ini</p>
                         </CardContent>
                     </Card>
 
                     <Card
-                        className="cursor-pointer hover:shadow-lg hover:border-red-500 transition-all"
+                        className="cursor-pointer hover:shadow-lg hover:border-red-500 transition-all border-0 bg-gradient-to-br from-red-50 to-red-100"
                         onClick={() => router.visit('/admin/tickets?status=overdue')}
                     >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Terlambat</CardTitle>
-                            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-red-900">Terlambat</CardTitle>
+                            <AlertTriangle className="h-4 w-4 text-red-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
-                            <p className="text-xs text-muted-foreground">Melewati batas waktu SLA</p>
+                            <div className="text-2xl font-bold text-red-700">{stats.overdue}</div>
+                            <p className="text-xs text-red-600">Melewati batas waktu SLA</p>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Time-Based Statistics */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                     <Card
-                        className="cursor-pointer hover:shadow-lg hover:border-green-500 transition-all"
+                        className="cursor-pointer hover:shadow-lg hover:border-amber-500 transition-all border-0 bg-gradient-to-br from-amber-50 to-amber-100"
                         onClick={() => router.visit('/admin/tickets?date_from=today')}
                     >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Tiket Hari Ini</CardTitle>
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-amber-900">Tiket Hari Ini</CardTitle>
+                            <Calendar className="h-4 w-4 text-amber-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.tickets_today}</div>
-                            <p className="text-xs text-muted-foreground">Dibuat hari ini</p>
+                            <div className="text-2xl font-bold text-amber-700">{stats.tickets_today}</div>
+                            <p className="text-xs text-amber-600">Dibuat hari ini</p>
                         </CardContent>
                     </Card>
 
                     <Card
-                        className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                        className="cursor-pointer hover:shadow-lg hover:border-cyan-500 transition-all border-0 bg-gradient-to-br from-cyan-50 to-cyan-100"
                         onClick={() => router.visit('/admin/tickets?date_from=7days')}
                     >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Tiket 7 Hari</CardTitle>
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-cyan-900">Tiket 7 Hari</CardTitle>
+                            <Calendar className="h-4 w-4 text-cyan-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.tickets_7days}</div>
-                            <p className="text-xs text-muted-foreground">Dalam 7 hari terakhir</p>
+                            <div className="text-2xl font-bold text-cyan-700">{stats.tickets_7days}</div>
+                            <p className="text-xs text-cyan-600">Dalam 7 hari terakhir</p>
                         </CardContent>
                     </Card>
 
                     <Card
-                        className="cursor-pointer hover:shadow-lg hover:border-yellow-500 transition-all"
+                        className="cursor-pointer hover:shadow-lg hover:border-violet-500 transition-all border-0 bg-gradient-to-br from-violet-50 to-violet-100"
                         onClick={() => router.visit('/admin/tickets?date_from=14days')}
                     >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Tiket 14 Hari</CardTitle>
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-violet-900">Tiket 14 Hari</CardTitle>
+                            <Calendar className="h-4 w-4 text-violet-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.tickets_14days}</div>
-                            <p className="text-xs text-muted-foreground">Dalam 14 hari terakhir</p>
+                            <div className="text-2xl font-bold text-violet-700">{stats.tickets_14days}</div>
+                            <p className="text-xs text-violet-600">Dalam 14 hari terakhir</p>
                         </CardContent>
                     </Card>
 
                     <Card
-                        className="cursor-pointer hover:shadow-lg hover:border-purple-500 transition-all"
+                        className="cursor-pointer hover:shadow-lg hover:border-fuchsia-500 transition-all border-0 bg-gradient-to-br from-fuchsia-50 to-fuchsia-100"
                         onClick={() => router.visit('/admin/tickets?date_from=30days')}
                     >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Tiket 30 Hari</CardTitle>
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-fuchsia-900">Tiket 30 Hari</CardTitle>
+                            <Calendar className="h-4 w-4 text-fuchsia-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.tickets_30days}</div>
-                            <p className="text-xs text-muted-foreground">Dalam 30 hari terakhir</p>
+                            <div className="text-2xl font-bold text-fuchsia-700">{stats.tickets_30days}</div>
+                            <p className="text-xs text-fuchsia-600">Dalam 30 hari terakhir</p>
                         </CardContent>
                     </Card>
                 </div>
                 {/* Status Distribution */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <Card>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    <Card className="border-0 bg-gradient-to-br from-indigo-50 to-indigo-100 shadow-md">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <BarChart3 className="h-5 w-5" />
+                            <CardTitle className="flex items-center gap-2 text-indigo-900">
+                                <BarChart3 className="h-5 w-5 text-indigo-600" />
                                 Distribusi Status Tiket
                             </CardTitle>
                         </CardHeader>
@@ -302,10 +302,10 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="border-0 bg-gradient-to-br from-orange-50 to-orange-100 shadow-md">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <AlertTriangle className="h-5 w-5" />
+                            <CardTitle className="flex items-center gap-2 text-orange-900">
+                                <AlertTriangle className="h-5 w-5 text-orange-600" />
                                 Distribusi Prioritas
                             </CardTitle>
                         </CardHeader>
@@ -347,11 +347,11 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                 </div>
 
                 {/* Weekly Performance & Achievements */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    <Card className="border-0 bg-gradient-to-br from-teal-50 to-teal-100 shadow-md">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <TrendingUp className="h-5 w-5" />
+                            <CardTitle className="flex items-center gap-2 text-teal-900">
+                                <TrendingUp className="h-5 w-5 text-teal-600" />
                                 Minggu Ini
                             </CardTitle>
                         </CardHeader>
@@ -393,10 +393,10 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="border-0 bg-gradient-to-br from-rose-50 to-rose-100 shadow-md">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Target className="h-5 w-5" />
+                            <CardTitle className="flex items-center gap-2 text-rose-900">
+                                <Target className="h-5 w-5 text-rose-600" />
                                 Pencapaian
                             </CardTitle>
                         </CardHeader>
