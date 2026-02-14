@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +21,11 @@ class UserController extends Controller
 
     public function create()
     {
-        return Inertia::render('Admin/Users/Create');
+        $categories = TicketCategory::all();
+
+        return Inertia::render('Admin/Users/Create', [
+            'categories' => $categories,
+        ]);
     }
 
     public function store(Request $request)
@@ -56,8 +61,11 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $categories = TicketCategory::all();
+
         return Inertia::render('Admin/Users/Edit', [
             'user' => $user,
+            'categories' => $categories,
         ]);
     }
 

@@ -21,11 +21,17 @@ interface User {
     unit: string | null;
 }
 
-interface Props {
-    user: User;
+interface Category {
+    id: number;
+    name: string;
 }
 
-export default function Edit({ user }: Props) {
+interface Props {
+    user: User;
+    categories: Category[];
+}
+
+export default function Edit({ user, categories }: Props) {
     const { data, setData, put, processing, errors } = useForm({
         name: user.name,
         username: user.username,
@@ -90,23 +96,31 @@ export default function Edit({ user }: Props) {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="admin">Admin</SelectItem>
-                                <SelectItem value="technician">Technician</SelectItem>
+                                <SelectItem value="technician">Teknisi</SelectItem>
                                 <SelectItem value="user">User</SelectItem>
                             </SelectContent>
                         </Select>
                         {errors.role && <p className="text-red-500 text-sm font-semibold">{errors.role}</p>}
                     </div>
 
-                    <div>
-                        <Label htmlFor="unit" className="text-blue-900 font-semibold">Unit</Label>
-                        <Input
-                            id="unit"
-                            value={data.unit}
-                            onChange={(e) => setData('unit', e.target.value)}
-                            className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
-                        />
-                        {errors.unit && <p className="text-red-500 text-sm font-semibold">{errors.unit}</p>}
-                    </div>
+                    {data.role === 'technician' && (
+                        <div>
+                            <Label htmlFor="unit" className="text-blue-900 font-semibold">Unit</Label>
+                            <Select value={data.unit} onValueChange={(value) => setData('unit', value)}>
+                                <SelectTrigger className="border-blue-200 focus:border-blue-500 focus:ring-blue-500">
+                                    <SelectValue placeholder="Pilih Unit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {categories.map((category) => (
+                                        <SelectItem key={category.id} value={category.name}>
+                                            {category.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.unit && <p className="text-red-500 text-sm font-semibold">{errors.unit}</p>}
+                        </div>
+                    )}
 
                     <Button type="submit" disabled={processing} className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold">
                         Update User

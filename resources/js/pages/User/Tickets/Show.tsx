@@ -345,8 +345,8 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                                                     Diupload oleh {attachment.uploaded_by.name}
                                                                 </p>
                                                             </div>
-                                                            <Button 
-                                                                variant="outline" 
+                                                            <Button
+                                                                variant="outline"
                                                                 size="sm"
                                                                 onClick={() => setSelectedAttachment(attachment)}
                                                             >
@@ -390,8 +390,8 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                                         {attachment.uploaded_by.name} • {new Date(attachment.created_at).toLocaleDateString()}
                                                     </p>
                                                 </div>
-                                                <Button 
-                                                    variant="outline" 
+                                                <Button
+                                                    variant="outline"
                                                     size="sm"
                                                     onClick={() => setSelectedAttachment(attachment)}
                                                 >

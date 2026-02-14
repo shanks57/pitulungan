@@ -129,7 +129,7 @@ class TicketController extends Controller
             Log::error('Validation failed:', $e->errors());
             throw $e;
         }
-
+        dd($request->all());
         $user = FacadesAuth::user();
 
         if (!$user) {
@@ -188,23 +188,23 @@ class TicketController extends Controller
         }
 
         // Handle file uploads
-        // if ($request->hasFile('attachments')) {
-        //     \Log::info('Processing attachments:', ['count' => count($request->file('attachments'))]);
+        if ($request->hasFile('attachments')) {
+            \Log::info('Processing attachments:', ['count' => count($request->file('attachments'))]);
 
-        //     foreach ($request->file('attachments') as $file) {
-        //         $originalName = $file->getClientOriginalName();
-        //         $path = $file->store('ticket-attachments', 'public');
+            foreach ($request->file('attachments') as $file) {
+                $originalName = $file->getClientOriginalName();
+                $path = $file->store('ticket-attachments', 'public');
 
-        //         TicketAttachment::create([
-        //             'ticket_id' => $ticket->id,
-        //             'file_path' => $path,
-        //             'file_type' => $file->getMimeType(),
-        //             'uploaded_by' => $user->id,
-        //         ]);
+                TicketAttachment::create([
+                    'ticket_id' => $ticket->id,
+                    'file_path' => $path,
+                    'file_type' => $file->getMimeType(),
+                    'uploaded_by' => $user->id,
+                ]);
 
-        //         \Log::info('Attachment created:', ['path' => $path, 'type' => $file->getMimeType()]);
-        //     }
-        // }
+                \Log::info('Attachment created:', ['path' => $path, 'type' => $file->getMimeType()]);
+            }
+        }
 
         return redirect()->route('dashboard')->with('success', 'Ticket created successfully. Ticket number: ' . $ticket->ticket_number);
     }
