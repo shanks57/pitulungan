@@ -1,6 +1,7 @@
 import { BellIcon, Check, X } from 'lucide-react';
 import React, { Fragment, useState } from 'react';
 import { useNotifications } from '@/hooks/use-notifications';
+import { PushSubscribeButton } from './PushSubscribeButton';
 
 export function NotificationBell() {
     const { notifications, unreadCount, loading, markRead, markAllRead } = useNotifications();
@@ -60,6 +61,10 @@ export function NotificationBell() {
                         ))}
                     </div>
 
+                    <div className="px-4 py-3 border-t space-y-2">
+                        <div className="text-xs text-gray-500 mb-2">Notifikasi Push</div>
+                        <PushSubscribeButton />
+                    </div>
                     <div className="px-4 py-2 border-t text-sm text-center">
                         <a href="/notifications" className="text-sm text-blue-600 hover:underline">Lihat semua notifikasi</a>
                     </div>

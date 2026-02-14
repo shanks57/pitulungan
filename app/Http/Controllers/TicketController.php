@@ -120,7 +120,8 @@ class TicketController extends Controller
                 'description' => 'required|string',
                 'location' => 'required|string|max:255',
                 'priority' => 'required|in:low,medium,high',
-                // 'attachments.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,txt|max:10240', // 10MB max
+                'attachments' => 'nullable|array',
+                'attachments.*' => 'file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,txt|max:10240', // 10MB max
             ]);
 
             Log::info('Validation passed');
@@ -161,7 +162,7 @@ class TicketController extends Controller
                 'ticket_number' => 'TICK-' . strtoupper(uniqid()),
                 'user_id' => $user->id,
                 'category_id' => $request->category_id,
-                'subcategory_id' => $request->subcategory_id ? (int)$request->subcategory_id : null,
+                'subcategory_id' => $request->subcategory_id ? (int) $request->subcategory_id : null,
                 'sla_id' => $sla ? $sla->id : null,
                 'title' => $request->title,
                 'description' => $request->description,
@@ -348,7 +349,8 @@ class TicketController extends Controller
         // Notify ticket owner & assignee (except the actor)
         $participants = collect([$ticket->user, $ticket->assignedUser])->filter();
         $participants->each(function ($participant) use ($user, $ticket) {
-            if ($participant->id === $user->id) return;
+            if ($participant->id === $user->id)
+                return;
             $participant->notify(new TicketUpdatedWebPush($ticket, 'Pembaharuan kemajuan: ' . \Illuminate\Support\Str::limit($ticket->title, 80)));
         });
 
@@ -359,9 +361,13 @@ class TicketController extends Controller
     {
         $user = $request->user();
 
-        $query = Ticket::with(['category', 'assignedUser', 'progress' => function ($query) {
-            $query->latest()->limit(1);
-        }]);
+        $query = Ticket::with([
+            'category',
+            'assignedUser',
+            'progress' => function ($query) {
+                $query->latest()->limit(1);
+            }
+        ]);
 
         // Visibility rules:
         // - admin/technician: see all tickets (handled elsewhere / via admin UI)

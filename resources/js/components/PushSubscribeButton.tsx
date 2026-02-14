@@ -1,30 +1,67 @@
 import React, { useEffect, useState } from 'react';
 import { usePushSubscription } from '@/hooks/use-push-subscription';
 
-export function PushSubscribeButton({ vapidKey }: { vapidKey: string }) {
+export function PushSubscribeButton({ vapidKey }: { vapidKey?: string } = {}) {
     const { supported, isSubscribed, subscribe, unsubscribe } = usePushSubscription();
     const [subscribed, setSubscribed] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!supported) return;
-        (async () => setSubscribed(await isSubscribed()))();
-    }, [supported]);
+        (async () => {
+            try {
+                setSubscribed(await isSubscribed());
+                setError(null);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Error checking subscription');
+            }
+        })();
+    }, [supported, isSubscribed]);
 
     if (!supported) return <div className="text-sm text-muted">Notifikasi tidak didukung pada peramban ini.</div>;
+
+    if (error) {
+        return <div className="text-sm text-red-600">Error: {error}</div>;
+    }
 
     return subscribed ? (
         <button
             className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50"
-            onClick={async () => { await unsubscribe(); setSubscribed(false); }}
+            onClick={async () => {
+                try {
+                    setLoading(true);
+                    await unsubscribe();
+                    setSubscribed(false);
+                    setError(null);
+                } catch (err) {
+                    setError(err instanceof Error ? err.message : 'Error unsubscribing');
+                } finally {
+                    setLoading(false);
+                }
+            }}
+            disabled={loading}
         >
-            Nonaktifkan Notifikasi
+            {loading ? 'Memproses...' : 'Nonaktifkan Notifikasi'}
         </button>
     ) : (
         <button
             className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
-            onClick={async () => { await subscribe(vapidKey); setSubscribed(true); }}
+            onClick={async () => {
+                try {
+                    setLoading(true);
+                    await subscribe(vapidKey);
+                    setSubscribed(true);
+                    setError(null);
+                } catch (err) {
+                    setError(err instanceof Error ? err.message : 'Error subscribing');
+                } finally {
+                    setLoading(false);
+                }
+            }}
+            disabled={loading}
         >
-            Aktifkan Notifikasi
+            {loading ? 'Memproses...' : 'Aktifkan Notifikasi'}
         </button>
     );
 }

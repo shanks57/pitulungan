@@ -88,7 +88,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-6 px-6 pb-20 md:p-6 rounded-xl">
+            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-4 px-4 pb-20 md:p-4 rounded-xl">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">Tiket Pemeliharaan</h1>
 
                 {/* Counts */}

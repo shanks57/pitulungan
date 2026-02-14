@@ -41,7 +41,7 @@ export default function Edit({ user }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-6 px-6 pb-20 md:p-6 rounded-xl">
+            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-4 px-4 pb-20 md:p-4 rounded-xl">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">Edit User</h1>
 
                 <form onSubmit={handleSubmit} className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl shadow-lg max-w-2xl space-y-4">

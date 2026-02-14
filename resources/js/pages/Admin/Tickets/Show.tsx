@@ -143,7 +143,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-6 px-6 pb-20 md:p-6 rounded-xl">
+            <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-4 px-4 pb-20 md:p-4 rounded-xl">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Ticket #{ticket.ticket_number}</h1>
                     <Badge className={getStatusColor(ticket.status)}>

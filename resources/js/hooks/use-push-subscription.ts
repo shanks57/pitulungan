@@ -15,15 +15,22 @@ export function usePushSubscription() {
         return !!sub;
     }
 
-    async function subscribe(vapidKey: string) {
+    async function subscribe(vapidKey?: string) {
         if (!supported) throw new Error('Push tidak didukung di peramban ini.');
+        
+        // Get VAPID key from parameter or window object
+        const key = vapidKey || (window as any).VAPID_PUBLIC_KEY;
+        if (!key) {
+            throw new Error('VAPID key tidak tersedia. Hubungi administrator.');
+        }
+
         const reg = await navigator.serviceWorker.ready;
         const permission = await Notification.requestPermission();
         if (permission !== 'granted') throw new Error('Izin notifikasi ditolak.');
 
         const sub = await reg.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(vapidKey),
+            applicationServerKey: urlBase64ToUint8Array(key),
         });
 
         const csrfMeta = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null;

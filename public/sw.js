@@ -135,49 +135,86 @@ async function doBackgroundSync() {
     // This could be extended to sync offline ticket submissions, comments, etc.
 }
 
-// Push notifications (optional enhancement)
+// Push notifications (web-push)
 self.addEventListener('push', (event) => {
-    console.log('[SW] Push received:', event);
+    console.log('[SW] Push received');
 
-    if (event.data) {
+    if (!event.data) {
+        console.log('[SW] Push received but no data');
+        return;
+    }
+
+    try {
         const data = event.data.json();
         const options = {
-            body: data.body,
-            icon: '/assets/android/android-launchericon-192-192.png',
-            badge: '/assets/android/android-launchericon-96-96.png',
+            body: data.body || '',
+            icon: data.icon || '/assets/android/android-launchericon-192-192.png',
+            badge: data.badge || '/assets/android/android-launchericon-96-96.png',
+            image: data.image || undefined,
             vibrate: [100, 50, 100],
+            tag: data.tag || 'notification',
+            requireInteraction: data.requireInteraction || true,
             data: {
                 dateOfArrival: Date.now(),
-                primaryKey: data.primaryKey
-            },
-            actions: [
+                url: data.url || '/dashboard',
+                primaryKey: data.primaryKey || Date.now()
+            }
+        };
+
+        // Add actions if available
+        if (data.actions && Array.isArray(data.actions)) {
+            options.actions = data.actions;
+        } else {
+            options.actions = [
                 {
                     action: 'view',
-                    title: 'Lihat',
+                    title: data.actionTitle || 'Lihat',
                     icon: '/assets/android/android-launchericon-96-96.png'
                 },
                 {
                     action: 'close',
                     title: 'Tutup'
                 }
-            ]
-        };
+            ];
+        }
 
         event.waitUntil(
-            self.registration.showNotification(data.title, options)
+            self.registration.showNotification(data.title || 'Notifikasi', options)
+        );
+    } catch (error) {
+        console.error('[SW] Error processing push:', error);
+        // Fallback notification
+        event.waitUntil(
+            self.registration.showNotification('Notifikasi Baru', {
+                body: event.data.text(),
+                icon: '/assets/android/android-launchericon-192-192.png',
+            })
         );
     }
 });
 
-// Handle notification clicks
+// Handle notification clicks and actions
 self.addEventListener('notificationclick', (event) => {
-    console.log('[SW] Notification click:', event);
+    console.log('[SW] Notification clicked:', event.action);
 
     event.notification.close();
 
-    if (event.action === 'view') {
-        event.waitUntil(
-            clients.openWindow(event.notification.data.url || '/dashboard')
-        );
-    }
+    const urlToOpen = event.notification.data.url || '/dashboard';
+
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then((clientList) => {
+                // Check if app is already open
+                for (let i = 0; i < clientList.length; i++) {
+                    const client = clientList[i];
+                    if (client.url === urlToOpen && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                // If not open, open it
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen);
+                }
+            })
+    );
 });

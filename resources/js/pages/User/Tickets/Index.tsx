@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { router, Link } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { CheckCircle, Clock, Wrench, AlertTriangle, Plus, Eye } from 'lucide-react';
+import { CheckCircle, Clock, Wrench, AlertTriangle, Plus, Eye, XCircle, FileText } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dasbor', href: '/dashboard' },
@@ -83,10 +83,21 @@ export default function Index({ tickets, filters, stats }: Props) {
         }
     };
 
+    const getStatusIcon = (status: string) => {
+        switch (status) {
+            case 'submitted': return <Clock className="h-4 w-4" />;
+            case 'processed': return <Clock className="h-4 w-4" />;
+            case 'repairing': return <Wrench className="h-4 w-4" />;
+            case 'done': return <CheckCircle className="h-4 w-4" />;
+            case 'rejected': return <XCircle className="h-4 w-4" />;
+            default: return <FileText className="h-4 w-4" />;
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tiket Saya" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl px-4 pt-4 pb-20 md:p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Tiket Saya</h1>
                     <Link href="/tickets/create">
@@ -208,57 +219,38 @@ export default function Index({ tickets, filters, stats }: Props) {
                         </Card>
                     ) : (
                         tickets.data.map((ticket) => (
-                            <Card key={ticket.id} className="hover:shadow-md transition-shadow">
-                                <CardContent className="p-6">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <h3 className="text-lg font-semibold">{ticket.title}</h3>
-                                                <Badge className={getStatusColor(ticket.status)}>
-                                                    {ticket.status}
+                            <div key={ticket.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 border-0 rounded-lg bg-white/60 hover:bg-white transition-colors gap-3 shadow-sm">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-2 mb-3">
+                                            <span className="font-medium text-blue-900 mr-2">{ticket.ticket_number}</span>
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <Badge className={`${getStatusColor(ticket.status)} whitespace-nowrap`}>
+                                                    {getStatusIcon(ticket.status)}
+                                                    <span className="ml-1">{ticket.status}</span>
                                                 </Badge>
-                                                <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
+                                                <Badge className={`${getPriorityColor(ticket.priority)} whitespace-nowrap`}>
                                                     {ticket.priority}
                                                 </Badge>
                                             </div>
-                                            <p className="text-sm text-muted-foreground mb-2">
-                                                #{ticket.ticket_number} • {ticket.category.name} • {ticket.location}
-                                            </p>
-                                            <p className="text-sm line-clamp-2">{ticket.description}</p>
                                         </div>
+                                        <p className="text-sm text-slate-700 mb-1 break-words font-medium">{ticket.title}</p>
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 text-xs text-slate-600">
+                                            <span className="truncate">Kategori: {ticket.category.name}</span>
+                                       
+                                            {ticket.progress && ticket.progress.length > 0 && (
+                                                <span className="truncate">Pembaruan terakhir: {new Date(ticket.progress[0].created_at).toLocaleDateString()}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex-shrink-0 w-full md:w-auto mt-3 md:mt-0 md:ml-4">
                                         <Link href={`/user/tickets/${ticket.id}`}>
-                                            <Button variant="outline" size="sm">
-                                                <Eye className="mr-2 h-4 w-4" />
-                                                Lihat Detail
+                                            <Button variant="outline" size="sm" className="w-full md:w-auto justify-center border-blue-300 hover:bg-blue-50">
+                                                <Eye className="h-4 w-4" />
+                                                <span className="sr-only sm:not-sr-only ml-2">Lihat</span>
                                             </Button>
                                         </Link>
                                     </div>
-
-                                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                        <div className="flex items-center gap-4">
-                                            <span>Dibuat: {new Date(ticket.created_at).toLocaleDateString()}</span>
-                                            {ticket.assigned_user && (
-                                                <span>Ditugaskan ke: {ticket.assigned_user.name}</span>
-                                            )}
-                                        </div>
-                                        {ticket.progress && ticket.progress.length > 0 && (
-                                            <div className="text-right">
-                                                <p className="text-xs">
-                                                    Pembaruan terakhir: {new Date(ticket.progress[0].created_at).toLocaleDateString()}
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {ticket.progress && ticket.progress.length > 0 && (
-                                        <div className="mt-4 p-3 bg-gray-50 rounded-md">
-                                            <p className="text-sm">
-                                                <strong>Pembaruan Terakhir:</strong> {ticket.progress[0].note || `Status diubah menjadi ${ticket.progress[0].status}`}
-                                            </p>
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                </div>
                         ))
                     )}
                 </div>
