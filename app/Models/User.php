@@ -20,6 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'nip',
         'username',
         'email',
         'password',
@@ -67,7 +68,7 @@ class User extends Authenticatable
 
     public function assignedTickets()
     {
-        return $this->hasMany(Ticket::class, 'assigned_to');
+        return $this->belongsToMany(Ticket::class, 'ticket_user');
     }
 
     public function comments()

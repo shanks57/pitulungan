@@ -24,10 +24,10 @@ export default function Login({
 }: LoginProps) {
     return (
         <AuthLayout
-            title="Log in to your account"
-            description="Enter your username and password below to log in"
+            title="Masuk ke akun Anda"
+            description="Masukkan username dan kata sandi Anda di bawah ini untuk masuk"
         >
-            <Head title="Log in" />
+            <Head title="Masuk" />
 
             <Form
                 {...store.form()}
@@ -47,14 +47,14 @@ export default function Login({
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="username"
-                                    placeholder="Enter your username"
+                                    placeholder="Masukkan username Anda"
                                     className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
-                                <div className="flex items-center">
+                                {/* <div className="flex items-center">
                                     <Label htmlFor="password" className="text-blue-900 font-semibold">Password</Label>
                                     {canResetPassword && (
                                         <TextLink
@@ -65,7 +65,7 @@ export default function Login({
                                             Forgot password?
                                         </TextLink>
                                     )}
-                                </div>
+                                </div> */}
                                 <Input
                                     id="password"
                                     type="password"
@@ -73,20 +73,20 @@ export default function Login({
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
+                                    placeholder="Kata Sandi"
                                     className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
-                            <div className="flex items-center space-x-3">
+                            {/* <div className="flex items-center space-x-3">
                                 <Checkbox
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
                                 />
                                 <Label htmlFor="remember" className="text-blue-900">Remember me</Label>
-                            </div>
+                            </div> */}
 
                             <Button
                                 type="submit"
@@ -96,10 +96,10 @@ export default function Login({
                                 data-test="login-button"
                             >
                                 {processing && <Spinner />}
-                                Log in
+                                Masuk
                             </Button>
                         </div>
-
+                        {/* 
                         {canRegister && (
                             <div className="text-center text-sm text-muted-foreground">
                                 Don't have an account?{' '}
@@ -107,7 +107,7 @@ export default function Login({
                                     Sign up
                                 </TextLink>
                             </div>
-                        )}
+                        )} */}
                     </>
                 )}
             </Form>

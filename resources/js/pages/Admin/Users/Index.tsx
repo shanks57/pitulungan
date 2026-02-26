@@ -1,12 +1,14 @@
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Link, router } from '@inertiajs/react';
+import { Input } from '@/components/ui/input';
+import { Link, router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
+import Pagination from '@/components/Pagination';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Users', href: '/admin/users' },
+    { title: 'Dasbor', href: '/dashboard' },
+    { title: 'Pengguna', href: '/admin/users' },
 ];
 
 interface User {
@@ -23,11 +25,25 @@ interface Props {
         data: User[];
         links: any[];
     };
+    filters: {
+        search: string;
+    };
 }
 
-export default function Index({ users }: Props) {
+export default function Index({ users, filters }: Props) {
+    const { data, setData, get, processing } = useForm({
+        search: filters.search || '',
+    });
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        get('/admin/users', {
+            preserveState: true,
+        });
+    };
+
     const handleDelete = (userId: number) => {
-        if (confirm('Are you sure you want to delete this user?')) {
+        if (confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
             router.delete(`/admin/users/${userId}`);
         }
     };
@@ -36,10 +52,21 @@ export default function Index({ users }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Users</h1>
-                    <Link href="/admin/users/create">
-                        <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">Create User</Button>
-                    </Link>
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Manajemen Pengguna</h1>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <form onSubmit={handleSearch} className="flex gap-2">
+                            <Input
+                                placeholder="Cari berdasarkan nama..."
+                                value={data.search}
+                                onChange={(e) => setData('search', e.target.value)}
+                                className="w-full md:w-64 border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500"
+                            />
+                            <Button type="submit" disabled={processing} variant="secondary">Cari</Button>
+                        </form>
+                        <Link href="/admin/users/create">
+                            <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg w-full">Tambah Pengguna</Button>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -62,7 +89,7 @@ export default function Index({ users }: Props) {
                                         size="sm"
                                         onClick={() => handleDelete(user.id)}
                                     >
-                                        Delete
+                                        Hapus
                                     </Button>
                                 </div>
                             </CardContent>
@@ -70,7 +97,8 @@ export default function Index({ users }: Props) {
                     ))}
                 </div>
 
-                {/* Pagination can be added here */}
+                {/* Pagination */}
+                <Pagination links={users.links} />
             </div>
         </AppLayout>
     );

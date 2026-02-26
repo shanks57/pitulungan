@@ -11,10 +11,11 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { ArrowLeft, Clock, User, MapPin, FileText, MessageSquare, Wrench, CheckCircle, XCircle, HelpCircle, X } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dasbor', href: '/dashboard' },
-    { title: 'Tiket Saya', href: '/user/tickets' },
+    { title: 'Daftar Tiket', href: '/user/tickets' },
     { title: 'Detail Tiket', href: '#' },
 ];
 
@@ -28,7 +29,7 @@ interface Ticket {
     location: string;
     user: { name: string; email: string };
     category: { name: string };
-    assigned_user: { name: string } | null;
+    assignees: { name: string }[];
     sla: { response_time_minutes: number; resolution_time_minutes: number } | null;
     created_at: string;
     updated_at: string;
@@ -90,6 +91,10 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
         postComment(`/tickets/${ticket.id}/comments`, {
             onSuccess: () => {
                 resetComment();
+                toast.success('Komentar berhasil ditambahkan!');
+            },
+            onError: () => {
+                toast.error('Gagal menambahkan komentar.');
             },
             forceFormData: true,
         });
@@ -112,6 +117,26 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
             case 'medium': return 'bg-yellow-100 text-yellow-800';
             case 'high': return 'bg-red-100 text-red-800';
             default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    const getStatusText = (status: string) => {
+        switch (status) {
+            case 'submitted': return 'Diajukan';
+            case 'processed': return 'Diproses';
+            case 'repairing': return 'Diperbaiki';
+            case 'done': return 'Selesai';
+            case 'rejected': return 'Ditolak';
+            default: return status;
+        }
+    };
+
+    const getPriorityText = (priority: string) => {
+        switch (priority) {
+            case 'low': return 'Rendah';
+            case 'medium': return 'Sedang';
+            case 'high': return 'Tinggi';
+            default: return priority;
         }
     };
 
@@ -138,16 +163,16 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Ticket ${ticket.ticket_number}`} />
+            <Head title={`Tiket ${ticket.ticket_number}`} />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl px-4 pt-4 pb-20 md:p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
                     <Button variant="outline" onClick={() => router.visit('/user/tickets')} className="border-blue-200 hover:bg-blue-50">
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Kembali ke Tiket Saya
+                        Kembali ke Daftar Tiket
                     </Button>
                     <div className="flex-1">
-                        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Ticket #{ticket.ticket_number}</h1>
+                        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Tiket #{ticket.ticket_number}</h1>
                         <p className="text-slate-600">{ticket.title}</p>
                     </div>
                 </div>
@@ -166,10 +191,10 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                             <CardContent className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <Badge className={getStatusColor(ticket.status)}>
-                                        {getStatusIcon(ticket.status)} {ticket.status}
+                                        {getStatusIcon(ticket.status)} {getStatusText(ticket.status)}
                                     </Badge>
                                     <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
-                                        Prioritas {ticket.priority}
+                                        Prioritas {getPriorityText(ticket.priority)}
                                     </Badge>
                                 </div>
 
@@ -201,7 +226,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                     <div className="flex items-center gap-2">
                                         <User className="h-4 w-4 text-muted-foreground" />
                                         <span className="text-muted-foreground">Ditugaskan ke:</span>
-                                        <span>{ticket.assigned_user?.name || 'Belum ditugaskan'}</span>
+                                        <span>{ticket.assignees && ticket.assignees.length > 0 ? ticket.assignees.map(a => a.name).join(', ') : 'Belum ditugaskan'}</span>
                                     </div>
                                 </div>
 
@@ -225,7 +250,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <MessageSquare className="h-5 w-5" />
-                                    Timeline Progress
+                                    Linimasa Progres
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -248,7 +273,7 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                                 <div className="flex-1 pb-4">
                                                     <div className="flex items-center justify-between mb-1">
                                                         <h4 className="font-semibold">
-                                                            Status diubah menjadi {item.status}
+                                                            Status diubah menjadi {getStatusText(item.status)}
                                                         </h4>
                                                         <span className="text-sm text-muted-foreground">
                                                             {new Date(item.created_at).toLocaleString()}
@@ -280,37 +305,43 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                             </CardHeader>
                             <CardContent>
                                 {/* Add Comment Form */}
-                                <form onSubmit={handleCommentSubmit} className="mb-6">
-                                    <div className="space-y-4">
-                                        <div>
-                                            <Label htmlFor="comment">Tambah Komentar</Label>
-                                            <Textarea
-                                                id="comment"
-                                                value={commentData.comment}
-                                                onChange={(e) => setCommentData('comment', e.target.value)}
-                                                placeholder="Tambah komentar..."
-                                                rows={3}
-                                                required
-                                            />
+                                {ticket.status !== 'done' ? (
+                                    <form onSubmit={handleCommentSubmit} className="mb-6">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label htmlFor="comment">Tambah Komentar</Label>
+                                                <Textarea
+                                                    id="comment"
+                                                    value={commentData.comment}
+                                                    onChange={(e) => setCommentData('comment', e.target.value)}
+                                                    placeholder="Tambah komentar..."
+                                                    rows={3}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label htmlFor="comment-attachments">Lampiran (opsional)</Label>
+                                                <Input
+                                                    id="comment-attachments"
+                                                    type="file"
+                                                    multiple
+                                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov"
+                                                    onChange={(e) => setCommentData('attachments', e.target.files ? Array.from(e.target.files) : [])}
+                                                />
+                                                <p className="text-xs text-muted-foreground mt-1">
+                                                    Maksimal 10MB per file. Didukung: PDF, DOC, DOCX, JPG, PNG, GIF, MP4, AVI, MOV
+                                                </p>
+                                            </div>
+                                            <Button type="submit" disabled={commentProcessing}>
+                                                {commentProcessing ? 'Menambah...' : 'Tambah Komentar'}
+                                            </Button>
                                         </div>
-                                        <div>
-                                            <Label htmlFor="comment-attachments">Lampiran (opsional)</Label>
-                                            <Input
-                                                id="comment-attachments"
-                                                type="file"
-                                                multiple
-                                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov"
-                                                onChange={(e) => setCommentData('attachments', e.target.files ? Array.from(e.target.files) : [])}
-                                            />
-                                            <p className="text-xs text-muted-foreground mt-1">
-                                                Maksimal 10MB per file. Didukung: PDF, DOC, DOCX, JPG, PNG, GIF, MP4, AVI, MOV
-                                            </p>
-                                        </div>
-                                        <Button type="submit" disabled={commentProcessing}>
-                                            {commentProcessing ? 'Menambah...' : 'Tambah Komentar'}
-                                        </Button>
+                                    </form>
+                                ) : (
+                                    <div className="mb-6 p-4 border rounded-md bg-gray-50 text-gray-500 text-center text-sm">
+                                        Tiket telah selesai. Penambahan komentar sudah ditutup.
                                     </div>
-                                </form>
+                                )}
 
                                 {/* Comments List */}
                                 <div className="space-y-4">
@@ -413,13 +444,13 @@ export default function Show({ ticket, progress, attachments, comments }: Props)
                                 <div className="flex justify-between text-sm">
                                     <span>Status:</span>
                                     <Badge className={getStatusColor(ticket.status)}>
-                                        {ticket.status}
+                                        {getStatusText(ticket.status)}
                                     </Badge>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span>Prioritas:</span>
                                     <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
-                                        {ticket.priority}
+                                        {getPriorityText(ticket.priority)}
                                     </Badge>
                                 </div>
                                 {ticket.responded_at && (

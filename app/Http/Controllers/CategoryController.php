@@ -72,13 +72,20 @@ class CategoryController extends Controller
 
     // ==================== Subcategories ====================
 
-    public function indexSubcategories()
+    public function indexSubcategories(Request $request)
     {
-        $subcategories = TicketSubcategory::with('category')->paginate(10);
+        $query = TicketSubcategory::with('category');
+
+        if ($request->has('search') && $request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $subcategories = $query->paginate(9)->withQueryString();
 
         return Inertia::render('Admin/Categories/SubcategoriesIndex', [
             'subcategories' => $subcategories,
             'categories' => TicketCategory::all(),
+            'filters' => $request->only(['search']),
         ]);
     }
 

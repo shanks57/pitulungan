@@ -5,11 +5,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Users', href: '/admin/users' },
-    { title: 'Create', href: '/admin/users/create' },
+    { title: 'Dasbor', href: '/dashboard' },
+    { title: 'Pengguna', href: '/admin/users' },
+    { title: 'Buat', href: '/admin/users/create' },
 ];
 
 interface Category {
@@ -20,6 +21,7 @@ interface Category {
 export default function Create({ categories }: { categories: Category[] }) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
+        nip: '',
         username: '',
         email: '',
         password: '',
@@ -29,25 +31,45 @@ export default function Create({ categories }: { categories: Category[] }) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/admin/users');
+        post('/admin/users', {
+            onSuccess: () => {
+                toast.success('Pengguna berhasil ditambahkan!');
+            },
+            onError: () => {
+                toast.error('Gagal menambahkan pengguna. Silakan periksa kembali data yang diinput.');
+            }
+        });
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-4 px-4 pb-20 md:p-4 rounded-xl">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">Create User</h1>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">Tambah Pengguna</h1>
 
-                <form onSubmit={handleSubmit} className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl shadow-lg max-w-2xl space-y-4">
+                <form onSubmit={handleSubmit} autoComplete="off" className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl shadow-lg max-w-2xl space-y-4">
                     <div>
-                        <Label htmlFor="name" className="text-blue-900 font-semibold">Name</Label>
+                        <Label htmlFor="name" className="text-blue-900 font-semibold">Nama Lengkap</Label>
                         <Input
                             id="name"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                             required
+                            autoComplete="off"
                             className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                         />
                         {errors.name && <p className="text-red-500 text-sm font-semibold">{errors.name}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="nip" className="text-blue-900 font-semibold">NIP (Opsional)</Label>
+                        <Input
+                            id="nip"
+                            value={data.nip}
+                            onChange={(e) => setData('nip', e.target.value)}
+                            placeholder="Contoh: 19950227 202504 1 002"
+                            className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                        {errors.nip && <p className="text-red-500 text-sm font-semibold">{errors.nip}</p>}
                     </div>
 
                     <div>
@@ -57,6 +79,7 @@ export default function Create({ categories }: { categories: Category[] }) {
                             value={data.username}
                             onChange={(e) => setData('username', e.target.value)}
                             required
+                            autoComplete="off"
                             className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                         />
                         {errors.username && <p className="text-red-500 text-sm font-semibold">{errors.username}</p>}
@@ -70,6 +93,7 @@ export default function Create({ categories }: { categories: Category[] }) {
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
                             required
+                            autoComplete="off"
                             className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                         />
                         {errors.email && <p className="text-red-500 text-sm font-semibold">{errors.email}</p>}
@@ -83,6 +107,7 @@ export default function Create({ categories }: { categories: Category[] }) {
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                             required
+                            autoComplete="new-password"
                             className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                         />
                         {errors.password && <p className="text-red-500 text-sm font-semibold">{errors.password}</p>}
@@ -123,7 +148,7 @@ export default function Create({ categories }: { categories: Category[] }) {
                     )}
 
                     <Button type="submit" disabled={processing} className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold">
-                        Create User
+                        {processing ? 'Menyimpan...' : 'Tambah Pengguna'}
                     </Button>
                 </form>
             </div>

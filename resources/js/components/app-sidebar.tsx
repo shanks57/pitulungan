@@ -55,6 +55,16 @@ export function AppSidebar() {
             case 'technician':
                 return [
                     {
+                        title: 'Semua Tiket',
+                        href: '/admin/tickets',
+                        icon: Tickets,
+                    },
+                    {
+                        title: 'Belum Ditugaskan',
+                        href: '/admin/tickets?assigned_to=unassigned',
+                        icon: Folder,
+                    },
+                    {
                         title: 'Tiket Saya',
                         href: '/admin/tickets?assigned_to=me',
                         icon: Wrench,
@@ -64,7 +74,7 @@ export function AppSidebar() {
             default:
                 return [
                     {
-                        title: 'Tiket Saya',
+                        title: 'Daftar Tiket',
                         href: '/user/tickets',
                         icon: User,
                     },

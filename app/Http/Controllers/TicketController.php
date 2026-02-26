@@ -8,20 +8,20 @@ use App\Models\Sla;
 use App\Models\User;
 use App\Models\TicketProgress;
 use App\Models\TicketAttachment;
+use App\Notifications\TicketCreatedWebPush;
+use App\Notifications\TicketUpdatedWebPush;
+use App\Helpers\TicketHelper;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Log;
-use App\Notifications\TicketCreatedWebPush;
-use App\Notifications\TicketUpdatedWebPush;
 
 class TicketController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Ticket::with(['user', 'category', 'assignedUser']);
+        $query = Ticket::with(['user', 'category', 'assignees']);
 
         // Search
         if ($request->has('search') && $request->search) {
@@ -46,11 +46,15 @@ class TicketController extends Controller
         // Filter by assigned user
         if ($request->has('assigned_to') && $request->assigned_to) {
             if ($request->assigned_to === 'me') {
-                $query->where('assigned_to', $request->user()->id);
+                $query->whereHas('assignees', function($q) use ($request) {
+                    $q->where('users.id', $request->user()->id);
+                });
             } elseif ($request->assigned_to === 'unassigned') {
-                $query->whereNull('assigned_to');
+                $query->doesntHave('assignees');
             } else {
-                $query->where('assigned_to', $request->assigned_to);
+                $query->whereHas('assignees', function($q) use ($request) {
+                    $q->where('users.id', $request->assigned_to);
+                });
             }
         }
 
@@ -86,7 +90,7 @@ class TicketController extends Controller
         return Inertia::render('Admin/Tickets/Index', [
             'tickets' => $tickets,
             'filters' => $request->only(['search', 'status', 'priority', 'assigned_to', 'date_from']),
-            'users' => User::whereIn('role', ['admin', 'technician'])->select('id', 'name')->get(),
+            'users' => User::where('role', 'technician')->select('id', 'name')->get(),
             'counts' => [
                 'open' => $openCount,
                 'in_progress' => $inProgressCount,
@@ -119,7 +123,8 @@ class TicketController extends Controller
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
                 'location' => 'required|string|max:255',
-                'priority' => 'required|in:low,medium,high',
+                // Priority will be determined by technician, not user
+                'priority' => 'nullable|in:low,medium,high',
                 'attachments' => 'nullable|array',
                 'attachments.*' => 'file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,txt|max:10240', // 10MB max
             ]);
@@ -129,7 +134,6 @@ class TicketController extends Controller
             Log::error('Validation failed:', $e->errors());
             throw $e;
         }
-        dd($request->all());
         $user = FacadesAuth::user();
 
         if (!$user) {
@@ -143,19 +147,7 @@ class TicketController extends Controller
         // Get SLA based on priority
         $sla = Sla::where('priority', $request->priority)->first();
 
-        // Find a technician assigned to this category
-        $assignedTechnician = null;
-        $categoryId = $request->category_id;
-
-        // Get a technician who handles this category (round-robin or first available)
-        $techniciansForCategory = User::whereHas('categories', function ($query) use ($categoryId) {
-            $query->where('category_id', $categoryId);
-        })->where('role', 'technician')->get();
-
-        if ($techniciansForCategory->count() > 0) {
-            // Get the first technician (can be improved with load balancing)
-            $assignedTechnician = $techniciansForCategory->first();
-        }
+        // No automatic assignment, technicians pick it up or are assigned later
 
         try {
             $ticket = Ticket::create([
@@ -167,24 +159,24 @@ class TicketController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'location' => $request->location,
-                'priority' => $request->priority,
+                'priority' => $request->priority ?? null,
                 'status' => 'submitted',
-                'assigned_to' => $assignedTechnician ? $assignedTechnician->id : null,
+            ]);
+
+            // Create initial progress entry
+            TicketProgress::create([
+                'ticket_id' => $ticket->id,
+                'status' => 'submitted',
+                'note' => 'Tiket berhasil diajukan',
+                'updated_by' => $user->id,
             ]);
 
             // Debug: Log ticket creation
-            Log::info('Ticket created:', ['id' => $ticket->id, 'ticket_number' => $ticket->ticket_number, 'assigned_to' => $assignedTechnician ? $assignedTechnician->id : null]);
+            Log::info('Ticket created:', ['id' => $ticket->id, 'ticket_number' => $ticket->ticket_number]);
 
-            // Notify assigned technician (if any)
-            if ($ticket->assigned_to) {
-                $assigned = User::find($ticket->assigned_to);
-                if ($assigned) {
-                    $assigned->notify(new TicketCreatedWebPush($ticket));
-                }
-            }
         } catch (\Exception $e) {
             Log::error('Ticket creation failed:', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Failed to create ticket: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal membuat tiket: ' . $e->getMessage());
         }
 
         // Handle file uploads
@@ -192,8 +184,13 @@ class TicketController extends Controller
             \Log::info('Processing attachments:', ['count' => count($request->file('attachments'))]);
 
             foreach ($request->file('attachments') as $file) {
-                $originalName = $file->getClientOriginalName();
-                $path = $file->store('ticket-attachments', 'public');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $originalName = preg_replace('/[^A-Za-z0-9\-]/', '_', $originalName);
+                $extension = $file->getClientOriginalExtension();
+                $timestamp = now()->format('YmdHis');
+                $newFileName = "{$originalName}_{$timestamp}.{$extension}";
+                
+                $path = $file->storeAs('ticket-attachments', $newFileName, 'public');
 
                 TicketAttachment::create([
                     'ticket_id' => $ticket->id,
@@ -206,44 +203,60 @@ class TicketController extends Controller
             }
         }
 
-        return redirect()->route('dashboard')->with('success', 'Ticket created successfully. Ticket number: ' . $ticket->ticket_number);
+        // Notify all technicians
+        $technicians = User::where('role', 'technician')->get();
+        foreach ($technicians as $technician) {
+            $technician->notify(new TicketCreatedWebPush($ticket));
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Tiket berhasil dibuat. Nomor tiket: ' . $ticket->ticket_number);
     }
 
     public function assign(Request $request, Ticket $ticket)
     {
+        if ($ticket->status === 'done') {
+            return back()->with('error', 'Tiket telah selesai dan tidak dapat diubah penugasannya.');
+        }
+
         $request->validate([
-            'assigned_to' => 'required|exists:users,id',
+            'assignees' => 'required|array',
+            'assignees.*' => 'exists:users,id',
         ]);
 
+        $ticket->assignees()->sync($request->assignees);
         $ticket->update([
-            'assigned_to' => $request->assigned_to,
             'status' => 'processed',
             'responded_at' => now(),
         ]);
 
-        // Notify the newly assigned technician and ticket owner
-        $assignee = User::find($request->assigned_to);
-        if ($assignee) {
+        // Notify the newly assigned technicians and ticket owner
+        $assignees = User::whereIn('id', $request->assignees)->get();
+        foreach ($assignees as $assignee) {
             $assignee->notify(new TicketUpdatedWebPush($ticket, 'Anda ditugaskan ke tiket ini.'));
         }
 
-        if ($ticket->user && $ticket->user->id !== $assignee->id) {
+        if ($ticket->user && !$assignees->contains('id', $ticket->user->id)) {
             $ticket->user->notify(new TicketUpdatedWebPush($ticket, 'Tiket Anda telah ditugaskan.'));
         }
 
-        return redirect()->back()->with('success', 'Ticket assigned successfully.');
+        return redirect()->back()->with('success', 'Penugasan berhasil diperbarui.');
     }
 
 
     public function update(Request $request, Ticket $ticket)
     {
+        if ($ticket->status === 'done') {
+            return back()->with('error', 'Tiket telah selesai dan tidak dapat diperbarui.');
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'category_id' => 'required|exists:ticket_categories,id',
             'priority' => 'required|in:low,medium,high',
             'location' => 'required|string|max:255',
-            'assigned_to' => 'nullable|exists:users,id',
+            'assignees' => 'nullable|array',
+            'assignees.*' => 'exists:users,id',
             'status' => 'required|in:submitted,processed,repairing,done,rejected',
         ]);
 
@@ -256,16 +269,19 @@ class TicketController extends Controller
             'category_id',
             'priority',
             'location',
-            'assigned_to',
             'status'
         ]));
+
+        if ($request->has('assignees')) {
+            $ticket->assignees()->sync($request->assignees);
+        }
 
         // Create progress entry if status changed
         if ($oldStatus !== $request->status) {
             TicketProgress::create([
                 'ticket_id' => $ticket->id,
                 'status' => $request->status,
-                'note' => 'Status updated from ' . $oldStatus,
+                'note' => 'Status diperbarui dari ' . TicketHelper::translateStatus($oldStatus) . ' ke ' . TicketHelper::translateStatus($request->status),
                 'updated_by' => $user->id,
             ]);
         }
@@ -275,16 +291,23 @@ class TicketController extends Controller
             $ticket->user->notify(new TicketUpdatedWebPush($ticket, 'Tiket Anda diperbarui'));
         }
 
-        if ($ticket->assigned_to && $ticket->assigned_to !== $user->id) {
-            $assigned = User::find($ticket->assigned_to);
-            $assigned?->notify(new TicketUpdatedWebPush($ticket, 'Tiket yang Anda tangani diperbarui'));
+        if ($ticket->assignees->count() > 0) {
+            foreach ($ticket->assignees as $assigned) {
+                if ($assigned->id !== $user->id) {
+                    $assigned->notify(new TicketUpdatedWebPush($ticket, 'Tiket yang Anda tangani diperbarui'));
+                }
+            }
         }
 
-        return redirect()->back()->with('success', 'Ticket updated successfully.');
+        return redirect()->back()->with('success', 'Tiket berhasil diperbarui.');
     }
 
     public function updateStatus(Request $request, Ticket $ticket)
     {
+        if ($ticket->status === 'done') {
+            return back()->with('error', 'Tiket telah selesai dan statusnya tidak dapat diubah.');
+        }
+
         $request->validate([
             'status' => 'required|in:submitted,processed,repairing,done,rejected',
         ]);
@@ -292,8 +315,8 @@ class TicketController extends Controller
         $user = FacadesAuth::user();
 
         // Check if technician is assigned to this ticket or is admin
-        if ($user->role === 'technician' && $ticket->assigned_to !== $user->id) {
-            abort(403, 'You can only update tickets assigned to you.');
+        if ($user->role === 'technician' && !$ticket->assignees->contains('id', $user->id)) {
+            abort(403, 'Anda hanya dapat memperbarui tiket yang ditugaskan kepada Anda.');
         }
 
         $oldStatus = $ticket->status;
@@ -308,26 +331,31 @@ class TicketController extends Controller
         TicketProgress::create([
             'ticket_id' => $ticket->id,
             'status' => $request->status,
-            'note' => 'Status updated from ' . $oldStatus . ' to ' . $request->status,
+            'note' => 'Status diperbarui dari ' . TicketHelper::translateStatus($oldStatus) . ' ke ' . TicketHelper::translateStatus($request->status),
             'updated_by' => $user->id,
         ]);
 
         // Notify ticket owner (if they didn't perform the action)
         if ($ticket->user && $ticket->user->id !== $user->id) {
-            $ticket->user->notify(new TicketUpdatedWebPush($ticket, 'Status tiket: ' . $ticket->status));
+            $ticket->user->notify(new TicketUpdatedWebPush($ticket, 'Status tiket: ' . TicketHelper::translateStatus($ticket->status)));
         }
 
-        // Notify assignee (if exists and not the actor)
-        if ($ticket->assigned_to && $ticket->assigned_to !== $user->id) {
-            $assignee = User::find($ticket->assigned_to);
-            $assignee?->notify(new TicketUpdatedWebPush($ticket, 'Status tiket: ' . $ticket->status));
+        // Notify assignees (if exists and not the actor)
+        foreach ($ticket->assignees as $assignee) {
+            if ($assignee->id !== $user->id) {
+                $assignee->notify(new TicketUpdatedWebPush($ticket, 'Status tiket: ' . TicketHelper::translateStatus($ticket->status)));
+            }
         }
 
-        return redirect()->back()->with('success', 'Ticket status updated successfully.');
+        return redirect()->back()->with('success', 'Status tiket berhasil diperbarui.');
     }
 
     public function addProgress(Request $request, Ticket $ticket)
     {
+        if ($ticket->status === 'done') {
+            return back()->with('error', 'Tiket telah selesai dan tidak dapat ditambah progresnya.');
+        }
+
         $request->validate([
             'note' => 'required|string|max:1000',
         ]);
@@ -335,7 +363,7 @@ class TicketController extends Controller
         $user = FacadesAuth::user();
 
         // Check if technician is assigned to this ticket or is admin
-        if ($user->role === 'technician' && $ticket->assigned_to !== $user->id) {
+        if ($user->role === 'technician' && !$ticket->assignees->contains('id', $user->id)) {
             abort(403, 'You can only add progress to tickets assigned to you.');
         }
 
@@ -347,14 +375,50 @@ class TicketController extends Controller
         ]);
 
         // Notify ticket owner & assignee (except the actor)
-        $participants = collect([$ticket->user, $ticket->assignedUser])->filter();
-        $participants->each(function ($participant) use ($user, $ticket) {
+        $participants = collect([$ticket->user])->merge($ticket->assignees)->filter();
+        $participants->unique('id')->each(function ($participant) use ($user, $ticket) {
             if ($participant->id === $user->id)
                 return;
             $participant->notify(new TicketUpdatedWebPush($ticket, 'Pembaharuan kemajuan: ' . \Illuminate\Support\Str::limit($ticket->title, 80)));
         });
 
-        return redirect()->back()->with('success', 'Progress note added successfully.');
+        return redirect()->back()->with('success', 'Progres berhasil ditambahkan.');
+    }
+
+    public function claim(Request $request, Ticket $ticket)
+    {
+        $user = $request->user();
+
+        if ($user->role !== 'technician') {
+            abort(403, 'Hanya teknisi yang dapat mengambil tiket.');
+        }
+
+        if ($ticket->status === 'done') {
+            return back()->with('error', 'Tiket telah selesai.');
+        }
+
+        if ($ticket->assignees->contains('id', $user->id)) {
+            return back()->with('error', 'Anda sudah ditugaskan ke tiket ini.');
+        }
+
+        $ticket->assignees()->attach($user->id);
+
+        if ($ticket->status === 'submitted') {
+            $ticket->update([
+                'status' => 'processed',
+                'responded_at' => now(),
+            ]);
+        }
+
+        // Create progress entry
+        TicketProgress::create([
+            'ticket_id' => $ticket->id,
+            'status' => $ticket->status,
+            'note' => $user->name . ' mengambil tiket ini.',
+            'updated_by' => $user->id,
+        ]);
+
+        return redirect()->back()->with('success', 'Berhasil mengambil tiket.');
     }
 
     public function userTickets(Request $request)
@@ -363,7 +427,7 @@ class TicketController extends Controller
 
         $query = Ticket::with([
             'category',
-            'assignedUser',
+            'assignees',
             'progress' => function ($query) {
                 $query->latest()->limit(1);
             }
@@ -403,11 +467,19 @@ class TicketController extends Controller
 
         $tickets = $query->orderBy('updated_at', 'desc')->paginate(10);
 
-        // User-specific counts
-        $totalTickets = Ticket::where('user_id', $user->id)->count();
-        $openTickets = Ticket::where('user_id', $user->id)->whereIn('status', ['submitted', 'processed'])->count();
-        $resolvedTickets = Ticket::where('user_id', $user->id)->where('status', 'done')->count();
-        $inProgressTickets = Ticket::where('user_id', $user->id)->where('status', 'repairing')->count();
+        // Visibility-aware counts
+        $countQuery = Ticket::query();
+        if ($user->role === 'user') {
+            $countQuery->where(function ($q) use ($user) {
+                $q->whereIn('status', ['submitted', 'processed', 'repairing'])
+                    ->orWhere('user_id', $user->id);
+            });
+        }
+
+        $totalTickets = (clone $countQuery)->count();
+        $openTickets = (clone $countQuery)->whereIn('status', ['submitted', 'processed'])->count();
+        $resolvedTickets = (clone $countQuery)->where('status', 'done')->count();
+        $inProgressTickets = (clone $countQuery)->where('status', 'repairing')->count();
 
         return Inertia::render('User/Tickets/Index', [
             'tickets' => $tickets,
@@ -431,7 +503,7 @@ class TicketController extends Controller
             // - any ticket they created
             // - any ticket that is still active (not 'done')
             if ($ticket->user_id !== $user->id && $ticket->status === 'done') {
-                abort(403, 'You can only view this ticket.');
+                abort(403, 'Anda tidak diizinkan melihat tiket ini.');
             }
         }
         // Note: technicians and admins may view any ticket (technician update actions remain restricted elsewhere).
@@ -439,7 +511,7 @@ class TicketController extends Controller
         $ticket->load([
             'user',
             'category',
-            'assignedUser',
+            'assignees',
             'sla',
             'progress.updatedBy',
             'attachments.uploadedBy',
@@ -463,7 +535,7 @@ class TicketController extends Controller
                 'attachments' => $ticket->attachments,
                 'comments' => $ticket->comments,
                 'categories' => TicketCategory::all(),
-                'users' => User::whereIn('role', ['admin', 'technician'])->get(),
+                'users' => User::where('role', 'technician')->get(),
             ]);
         } else {
             // Admin
@@ -473,7 +545,7 @@ class TicketController extends Controller
                 'attachments' => $ticket->attachments,
                 'comments' => $ticket->comments,
                 'categories' => TicketCategory::all(),
-                'users' => User::whereIn('role', ['admin', 'technician'])->get(),
+                'users' => User::where('role', 'technician')->get(),
             ]);
         }
     }

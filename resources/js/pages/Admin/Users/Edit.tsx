@@ -5,16 +5,18 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Users', href: '/admin/users' },
+    { title: 'Dasbor', href: '/dashboard' },
+    { title: 'Pengguna', href: '/admin/users' },
     { title: 'Edit', href: '/admin/users/edit' },
 ];
 
 interface User {
     id: number;
     name: string;
+    nip: string | null;
     username: string;
     email: string;
     role: string;
@@ -34,6 +36,7 @@ interface Props {
 export default function Edit({ user, categories }: Props) {
     const { data, setData, put, processing, errors } = useForm({
         name: user.name,
+        nip: user.nip || '',
         username: user.username,
         email: user.email,
         role: user.role,
@@ -42,17 +45,24 @@ export default function Edit({ user, categories }: Props) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/users/${user.id}`);
+        put(`/admin/users/${user.id}`, {
+            onSuccess: () => {
+                toast.success('Data pengguna berhasil diperbarui!');
+            },
+            onError: () => {
+                toast.error('Gagal memperbarui data pengguna.');
+            }
+        });
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-4 px-4 pb-20 md:p-4 rounded-xl">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">Edit User</h1>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">Edit Pengguna</h1>
 
                 <form onSubmit={handleSubmit} className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl shadow-lg max-w-2xl space-y-4">
                     <div>
-                        <Label htmlFor="name" className="text-blue-900 font-semibold">Name</Label>
+                        <Label htmlFor="name" className="text-blue-900 font-semibold">Nama Lengkap</Label>
                         <Input
                             id="name"
                             value={data.name}
@@ -61,6 +71,18 @@ export default function Edit({ user, categories }: Props) {
                             className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                         />
                         {errors.name && <p className="text-red-500 text-sm font-semibold">{errors.name}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="nip" className="text-blue-900 font-semibold">NIP (Opsional)</Label>
+                        <Input
+                            id="nip"
+                            value={data.nip}
+                            onChange={(e) => setData('nip', e.target.value)}
+                            placeholder="Contoh: 19950227 202504 1 002"
+                            className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                        {errors.nip && <p className="text-red-500 text-sm font-semibold">{errors.nip}</p>}
                     </div>
 
                     <div>
@@ -123,7 +145,7 @@ export default function Edit({ user, categories }: Props) {
                     )}
 
                     <Button type="submit" disabled={processing} className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold">
-                        Update User
+                        {processing ? 'Menyimpan...' : 'Perbarui Pengguna'}
                     </Button>
                 </form>
             </div>

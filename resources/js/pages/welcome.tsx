@@ -1,4 +1,4 @@
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
@@ -73,14 +73,6 @@ export default function Welcome({
                             >
                                 Masuk
                             </Link>
-                            {canRegister && (
-                                <Link
-                                    href={register()}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
-                                >
-                                    Mulai
-                                </Link>
-                            )}
                         </div>
                     </div>
                 </div>

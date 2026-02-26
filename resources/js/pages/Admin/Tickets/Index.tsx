@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { router, useForm, Link } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
+import Pagination from '@/components/Pagination';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dasbor', href: '/dashboard' },
@@ -22,7 +23,7 @@ interface Ticket {
     location: string;
     user: { name: string };
     category: { name: string };
-    assigned_user: { name: string } | null;
+    assignees: { name: string }[];
 }
 
 interface User {
@@ -83,6 +84,26 @@ export default function Index({ tickets, filters, users, counts }: Props) {
             case 'medium': return 'bg-yellow-500';
             case 'high': return 'bg-red-500';
             default: return 'bg-gray-500';
+        }
+    };
+
+    const getStatusText = (status: string) => {
+        switch (status) {
+            case 'submitted': return 'Diajukan';
+            case 'processed': return 'Diproses';
+            case 'repairing': return 'Diperbaiki';
+            case 'done': return 'Selesai';
+            case 'rejected': return 'Ditolak';
+            default: return status;
+        }
+    };
+
+    const getPriorityText = (priority: string) => {
+        switch (priority) {
+            case 'low': return 'Rendah';
+            case 'medium': return 'Sedang';
+            case 'high': return 'Tinggi';
+            default: return priority || 'Belum Diatur';
         }
     };
 
@@ -206,7 +227,7 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                                     <div className="flex justify-between items-start">
                                         <CardTitle className="text-lg text-blue-900">{ticket.title}</CardTitle>
                                         <Badge className={getStatusColor(ticket.status)}>
-                                            {ticket.status}
+                                            {getStatusText(ticket.status)}
                                         </Badge>
                                     </div>
                                     <div className="text-sm text-blue-600">
@@ -222,16 +243,16 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                                     <div className="flex justify-between items-center mb-2">
                                         <div className="text-sm">
                                             <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
-                                                {ticket.priority}
+                                                {getPriorityText(ticket.priority)}
                                             </Badge>
                                         </div>
                                         <div className="text-xs text-blue-600">
                                             {ticket.user.name}
                                         </div>
                                     </div>
-                                    {ticket.assigned_user && (
-                                        <div className="text-xs text-blue-600">
-                                            Ditugaskan ke: {ticket.assigned_user.name}
+                                    {ticket.assignees && ticket.assignees.length > 0 && (
+                                        <div className="text-xs text-blue-600 mt-2">
+                                            Ditugaskan ke: {ticket.assignees.map(a => a.name).join(', ')}
                                         </div>
                                     )}
                                 </CardContent>
@@ -240,7 +261,8 @@ export default function Index({ tickets, filters, users, counts }: Props) {
                     ))}
                 </div>
 
-                {/* Pagination can be added here */}
+                {/* Pagination */}
+                <Pagination links={tickets.links} />
             </div>
         </AppLayout>
     );

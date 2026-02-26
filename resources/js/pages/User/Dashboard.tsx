@@ -52,9 +52,9 @@ interface Ticket {
     category: {
         name: string;
     };
-    assignedUser?: {
+    assignees?: {
         name: string;
-    };
+    }[];
     progress?: Array<{
         status: string;
         note?: string;
@@ -87,6 +87,26 @@ export default function Dashboard({ stats, recentTickets }: Props) {
             case 'medium': return 'bg-yellow-100 text-yellow-800';
             case 'high': return 'bg-red-100 text-red-800';
             default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    const getStatusText = (status: string) => {
+        switch (status) {
+            case 'submitted': return 'Diajukan';
+            case 'processed': return 'Diproses';
+            case 'repairing': return 'Diperbaiki';
+            case 'done': return 'Selesai';
+            case 'rejected': return 'Ditolak';
+            default: return status;
+        }
+    };
+
+    const getPriorityText = (priority: string) => {
+        switch (priority) {
+            case 'low': return 'Rendah';
+            case 'medium': return 'Sedang';
+            case 'high': return 'Tinggi';
+            default: return priority;
         }
     };
 
@@ -280,18 +300,18 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <Badge className={`${getStatusColor(ticket.status)} whitespace-nowrap`}>
                                                     {getStatusIcon(ticket.status)}
-                                                    <span className="ml-1">{ticket.status}</span>
+                                                    <span className="ml-1">{getStatusText(ticket.status)}</span>
                                                 </Badge>
                                                 <Badge className={`${getPriorityColor(ticket.priority)} whitespace-nowrap`}>
-                                                    {ticket.priority}
+                                                    {getPriorityText(ticket.priority)}
                                                 </Badge>
                                             </div>
                                         </div>
                                         <p className="text-sm text-slate-700 mb-1 break-words font-medium">{ticket.title}</p>
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 text-xs text-slate-600">
                                             <span className="truncate">Kategori: {ticket.category.name}</span>
-                                            {ticket.assignedUser && (
-                                                <span className="truncate">Ditugaskan: {ticket.assignedUser.name}</span>
+                                            {ticket.assignees && ticket.assignees.length > 0 && (
+                                                <span className="truncate">Ditugaskan: {ticket.assignees.map(a => a.name).join(', ')}</span>
                                             )}
                                             {ticket.progress && ticket.progress.length > 0 && (
                                                 <span className="truncate">Pembaruan terakhir: {new Date(ticket.progress[0].created_at).toLocaleDateString()}</span>

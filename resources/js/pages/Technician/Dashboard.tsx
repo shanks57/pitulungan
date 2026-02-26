@@ -6,7 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { CheckCircle, Clock, Wrench, AlertTriangle, TrendingUp, FileText, Upload, MessageSquare } from 'lucide-react';
+import { CheckCircle, Clock, Wrench, AlertTriangle, TrendingUp, FileText, Upload, MessageSquare, Info } from 'lucide-react';
+import { SlaInfoModal } from '@/components/sla-info-modal';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -49,12 +50,20 @@ interface Ticket {
     updated_at: string;
 }
 
+interface Sla {
+    id: number;
+    priority: string;
+    response_time_minutes: number;
+    resolution_time_minutes: number;
+}
+
 interface Props {
     stats: Stats;
     recentTickets: Ticket[];
+    slas: Sla[];
 }
 
-export default function Dashboard({ stats, recentTickets }: Props) {
+export default function Dashboard({ stats, recentTickets, slas = [] }: Props) {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'submitted': return 'bg-gray-100 text-gray-800';
@@ -72,6 +81,26 @@ export default function Dashboard({ stats, recentTickets }: Props) {
             case 'medium': return 'bg-yellow-100 text-yellow-800';
             case 'high': return 'bg-red-100 text-red-800';
             default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    const getStatusText = (status: string) => {
+        switch (status) {
+            case 'submitted': return 'Diajukan';
+            case 'processed': return 'Diproses';
+            case 'repairing': return 'Diperbaiki';
+            case 'done': return 'Selesai';
+            case 'rejected': return 'Ditolak';
+            default: return status;
+        }
+    };
+
+    const getPriorityText = (priority: string) => {
+        switch (priority) {
+            case 'low': return 'Rendah';
+            case 'medium': return 'Sedang';
+            case 'high': return 'Tinggi';
+            default: return priority;
         }
     };
 
@@ -97,9 +126,12 @@ export default function Dashboard({ stats, recentTickets }: Props) {
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl px-4 pt-4 pb-20 md:p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">Dasbor Teknisi</h1>
-                    <Button onClick={() => router.visit('/admin/tickets?assigned_to=me')} variant="outline" className="border-blue-200 hover:bg-blue-50">
-                        Lihat Semua Tiket Saya
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <SlaInfoModal slas={slas} />
+                        <Button onClick={() => router.visit('/admin/tickets?assigned_to=me')} variant="outline" className="border-blue-200 hover:bg-blue-50">
+                            Lihat Semua Tiket Saya
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Statistics Cards */}
@@ -232,10 +264,10 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <h3 className="font-semibold">{ticket.title}</h3>
                                                     <Badge className={getStatusColor(ticket.status)}>
-                                                        {ticket.status}
+                                                        {getStatusText(ticket.status)}
                                                     </Badge>
                                                     <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
-                                                        {ticket.priority}
+                                                        {getPriorityText(ticket.priority)}
                                                     </Badge>
                                                 </div>
                                                 <p className="text-sm text-muted-foreground mb-2">
@@ -273,7 +305,7 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                         {ticket.progress && ticket.progress.length > 0 && (
                                             <div className="mt-3 p-3 bg-gray-50 rounded-md">
                                                 <p className="text-sm">
-                                                    <strong>Pembaruan Terakhir:</strong> {ticket.progress[0].note || `Status diubah menjadi ${ticket.progress[0].status}`}
+                                                    <strong>Pembaruan Terakhir:</strong> {ticket.progress[0].note || `Status diubah menjadi ${getStatusText(ticket.progress[0].status)}`}
                                                 </p>
                                                 <p className="text-xs text-muted-foreground mt-1">
                                                     {new Date(ticket.progress[0].created_at).toLocaleString()}

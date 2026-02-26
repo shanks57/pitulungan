@@ -26,7 +26,7 @@ export default function MobileBottomNav() {
             case 'user':
             default:
                 return [
-                    { title: 'Tiket Saya', href: '/user/tickets', icon: User },
+                    { title: 'Daftar Tiket', href: '/user/tickets', icon: User },
                     { title: 'Buat Tiket', href: '/tickets/create', icon: Tickets },
                 ];
         }
@@ -52,9 +52,8 @@ export default function MobileBottomNav() {
                         <Link
                             key={item.title}
                             href={item.href}
-                            className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 text-sm transition-colors ${
-                                isActive ? 'text-primary' : 'text-muted-foreground'
-                            }`}
+                            className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 text-sm transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground'
+                                }`}
                             aria-label={item.title}
                             title={item.title}
                             preserveScroll

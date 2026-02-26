@@ -19,6 +19,10 @@ class TicketCommentController extends Controller
             'attachments.*' => 'file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif,mp4,avi,mov',
         ]);
 
+        if ($ticket->status === 'done') {
+            return back()->with('error', 'Tiket telah selesai. Komentar tidak diperbolehkan.');
+        }
+
         // Create the comment
         $comment = TicketComment::create([
             'ticket_id' => $ticket->id,
@@ -29,7 +33,13 @@ class TicketCommentController extends Controller
         // Handle file attachments
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
-                $path = $file->store('ticket-attachments', 'public');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $originalName = preg_replace('/[^A-Za-z0-9\-]/', '_', $originalName);
+                $extension = $file->getClientOriginalExtension();
+                $timestamp = now()->format('YmdHis');
+                $newFileName = "{$originalName}_{$timestamp}.{$extension}";
+                
+                $path = $file->storeAs('ticket-attachments', $newFileName, 'public');
 
                 TicketAttachment::create([
                     'ticket_id' => $ticket->id,
@@ -42,12 +52,12 @@ class TicketCommentController extends Controller
         }
 
         // Notify ticket owner & assignee (except the comment author)
-        $participants = collect([$ticket->user, $ticket->assignedUser])->filter();
-        $participants->each(function ($participant) use ($request, $ticket) {
+        $participants = collect([$ticket->user])->merge($ticket->assignees)->filter();
+        $participants->unique('id')->each(function ($participant) use ($request, $ticket) {
             if ($participant->id === $request->user()->id) return;
             $participant->notify(new \App\Notifications\TicketUpdatedWebPush($ticket, 'Komentar baru: ' . \Illuminate\Support\Str::limit($request->comment, 120)));
         });
 
-        return back()->with('success', 'Comment added successfully.');
+        return back()->with('success', 'Komentar berhasil ditambahkan.');
     }
 }

@@ -14,8 +14,29 @@ import {
     Users,
     BarChart3,
     Calendar,
-    Target
+    Target,
+    Download,
+    Info
 } from 'lucide-react';
+import { SlaInfoModal } from '@/components/sla-info-modal';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -56,19 +77,46 @@ interface Ticket {
     user: {
         name: string;
     };
-    assignedUser?: {
+    assignees?: {
         name: string;
-    };
+    }[];
     created_at: string;
     updated_at: string;
+}
+
+interface User {
+    id: number;
+    name: string;
+}
+
+interface Sla {
+    id: number;
+    priority: string;
+    response_time_minutes: number;
+    resolution_time_minutes: number;
 }
 
 interface Props {
     stats: Stats;
     recentTickets: Ticket[];
+    technicians: User[];
+    slas: Sla[];
 }
 
-export default function Dashboard({ stats, recentTickets }: Props) {
+export default function Dashboard({ stats, recentTickets, technicians = [], slas = [] }: Props) {
+    const [selectedTechnician, setSelectedTechnician] = useState<string>('all');
+    const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().substring(0, 7));
+    const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+
+    const handleDownloadExcel = () => {
+        const params = new URLSearchParams();
+        params.append('format', 'xlsx');
+        if (selectedTechnician !== 'all') params.append('technician_id', selectedTechnician);
+        if (selectedMonth) params.append('month', selectedMonth);
+
+        window.open(`/admin/reports/performance?${params.toString()}`, '_blank');
+        setIsDownloadOpen(false);
+    };
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'submitted': return 'bg-gray-100 text-gray-800';
@@ -77,6 +125,26 @@ export default function Dashboard({ stats, recentTickets }: Props) {
             case 'done': return 'bg-green-100 text-green-800';
             case 'rejected': return 'bg-red-100 text-red-800';
             default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    const getStatusText = (status: string) => {
+        switch (status) {
+            case 'submitted': return 'Diajukan';
+            case 'processed': return 'Diproses';
+            case 'repairing': return 'Diperbaiki';
+            case 'done': return 'Selesai';
+            case 'rejected': return 'Ditolak';
+            default: return status;
+        }
+    };
+
+    const getPriorityText = (priority: string) => {
+        switch (priority) {
+            case 'low': return 'Rendah';
+            case 'medium': return 'Sedang';
+            case 'high': return 'Tinggi';
+            default: return priority;
         }
     };
 
@@ -126,21 +194,62 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                 Kelola Pengguna
                             </Button>
                         </Link>
-                        <div>
-                            <a href="/admin/reports/performance?format=pdf" target="_blank" rel="noopener noreferrer">
-                                <Button className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 shadow-lg">
-                                    <BarChart3 className="mr-2 h-4 w-4" />
-                                    Download Performance (PDF)
+                        <SlaInfoModal slas={slas} />
+                        <Dialog open={isDownloadOpen} onOpenChange={setIsDownloadOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-lg">
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Download Performa (Excel)
                                 </Button>
-                            </a>
-                        </div>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                    <DialogTitle>Download Laporan Performa</DialogTitle>
+                                    <DialogDescription>
+                                        Pilih teknisi dan bulan untuk mengunduh laporan performa dalam format Excel.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-sm font-medium">Teknisi</label>
+                                        <Select value={selectedTechnician} onValueChange={setSelectedTechnician}>
+                                            <SelectTrigger className="border-blue-200">
+                                                <SelectValue placeholder="Pilih Teknisi" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">Semua Teknisi</SelectItem>
+                                                {technicians?.map((tech) => (
+                                                    <SelectItem key={tech.id} value={tech.id.toString()}>
+                                                        {tech.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-sm font-medium">Bulan</label>
+                                        <Input
+                                            type="month"
+                                            value={selectedMonth}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedMonth(e.target.value)}
+                                            className="border-blue-200"
+                                        />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleDownloadExcel} className="bg-emerald-600 hover:bg-emerald-700">
+                                        Download Excel
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 </div>
-                
+
 
                 {/* Key Metrics */}
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                    <Card 
+                    <Card
                         className="cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all border-0 bg-gradient-to-br from-blue-50 to-blue-100"
                         onClick={() => router.visit('/admin/tickets')}
                     >
@@ -267,8 +376,8 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardContent>
                             <div className="space-y-4">
                                 {statusData.map((item) => (
-                                    <div 
-                                        key={item.status} 
+                                    <div
+                                        key={item.status}
                                         className="flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity"
                                         onClick={() => {
                                             const statusMap: { [key: string]: string } = {
@@ -312,8 +421,8 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                         <CardContent>
                             <div className="space-y-4">
                                 {priorityData.map((item) => (
-                                    <div 
-                                        key={item.priority} 
+                                    <div
+                                        key={item.priority}
                                         className="flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity"
                                         onClick={() => {
                                             const priorityMap: { [key: string]: string } = {
@@ -441,18 +550,18 @@ export default function Dashboard({ stats, recentTickets }: Props) {
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="font-medium">{ticket.ticket_number}</span>
                                             <Badge className={getStatusColor(ticket.status)}>
-                                                {ticket.status}
+                                                {getStatusText(ticket.status)}
                                             </Badge>
                                             <Badge className={getPriorityColor(ticket.priority)}>
-                                                {ticket.priority}
+                                                {getPriorityText(ticket.priority)}
                                             </Badge>
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-1">{ticket.title}</p>
                                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                             <span>Oleh {ticket.user.name}</span>
                                             <span>Kategori: {ticket.category.name}</span>
-                                            {ticket.assignedUser && (
-                                                <span>Ditugaskan: {ticket.assignedUser.name}</span>
+                                            {ticket.assignees && ticket.assignees.length > 0 && (
+                                                <span>Ditugaskan: {ticket.assignees.map(a => a.name).join(', ')}</span>
                                             )}
                                         </div>
                                     </div>

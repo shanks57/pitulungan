@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dasbor', href: '/dashboard' },
@@ -43,7 +44,6 @@ export default function Create({ categories, slas }: Props) {
         title: '',
         description: '',
         location: '',
-        priority: 'medium',
         attachments: [] as File[],
     });
 
@@ -55,6 +55,12 @@ export default function Create({ categories, slas }: Props) {
 
         post('/tickets', {
             forceFormData: true,
+            onSuccess: () => {
+                toast.success('Tiket berhasil dibuat!');
+            },
+            onError: () => {
+                toast.error('Gagal membuat tiket. Silakan periksa kembali isian Anda.');
+            }
         });
     };
 
@@ -165,20 +171,7 @@ export default function Create({ categories, slas }: Props) {
                         {errors.location && <p className="text-red-500">{errors.location}</p>}
                     </div>
 
-                    <div>
-                        <Label htmlFor="priority">Prioritas</Label>
-                        <Select value={data.priority} onValueChange={(value) => setData('priority', value)}>
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="low">Rendah</SelectItem>
-                                <SelectItem value="medium">Sedang</SelectItem>
-                                <SelectItem value="high">Tinggi</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        {errors.priority && <p className="text-red-500">{errors.priority}</p>}
-                    </div>
+
 
                     <Button type="submit" disabled={processing}>
                         Buat Tiket

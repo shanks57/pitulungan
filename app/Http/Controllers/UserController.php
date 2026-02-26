@@ -10,12 +10,19 @@ use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::paginate(10);
+        $query = User::query();
+
+        if ($request->has('search') && $request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $users = $query->paginate(9)->withQueryString();
 
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
+            'filters' => $request->only(['search']),
         ]);
     }
 
@@ -32,6 +39,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'nip' => 'nullable|string|max:255',
             'username' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
@@ -41,6 +49,7 @@ class UserController extends Controller
 
         User::create([
             'name' => $request->name,
+            'nip' => $request->nip,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -73,13 +82,14 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'nip' => 'nullable|string|max:255',
             'username' => 'required|string|max:255|unique:users,username,' . $user->id,
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role' => 'required|in:admin,technician,user',
             'unit' => 'nullable|string|max:255',
         ]);
 
-        $user->update($request->only(['name', 'username', 'email', 'role', 'unit']));
+        $user->update($request->only(['name', 'nip', 'username', 'email', 'role', 'unit']));
 
         return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
     }

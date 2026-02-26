@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketCommentController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -43,6 +44,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/mobile/devices', [\App\Http\Controllers\MobileDeviceController::class, 'store'])->name('mobile.devices.store');
     Route::post('/mobile/devices/unregister', [\App\Http\Controllers\MobileDeviceController::class, 'destroy'])->name('mobile.devices.destroy');
 
+    // Notification routes
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
+
     // User routes
     Route::middleware(['role:user'])->prefix('user')->name('user.')->group(function () {
         Route::get('tickets', [TicketController::class, 'userTickets'])->name('tickets.index');
@@ -62,6 +68,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('users', UserController::class);
         Route::resource('tickets', TicketController::class)->except(['create', 'store']);
         Route::post('tickets/{ticket}/assign', [TicketController::class, 'assign'])->name('tickets.assign');
+        Route::post('tickets/{ticket}/claim', [TicketController::class, 'claim'])->name('tickets.claim');
         Route::post('tickets/{ticket}/status', [TicketController::class, 'updateStatus'])->name('tickets.update-status');
 
         // Reports

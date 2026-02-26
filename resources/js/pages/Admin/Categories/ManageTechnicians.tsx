@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
+import { toast } from 'sonner';
 
 interface Technician {
     id: number;
@@ -38,19 +39,26 @@ export default function ManageTechnicians({ category, technicians, assignedTechn
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/admin/categories/${category.id}/assign-technicians`);
+        post(`/admin/categories/${category.id}/assign-technicians`, {
+            onSuccess: () => {
+                toast.success('Penugasan teknisi berhasil diperbarui!');
+            },
+            onError: () => {
+                toast.error('Gagal memperbarui penugasan teknisi.');
+            }
+        });
     };
 
     const handleTechnicianToggle = (technicianId: number) => {
         const updated = Array.isArray(data.technician_ids) ? [...data.technician_ids] : [];
         const index = updated.indexOf(technicianId);
-        
+
         if (index > -1) {
             updated.splice(index, 1);
         } else {
             updated.push(technicianId);
         }
-        
+
         setData('technician_ids', updated);
     };
 

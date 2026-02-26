@@ -20,7 +20,6 @@ class Ticket extends Model
         'location',
         'priority',
         'status',
-        'assigned_to',
         'responded_at',
         'resolved_at',
     ];
@@ -54,9 +53,9 @@ class Ticket extends Model
         return $this->belongsTo(Sla::class, 'sla_id');
     }
 
-    public function assignedUser()
+    public function assignees()
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        return $this->belongsToMany(User::class, 'ticket_user');
     }
 
     public function comments()

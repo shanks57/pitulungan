@@ -20,16 +20,31 @@ class ReportController extends Controller
         $validated = $request->validate([
             'date_from' => 'nullable|date',
             'date_to' => 'nullable|date',
-            'format' => 'nullable|in:html,pdf',
+            'month' => 'nullable|string|regex:/^\d{4}-\d{2}$/',
+            'technician_id' => 'nullable|exists:users,id',
+            'format' => 'nullable|in:html,pdf,xlsx',
         ]);
 
-        $dateTo = isset($validated['date_to']) ? Carbon::parse($validated['date_to'])->endOfDay() : Carbon::now()->endOfDay();
-        $dateFrom = isset($validated['date_from']) ? Carbon::parse($validated['date_from'])->startOfDay() : (clone $dateTo)->subDays(30)->startOfDay();
+        if (isset($validated['month'])) {
+            $monthDate = Carbon::parse($validated['month']);
+            $dateFrom = $monthDate->copy()->startOfMonth();
+            $dateTo = $monthDate->copy()->endOfMonth();
+        } else {
+            $dateTo = isset($validated['date_to']) ? Carbon::parse($validated['date_to'])->endOfDay() : Carbon::now()->endOfDay();
+            $dateFrom = isset($validated['date_from']) ? Carbon::parse($validated['date_from'])->startOfDay() : (clone $dateTo)->subDays(30)->startOfDay();
+        }
 
-        $tickets = Ticket::with('assignedUser', 'user')
+        $query = Ticket::with('assignees', 'user', 'category', 'subcategory')
             ->whereNotNull('resolved_at')
-            ->whereBetween('resolved_at', [$dateFrom, $dateTo])
-            ->get()
+            ->whereBetween('resolved_at', [$dateFrom, $dateTo]);
+
+        if (isset($validated['technician_id'])) {
+            $query->whereHas('assignees', function($q) use ($validated) {
+                $q->where('users.id', $validated['technician_id']);
+            });
+        }
+
+        $tickets = $query->get()
             ->map(function ($t) {
                 $duration = $t->resolved_at->floatDiffInSeconds($t->created_at);
                 $t->response_seconds = $duration;
@@ -39,8 +54,23 @@ class ReportController extends Controller
 
         // Per-technician statistics (include unassigned as key 'unassigned')
         $perTech = [];
-        $tickets->groupBy(function ($t) {
-            return $t->assigned_to ?? 'unassigned';
+        $expandedTickets = collect();
+        $tickets->each(function($t) use (&$expandedTickets) {
+            if ($t->assignees->count() > 0) {
+                foreach ($t->assignees as $assignee) {
+                    $cloned = clone $t;
+                    $cloned->temp_assigned_to = $assignee->id;
+                    $expandedTickets->push($cloned);
+                }
+            } else {
+                $cloned = clone $t;
+                $cloned->temp_assigned_to = 'unassigned';
+                $expandedTickets->push($cloned);
+            }
+        });
+
+        $expandedTickets->groupBy(function ($t) {
+            return $t->temp_assigned_to;
         })->each(function ($group, $assignedTo) use (&$perTech) {
             $durations = $group->pluck('response_seconds')->filter()->values()->all();
             sort($durations);
@@ -129,7 +159,32 @@ class ReportController extends Controller
             }
         }
 
+        if ($format === 'xlsx') {
+            return $this->exportExcel($viewData, $validated['technician_id'] ?? null, $validated['month'] ?? null);
+        }
+
         return view('reports.performance', $viewData);
+    }
+
+    protected function exportExcel($data, $technicianId = null, $month = null)
+    {
+        $technician = $technicianId ? User::find($technicianId) : null;
+        $monthName = $month ? Carbon::parse($month)->translatedFormat('F Y') : 'Semua Waktu';
+        
+        $viewData = array_merge($data, [
+            'technician' => $technician,
+            'month_name' => $monthName,
+        ]);
+
+        $html = view('reports.performance_excel', $viewData)->render();
+
+        $filename = 'Laporan-Performa-' . ($technician ? str_replace(' ', '-', $technician->name) : 'All') . '-' . ($month ?: 'All') . '.xls';
+
+        return response($html)
+            ->header('Content-Type', 'application/vnd.ms-excel')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     protected function percentile(array $items, float $p)

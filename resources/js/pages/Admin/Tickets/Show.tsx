@@ -11,11 +11,14 @@ import { router, useForm } from '@inertiajs/react';
 import { type BreadcrumbItem } from '@/types';
 import { FileText, X } from 'lucide-react';
 import { useState } from 'react';
+import { usePage } from '@inertiajs/react';
+import { SharedData } from '@/types';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dasbor', href: '/dashboard' },
     { title: 'Tiket', href: '/admin/tickets' },
-    { title: 'Detail', href: '/admin/tickets/detail' },
+    { title: 'Detail Tiket', href: '#' },
 ];
 
 interface Ticket {
@@ -28,7 +31,7 @@ interface Ticket {
     location: string;
     user: { name: string; username: string };
     category: { id: number; name: string };
-    assigned_user: { id: number; name: string } | null;
+    assignees: { id: number; name: string }[];
     sla: { priority: string; response_time_minutes: number; resolution_time_minutes: number } | null;
     created_at: string;
     responded_at: string | null;
@@ -73,9 +76,9 @@ export default function Show({ ticket, progress, attachments, comments, categori
         title: ticket.title,
         description: ticket.description,
         category_id: ticket.category.id.toString(),
-        priority: ticket.priority,
+        priority: ticket.priority || '',
         location: ticket.location,
-        assigned_to: ticket.assigned_user?.id?.toString() || '',
+        assignees: ticket.assignees?.map(a => a.id.toString()) || [],
         status: ticket.status,
     });
 
@@ -86,9 +89,28 @@ export default function Show({ ticket, progress, attachments, comments, categori
 
     const [selectedAttachment, setSelectedAttachment] = useState<Attachment | null>(null);
 
+    const isCompleted = ticket.status === 'done';
+
+    // Multiple select toggle helper
+    const toggleAssignee = (userId: string) => {
+        const currentAssignees = data.assignees;
+        if (currentAssignees.includes(userId)) {
+            setData('assignees', currentAssignees.filter(id => id !== userId));
+        } else {
+            setData('assignees', [...currentAssignees, userId]);
+        }
+    };
+
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/tickets/${ticket.id}`);
+        put(`/admin/tickets/${ticket.id}`, {
+            onSuccess: () => {
+                toast.success('Tiket berhasil diperbarui!');
+            },
+            onError: () => {
+                toast.error('Gagal memperbarui tiket.');
+            }
+        });
     };
 
     const handleCommentSubmit = (e: React.FormEvent) => {
@@ -107,7 +129,11 @@ export default function Show({ ticket, progress, attachments, comments, categori
             forceFormData: true,
             onSuccess: () => {
                 resetComment();
+                toast.success('Komentar berhasil ditambahkan!');
             },
+            onError: () => {
+                toast.error('Gagal menambahkan komentar.');
+            }
         });
     };
 
@@ -131,6 +157,26 @@ export default function Show({ ticket, progress, attachments, comments, categori
         }
     };
 
+    const getStatusText = (status: string) => {
+        switch (status) {
+            case 'submitted': return 'Diajukan';
+            case 'processed': return 'Diproses';
+            case 'repairing': return 'Diperbaiki';
+            case 'done': return 'Selesai';
+            case 'rejected': return 'Ditolak';
+            default: return status;
+        }
+    };
+
+    const getPriorityText = (priority: string) => {
+        switch (priority) {
+            case 'low': return 'Rendah';
+            case 'medium': return 'Sedang';
+            case 'high': return 'Tinggi';
+            default: return priority || 'Belum Diatur';
+        }
+    };
+
     const isImageFile = (filePath: string) => {
         const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
         return imageExtensions.some(ext => filePath.toLowerCase().endsWith(ext));
@@ -145,10 +191,27 @@ export default function Show({ ticket, progress, attachments, comments, categori
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-4 px-4 pb-20 md:p-4 rounded-xl">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Ticket #{ticket.ticket_number}</h1>
-                    <Badge className={getStatusColor(ticket.status)}>
-                        {ticket.status}
-                    </Badge>
+                    <div className="flex items-center gap-4">
+                        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Tiket #{ticket.ticket_number}</h1>
+                        <Badge className={getStatusColor(ticket.status)}>
+                            {getStatusText(ticket.status)}
+                        </Badge>
+                    </div>
+                    {!isCompleted && !ticket.assignees.some(a => a.id === usePage<SharedData>().props.auth.user.id) && (
+                        <Button
+                            onClick={() => router.post(`/admin/tickets/${ticket.id}/claim`, {}, {
+                                onSuccess: () => {
+                                    toast.success('Berhasil mengambil tiket ini!');
+                                },
+                                onError: () => {
+                                    toast.error('Gagal mengambil tiket.');
+                                }
+                            })}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                            Ambil Tiket Ini
+                        </Button>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -159,6 +222,11 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                 <CardTitle className="text-blue-900">Detail Tiket</CardTitle>
                             </CardHeader>
                             <CardContent>
+                                {isCompleted && (
+                                    <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md border border-red-200">
+                                        Tiket telah selesai dan tidak dapat diedit.
+                                    </div>
+                                )}
                                 <form onSubmit={handleUpdate} className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
@@ -168,6 +236,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                 value={data.title}
                                                 onChange={(e) => setData('title', e.target.value)}
                                                 required
+                                                disabled={isCompleted}
                                                 className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                                             />
                                             {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
@@ -175,7 +244,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
 
                                         <div>
                                             <Label htmlFor="category_id" className="text-blue-900 font-semibold">Kategori</Label>
-                                            <Select value={data.category_id} onValueChange={(value) => setData('category_id', value)}>
+                                            <Select value={data.category_id} onValueChange={(value) => setData('category_id', value)} disabled={isCompleted}>
                                                 <SelectTrigger className="border-blue-200 focus:border-blue-500 focus:ring-blue-500">
                                                     <SelectValue />
                                                 </SelectTrigger>
@@ -192,7 +261,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
 
                                         <div>
                                             <Label htmlFor="priority" className="text-blue-900 font-semibold">Prioritas</Label>
-                                            <Select value={data.priority} onValueChange={(value) => setData('priority', value)}>
+                                            <Select value={data.priority} onValueChange={(value) => setData('priority', value)} disabled={isCompleted}>
                                                 <SelectTrigger>
                                                     <SelectValue />
                                                 </SelectTrigger>
@@ -207,7 +276,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
 
                                         <div>
                                             <Label htmlFor="status">Status</Label>
-                                            <Select value={data.status} onValueChange={(value) => setData('status', value)}>
+                                            <Select value={data.status} onValueChange={(value) => setData('status', value)} disabled={isCompleted}>
                                                 <SelectTrigger>
                                                     <SelectValue />
                                                 </SelectTrigger>
@@ -228,27 +297,29 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                 id="location"
                                                 value={data.location}
                                                 onChange={(e) => setData('location', e.target.value)}
+                                                disabled={isCompleted}
                                                 required
                                             />
                                             {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location}</p>}
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="assigned_to">Ditugaskan Ke</Label>
-                                            <Select value={data.assigned_to} onValueChange={(value) => setData('assigned_to', value)}>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Pilih pengguna" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="unassigned">Tidak ditugaskan</SelectItem>
-                                                    {users.map((user) => (
-                                                        <SelectItem key={user.id} value={user.id.toString()}>
-                                                            {user.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            {errors.assigned_to && <p className="text-red-500 text-sm mt-1">{errors.assigned_to}</p>}
+                                            <Label>Ditugaskan Ke (Banyak)</Label>
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                {users.map((u) => (
+                                                    <Button
+                                                        key={`assignee-toggle-${u.id}`}
+                                                        type="button"
+                                                        variant={data.assignees.includes(u.id.toString()) ? 'default' : 'outline'}
+                                                        size="sm"
+                                                        disabled={isCompleted}
+                                                        onClick={() => toggleAssignee(u.id.toString())}
+                                                    >
+                                                        {u.name}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                            {errors.assignees && <p className="text-red-500 text-sm mt-1">{errors.assignees}</p>}
                                         </div>
                                     </div>
 
@@ -259,15 +330,18 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                             value={data.description}
                                             onChange={(e) => setData('description', e.target.value)}
                                             required
+                                            disabled={isCompleted}
                                             rows={4}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         />
                                         {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                                     </div>
 
-                                    <Button type="submit" disabled={processing}>
-                                        Perbarui Tiket
-                                    </Button>
+                                    {!isCompleted && (
+                                        <Button type="submit" disabled={processing}>
+                                            Perbarui Tiket
+                                        </Button>
+                                    )}
                                 </form>
                             </CardContent>
                         </Card>
@@ -278,7 +352,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                         {/* Progress Timeline */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Timeline Progress</CardTitle>
+                                <CardTitle>Linimasa Progres</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
@@ -291,7 +365,7 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
                                                     <Badge className={getStatusColor(item.status)}>
-                                                        {item.status}
+                                                        {getStatusText(item.status)}
                                                     </Badge>
                                                     <span className="text-sm text-gray-500">
                                                         oleh {item.updated_by.name}
@@ -317,37 +391,43 @@ export default function Show({ ticket, progress, attachments, comments, categori
                             </CardHeader>
                             <CardContent>
                                 {/* Add Comment Form */}
-                                <form onSubmit={handleCommentSubmit} className="mb-6">
-                                    <div className="space-y-4">
-                                        <div>
-                                            <Label htmlFor="comment">Tambah Komentar</Label>
-                                            <Textarea
-                                                id="comment"
-                                                value={commentData.comment}
-                                                onChange={(e) => setCommentData('comment', e.target.value)}
-                                                placeholder="Tambah komentar..."
-                                                rows={3}
-                                                required
-                                            />
+                                {!isCompleted ? (
+                                    <form onSubmit={handleCommentSubmit} className="mb-6">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label htmlFor="comment">Tambah Komentar</Label>
+                                                <Textarea
+                                                    id="comment"
+                                                    value={commentData.comment}
+                                                    onChange={(e) => setCommentData('comment', e.target.value)}
+                                                    placeholder="Tambah komentar..."
+                                                    rows={3}
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label htmlFor="comment-attachments">Lampiran (opsional)</Label>
+                                                <Input
+                                                    id="comment-attachments"
+                                                    type="file"
+                                                    multiple
+                                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov"
+                                                    onChange={(e) => setCommentData('attachments', e.target.files ? Array.from(e.target.files) : [])}
+                                                />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Maksimal 10MB per file. Didukung: PDF, DOC, DOCX, JPG, PNG, GIF, MP4, AVI, MOV
+                                                </p>
+                                            </div>
+                                            <Button type="submit" disabled={commentProcessing}>
+                                                {commentProcessing ? 'Menambah...' : 'Tambah Komentar'}
+                                            </Button>
                                         </div>
-                                        <div>
-                                            <Label htmlFor="comment-attachments">Lampiran (opsional)</Label>
-                                            <Input
-                                                id="comment-attachments"
-                                                type="file"
-                                                multiple
-                                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov"
-                                                onChange={(e) => setCommentData('attachments', e.target.files ? Array.from(e.target.files) : [])}
-                                            />
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                Maksimal 10MB per file. Didukung: PDF, DOC, DOCX, JPG, PNG, GIF, MP4, AVI, MOV
-                                            </p>
-                                        </div>
-                                        <Button type="submit" disabled={commentProcessing}>
-                                            {commentProcessing ? 'Menambah...' : 'Tambah Komentar'}
-                                        </Button>
+                                    </form>
+                                ) : (
+                                    <div className="mb-6 p-4 border rounded-md bg-gray-50 text-gray-500 text-center text-sm">
+                                        Tiket telah selesai. Penambahan komentar sudah ditutup.
                                     </div>
-                                </form>
+                                )}
 
                                 {/* Comments List */}
                                 <div className="space-y-4">
@@ -382,8 +462,8 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                                     Diupload oleh {attachment.uploaded_by.name}
                                                                 </p>
                                                             </div>
-                                                            <Button 
-                                                                variant="outline" 
+                                                            <Button
+                                                                variant="outline"
                                                                 size="sm"
                                                                 onClick={() => setSelectedAttachment(attachment)}
                                                             >
@@ -444,8 +524,8 @@ export default function Show({ ticket, progress, attachments, comments, categori
                                                         Diupload oleh {attachment.uploaded_by.name} pada {new Date(attachment.created_at).toLocaleDateString()}
                                                     </p>
                                                 </div>
-                                                <Button 
-                                                    variant="outline" 
+                                                <Button
+                                                    variant="outline"
                                                     size="sm"
                                                     onClick={() => setSelectedAttachment(attachment)}
                                                 >
