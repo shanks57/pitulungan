@@ -24,7 +24,7 @@ Route::get('/', function () {
     return Inertia::render('welcome', $data);
 })->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'prevent-back-history'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Ticket routes for all authenticated users

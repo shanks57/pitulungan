@@ -19,10 +19,6 @@ interface UserMenuContentProps {
 export function UserMenuContent({ user }: UserMenuContentProps) {
     const cleanup = useMobileNavigation();
 
-    const handleLogout = () => {
-        cleanup();
-        router.flushAll();
-    };
 
     return (
         <>
@@ -50,9 +46,13 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
             <DropdownMenuItem asChild>
                 <Link
                     className="block w-full"
-                    href={logout()}
+                    href={logout().url}
+                    method="post"
                     as="button"
-                    onClick={handleLogout}
+                    onClick={() => {
+                        cleanup();
+                        router.clearHistory();
+                    }}
                     data-test="logout-button"
                 >
                     <LogOut className="mr-2" />

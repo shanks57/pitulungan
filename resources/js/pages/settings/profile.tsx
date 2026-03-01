@@ -2,7 +2,7 @@ import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileCo
 import { send } from '@/routes/verification';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
-import { Form, Head, Link, usePage } from '@inertiajs/react';
+import { Form, Head, Link, router, usePage } from '@inertiajs/react';
 
 import HeadingSmall from '@/components/heading-small';
 import InputError from '@/components/input-error';
@@ -152,6 +152,7 @@ export default function Profile({
                             href={logout().url}
                             method="post"
                             as="button"
+                            onClick={() => router.clearHistory()}
                             className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 font-black rounded-xl text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all duration-300 shadow-sm border border-red-100 dark:border-red-900/30 group"
                         >
                             <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
