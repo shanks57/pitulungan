@@ -9,49 +9,101 @@
         body {
             font-family: DejaVu Sans, Arial, Helvetica, sans-serif;
             color: #222;
+            background: #fff;
+            transition: background 0.3s, color 0.3s;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px
+            margin-bottom: 24px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 12px;
         }
 
         h1 {
-            font-size: 18px;
-            margin: 0
+            font-size: 20px;
+            margin: 0;
+            color: #1e40af;
+        }
+
+        h2 {
+            font-size: 16px;
+            color: #1e3a8a;
+            margin-top: 24px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 10px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 12px
+            margin-top: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         th,
         td {
             border: 1px solid #ddd;
-            padding: 8px;
-            font-size: 12px
+            padding: 10px;
+            font-size: 12px;
         }
 
         th {
-            background: #f6f6f6;
-            text-align: left
+            background: #f8fafc;
+            text-align: left;
+            color: #475569;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .muted {
-            color: #666;
-            font-size: 11px
+            color: #64748b;
+            font-size: 11px;
         }
 
         .small {
-            font-size: 11px
+            font-size: 11px;
         }
 
         .right {
-            text-align: right
+            text-align: right;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #0f172a;
+                color: #f1f5f9;
+            }
+            .header {
+                border-bottom-color: #1e293b;
+            }
+            h1 {
+                color: #60a5fa;
+            }
+            h2 {
+                color: #93c5fd;
+                border-left-color: #3b82f6;
+            }
+            th {
+                background: #1e293b;
+                color: #94a3b8;
+                border-color: #334155;
+            }
+            td {
+                border-color: #334155;
+            }
+            .muted {
+                color: #94a3b8;
+            }
+            table {
+                background: #0f172a;
+            }
+            tr:nth-child(even) {
+                background: #1e293b20;
+            }
         }
     </style>
 </head>

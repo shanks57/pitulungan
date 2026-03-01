@@ -23,8 +23,6 @@ export function PWAInstallButton({
         return null; // Don't show if not installable
     }
 
-    console.log(isInstallable, "isInstallable", isInstalled, "isInstalled")
-
     return (
         <Button
             variant={variant}
@@ -35,7 +33,7 @@ export function PWAInstallButton({
             <Smartphone className="w-4 h-4" />
             <Download className="w-4 h-4" />
             <span className="hidden sm:inline">Instal Aplikasi</span>
-            <span className="sm:hidden">Instal</span>
+            <span className="sm:hidden">Instal Aplikasi Mobile</span>
         </Button>
     );
 }

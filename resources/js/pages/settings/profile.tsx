@@ -4,7 +4,6 @@ import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
 
-import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
+import { LogOut } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -35,10 +36,10 @@ export default function Profile({
             <Head title="Profile settings" />
 
             <SettingsLayout>
-                <div className="space-y-6 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 p-6 rounded-xl">
+                <div className="space-y-6 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-cyan-950 p-6 rounded-xl transition-colors duration-300">
                     <HeadingSmall
-                        title="Profile information"
-                        description="Update your name and email address"
+                        title="Informasi Profil"
+                        description="Perbarui nama dan alamat email Anda"
                     />
 
                     <Form
@@ -46,21 +47,21 @@ export default function Profile({
                         options={{
                             preserveScroll: true,
                         }}
-                        className="space-y-6 bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border-0 shadow-md"
+                        className="space-y-6 bg-gradient-to-br from-white to-blue-50 dark:from-slate-900 dark:to-slate-800 p-6 rounded-xl border border-blue-100 dark:border-slate-800 shadow-md"
                     >
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name" className="text-blue-900">Name</Label>
+                                    <Label htmlFor="name" className="text-blue-900 dark:text-blue-100 font-semibold">Nama Lengkap</Label>
 
                                     <Input
                                         id="name"
-                                        className="mt-1 block w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                                        className="mt-1 block w-full border-blue-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:text-slate-100"
                                         defaultValue={auth.user.name}
                                         name="name"
                                         required
                                         autoComplete="name"
-                                        placeholder="Full name"
+                                        placeholder="Nama Lengkap"
                                     />
 
                                     <InputError
@@ -70,17 +71,17 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email" className="text-blue-900">Email address</Label>
+                                    <Label htmlFor="email" className="text-blue-900 dark:text-blue-100 font-semibold">Alamat Email</Label>
 
                                     <Input
                                         id="email"
                                         type="email"
-                                        className="mt-1 block w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                                        className="mt-1 block w-full border-blue-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:text-slate-100"
                                         defaultValue={auth.user.email}
                                         name="email"
                                         required
                                         autoComplete="username"
-                                        placeholder="Email address"
+                                        placeholder="Alamat Email"
                                     />
 
                                     <InputError
@@ -107,12 +108,12 @@ export default function Profile({
 
                                             {status ===
                                                 'verification-link-sent' && (
-                                                <div className="mt-2 text-sm font-medium text-green-600">
-                                                    A new verification link has
-                                                    been sent to your email
-                                                    address.
-                                                </div>
-                                            )}
+                                                    <div className="mt-2 text-sm font-medium text-green-600">
+                                                        A new verification link has
+                                                        been sent to your email
+                                                        address.
+                                                    </div>
+                                                )}
                                         </div>
                                     )}
 
@@ -141,7 +142,23 @@ export default function Profile({
                     </Form>
                 </div>
 
-                <DeleteUser />
+                <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 bg-red-50/50 dark:bg-red-950/10 rounded-2xl border border-red-100 dark:border-red-900/20 transition-all duration-300">
+                        <div className="space-y-1">
+                            <h3 className="text-sm font-black text-red-900 dark:text-red-100 uppercase tracking-tight">Sesi Akun</h3>
+                            <p className="text-xs text-red-700/70 dark:text-red-400/70 font-medium italic">Keluar dari akun Anda untuk mengakhiri sesi aktif pada perangkat ini.</p>
+                        </div>
+                        <Link
+                            href={logout().url}
+                            method="post"
+                            as="button"
+                            className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 font-black rounded-xl text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all duration-300 shadow-sm border border-red-100 dark:border-red-900/30 group"
+                        >
+                            <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                            Keluar Sekarang
+                        </Link>
+                    </div>
+                </div>
             </SettingsLayout>
         </AppLayout>
     );

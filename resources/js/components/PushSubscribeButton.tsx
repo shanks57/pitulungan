@@ -27,7 +27,7 @@ export function PushSubscribeButton({ vapidKey }: { vapidKey?: string } = {}) {
 
     return subscribed ? (
         <button
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-200 dark:border-slate-800 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
             onClick={async () => {
                 try {
                     setLoading(true);

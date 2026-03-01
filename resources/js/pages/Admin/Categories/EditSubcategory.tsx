@@ -45,58 +45,64 @@ export default function EditSubcategory({ subcategory, categories }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Edit Subcategory</h1>
+            <div className="flex flex-1 flex-col gap-6 rounded-xl px-4 pt-4 pb-10 md:p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-indigo-950 transition-colors duration-300">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Edit Subkategori</h1>
+                    <p className="text-muted-foreground text-sm dark:text-gray-400">Perbarui rincian subkategori untuk "{subcategory.name}"</p>
+                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
-                    <div>
-                        <Label htmlFor="category_id">Category</Label>
+                <form onSubmit={handleSubmit} className="bg-gradient-to-br from-white to-blue-50 dark:from-slate-900 dark:to-slate-800 p-8 rounded-2xl shadow-xl dark:shadow-blue-900/10 max-w-2xl space-y-6 border border-blue-100 dark:border-slate-800">
+                    <div className="space-y-2">
+                        <Label htmlFor="category_id" className="text-blue-900 dark:text-blue-100 font-bold uppercase text-[10px] tracking-widest pl-1">Kategori Induk</Label>
                         <Select value={data.category_id} onValueChange={(value) => setData('category_id', value)}>
-                            <SelectTrigger>
+                            <SelectTrigger className="h-12 border-blue-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-950 rounded-xl">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="dark:bg-slate-900 dark:border-slate-800">
                                 {categories.map((category) => (
-                                    <SelectItem key={category.id} value={category.id.toString()}>
+                                    <SelectItem key={category.id} value={category.id.toString()} className="dark:focus:bg-slate-800">
                                         {category.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
-                        {errors.category_id && <p className="text-red-500 text-sm mt-1">{errors.category_id}</p>}
+                        {errors.category_id && <p className="text-red-500 text-[10px] sm:text-xs mt-1 font-bold italic uppercase pl-1">{errors.category_id}</p>}
                     </div>
 
-                    <div>
-                        <Label htmlFor="name">Name</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="name" className="text-blue-900 dark:text-blue-100 font-bold uppercase text-[10px] tracking-widest pl-1">Nama Subkategori</Label>
                         <Input
                             id="name"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                             required
+                            className="h-12 border-blue-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-950 rounded-xl"
                         />
-                        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                        {errors.name && <p className="text-red-500 text-[10px] sm:text-xs mt-1 font-bold italic uppercase pl-1">{errors.name}</p>}
                     </div>
 
-                    <div>
-                        <Label htmlFor="description">Description</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="description" className="text-blue-900 dark:text-blue-100 font-bold uppercase text-[10px] tracking-widest pl-1">Deskripsi</Label>
                         <Textarea
                             id="description"
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
+                            className="min-h-[120px] border-blue-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-950 rounded-xl resize-none"
                         />
-                        {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+                        {errors.description && <p className="text-red-500 text-[10px] sm:text-xs mt-1 font-bold italic uppercase pl-1">{errors.description}</p>}
                     </div>
 
-                    <div className="flex gap-2">
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Updating...' : 'Update Subcategory'}
+                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                        <Button type="submit" disabled={processing} className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 shadow-lg shadow-blue-500/20 text-white font-black h-12 rounded-xl text-sm uppercase tracking-wider">
+                            {processing ? 'Memperbarui...' : 'Simpan Perubahan'}
                         </Button>
                         <Button
                             type="button"
                             variant="outline"
+                            className="flex-1 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 h-12 rounded-xl font-bold uppercase text-xs tracking-widest"
                             onClick={() => window.history.back()}
                         >
-                            Cancel
+                            Batal
                         </Button>
                     </div>
                 </form>

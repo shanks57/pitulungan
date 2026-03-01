@@ -54,41 +54,48 @@ export default function SubcategoriesIndex({ subcategories, filters }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Subkategori Tiket</h1>
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <form onSubmit={handleSearch} className="flex gap-2">
+            <div className="flex flex-1 flex-col gap-6 rounded-xl px-4 pt-4 pb-12 md:p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-indigo-950 transition-colors duration-300">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                    <div className="space-y-1">
+                        <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent uppercase tracking-tight">Subkategori Tiket</h1>
+                        <p className="text-muted-foreground text-xs md:text-sm font-medium dark:text-slate-400 italic">Kelola detail spesifikasi masalah untuk layanan yang lebih efisien.</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <form onSubmit={handleSearch} className="flex gap-2 relative group">
                             <Input
-                                placeholder="Cari berdasarkan nama..."
+                                placeholder="Cari subkategori..."
                                 value={data.search}
                                 onChange={(e) => setData('search', e.target.value)}
-                                className="w-full md:w-64 border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                                className="w-full sm:w-64 h-12 border-blue-200 dark:border-slate-800 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900/50 rounded-xl pl-4 pr-10 transition-all font-medium"
                             />
-                            <Button type="submit" disabled={processing} variant="secondary">Cari</Button>
+                            <Button type="submit" disabled={processing} variant="secondary" className="h-12 px-6 rounded-xl font-bold bg-white dark:bg-slate-800 border-2 border-blue-100 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-slate-700 transition-all">Cari</Button>
                         </form>
                         <Link href="/admin/subcategories/create">
-                            <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg">Buat Subkategori</Button>
+                            <Button className="h-12 w-full sm:w-auto px-8 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 text-white font-black rounded-xl shadow-xl shadow-blue-500/20 uppercase tracking-widest text-xs">Buat Baru</Button>
                         </Link>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {subcategories.data.map((subcategory) => (
-                        <Card key={subcategory.id}>
-                            <CardHeader>
-                                <CardTitle className="text-blue-900">{subcategory.name}</CardTitle>
+                        <Card key={subcategory.id} className="border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm shadow-xl dark:shadow-blue-900/10 rounded-2xl overflow-hidden group hover:translate-y-[-4px] transition-all duration-300">
+                            <CardHeader className="border-b border-blue-50 dark:border-slate-800 p-6 bg-gradient-to-r from-blue-50/30 to-transparent dark:from-blue-900/10">
+                                <CardTitle className="text-blue-900 dark:text-blue-100 font-black text-xl tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase">{subcategory.name}</CardTitle>
+                                <span className="inline-block mt-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-black rounded-full uppercase tracking-tighter">
+                                    {subcategory.category.name}
+                                </span>
                             </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-blue-700 mb-2">Kategori: <span className="font-semibold text-blue-900">{subcategory.category.name}</span></p>
-                                <p className="text-sm text-blue-600 mb-4">{subcategory.description || 'Tidak ada deskripsi'}</p>
-                                <div className="mt-4 flex gap-2">
-                                    <Link href={`/admin/subcategories/${subcategory.id}/edit`}>
-                                        <Button variant="outline" size="sm" className="border-blue-200 text-blue-600 hover:bg-blue-50">Edit</Button>
+                            <CardContent className="p-6">
+                                <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 italic min-h-[40px] leading-relaxed">{subcategory.description || 'Tidak ada deskripsi rinci'}</p>
+                                <div className="flex gap-2 pt-4 border-t border-blue-50 dark:border-slate-800">
+                                    <Link href={`/admin/subcategories/${subcategory.id}/edit`} className="flex-1">
+                                        <Button variant="outline" size="sm" className="w-full border-blue-200 dark:border-slate-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 font-bold rounded-lg h-10 text-xs uppercase tracking-widest transition-all">Edit</Button>
                                     </Link>
                                     <Button
-                                        className="bg-red-600 hover:bg-red-700"
+                                        variant="destructive"
                                         size="sm"
+                                        className="flex-1 font-bold rounded-lg h-10 shadow-lg shadow-red-500/10 text-xs uppercase tracking-widest transition-all"
                                         onClick={() => handleDelete(subcategory.id)}
                                     >
                                         Hapus
@@ -100,13 +107,18 @@ export default function SubcategoriesIndex({ subcategories, filters }: Props) {
                 </div>
 
                 {subcategories.data.length === 0 && (
-                    <div className="text-center py-8 text-blue-500">
-                        Tidak ada subkategori ditemukan. <Link href="/admin/subcategories/create" className="text-blue-600 font-semibold hover:underline">Buat baru</Link>
+                    <div className="text-center py-20 bg-white/40 dark:bg-slate-900/40 rounded-3xl border-2 border-dashed border-blue-100 dark:border-slate-800">
+                        <p className="text-slate-500 dark:text-slate-400 font-bold italic mb-4">Tidak ada subkategori ditemukan.</p>
+                        <Link href="/admin/subcategories/create">
+                            <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 font-black px-8 rounded-xl shadow-lg">Buat Subkategori Pertama</Button>
+                        </Link>
                     </div>
                 )}
 
                 {/* Pagination */}
-                <Pagination links={subcategories.links} />
+                <div className="mt-8">
+                    <Pagination links={subcategories.links} />
+                </div>
             </div>
         </AppLayout>
     );

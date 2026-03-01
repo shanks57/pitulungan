@@ -64,52 +64,70 @@ export default function ManageTechnicians({ category, technicians, assignedTechn
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Assign Technicians to {category.name}</h1>
-                <p className="text-gray-600">{category.description || 'No description'}</p>
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl px-4 pt-4 pb-20 md:p-4 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-indigo-950 transition-colors duration-300">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Tugaskan Teknisi</h1>
+                    <p className="text-muted-foreground text-sm dark:text-gray-400">Atur siapa saja yang bertanggung jawab untuk kategori: <span className="font-bold text-blue-600 dark:text-blue-400">{category.name}</span></p>
+                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
-                    <div className="border rounded-lg p-4">
-                        <h2 className="text-lg font-semibold mb-4">Select Technicians</h2>
-                        <p className="text-sm text-gray-600 mb-4">
-                            Choose which technicians should handle tickets in this category. They will be automatically assigned tickets when created.
-                        </p>
+                <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl bg-white/60 dark:bg-slate-900/60 p-6 md:p-8 rounded-2xl shadow-xl dark:shadow-blue-900/10 border border-blue-100 dark:border-slate-800">
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-sm font-black text-blue-900 dark:text-blue-100 uppercase tracking-widest">Pilih Teknisi</h2>
+                            <span className="text-[10px] font-bold bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full uppercase tracking-tighter">
+                                {data.technician_ids.length} Dipilih
+                            </span>
+                        </div>
 
-                        <div className="space-y-3">
+                        <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                             {technicians.length > 0 ? (
                                 technicians.map((technician) => (
-                                    <div key={technician.id} className="flex items-center space-x-3 p-3 border rounded hover:bg-gray-50">
+                                    <div
+                                        key={technician.id}
+                                        className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer group ${(Array.isArray(data.technician_ids) && data.technician_ids.includes(technician.id))
+                                                ? 'bg-blue-50/50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                                                : 'bg-white dark:bg-slate-950 border-slate-100 dark:border-slate-800/50 hover:border-blue-200 dark:hover:border-blue-800/50'
+                                            }`}
+                                        onClick={() => handleTechnicianToggle(technician.id)}
+                                    >
                                         <Checkbox
                                             id={`tech-${technician.id}`}
                                             checked={Array.isArray(data.technician_ids) && data.technician_ids.includes(technician.id)}
                                             onCheckedChange={() => handleTechnicianToggle(technician.id)}
+                                            className="h-5 w-5 rounded-md border-slate-300 dark:border-slate-700 data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
                                         />
                                         <Label htmlFor={`tech-${technician.id}`} className="cursor-pointer flex-1">
-                                            <div>
-                                                <p className="font-semibold">{technician.name}</p>
-                                                <p className="text-sm text-gray-600">@{technician.username} - {technician.email}</p>
+                                            <div className="flex flex-col">
+                                                <p className={`font-bold transition-colors ${(Array.isArray(data.technician_ids) && data.technician_ids.includes(technician.id))
+                                                        ? 'text-blue-700 dark:text-blue-300'
+                                                        : 'text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                                                    }`}>{technician.name}</p>
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">@{technician.username} • {technician.email}</p>
                                             </div>
                                         </Label>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-gray-500">No technicians available</p>
+                                <div className="text-center py-12 bg-slate-50 dark:bg-slate-950/40 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                                    <p className="text-slate-500 dark:text-slate-400 font-medium italic">Tidak ada teknisi tersedia</p>
+                                </div>
                             )}
                         </div>
                     </div>
 
-                    {errors.technician_ids && <p className="text-red-500">{errors.technician_ids}</p>}
+                    {errors.technician_ids && <p className="text-red-500 text-xs font-bold italic p-2 border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-r-lg">{errors.technician_ids}</p>}
 
-                    <div className="flex gap-2">
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Saving...' : 'Save Assignments'}
+                    <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <Button type="submit" disabled={processing} className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-black h-12 rounded-xl text-sm uppercase tracking-wider shadow-lg shadow-blue-500/20">
+                            {processing ? 'Menyimpan...' : 'Simpan Penugasan'}
                         </Button>
                         <Button
                             type="button"
                             variant="outline"
+                            className="flex-1 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 h-12 rounded-xl font-bold uppercase text-xs tracking-widest"
                             onClick={() => window.history.back()}
                         >
-                            Cancel
+                            Batal
                         </Button>
                     </div>
                 </form>

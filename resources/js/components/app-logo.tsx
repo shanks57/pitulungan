@@ -1,13 +1,12 @@
 import AppLogoIcon from './app-logo-icon';
+import { cn } from '@/lib/utils';
 
-export default function AppLogo() {
+export default function AppLogo({ className }: { className?: string }) {
     return (
         <>
-            <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                <AppLogoIcon className="size-5 fill-current text-white dark:text-black" />
-            </div>
+            <AppLogoIcon className={cn("size-8", className)} />
             <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">
+                <span className="mb-0.5 truncate leading-tight font-semibold text-gray-900 dark:text-white">
                     SIPERKASA
                 </span>
             </div>

@@ -36,6 +36,7 @@ import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 import { NotificationBell } from '@/components/NotificationBell';
+import AppearanceToggleDropdown from '@/components/appearance-dropdown';
 
 const mainNavItems: NavItem[] = [
     {
@@ -71,7 +72,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const getInitials = useInitials();
     return (
         <>
-            <div className="border-b border-sidebar-border/80">
+            <div className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 transition-colors duration-300">
                 <div className="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
                     {/* Mobile Menu */}
                     <div className="lg:hidden">
@@ -80,57 +81,74 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="mr-2 h-[34px] w-[34px]"
+                                    className="mr-2 h-10 w-10 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
                                 >
-                                    <Menu className="h-5 w-5" />
+                                    <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>
                             <SheetContent
                                 side="left"
-                                className="flex h-full w-64 flex-col items-stretch justify-between bg-sidebar"
+                                className="flex h-full w-[280px] flex-col items-stretch justify-between bg-white dark:bg-slate-950 p-0 border-r border-slate-200 dark:border-slate-800 transition-colors"
                             >
                                 <SheetTitle className="sr-only">
                                     Navigation Menu
                                 </SheetTitle>
-                                <SheetHeader className="flex justify-start text-left">
-                                    <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
+                                <SheetHeader className="p-6 border-b border-slate-100 dark:border-slate-900 bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-900/10">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-blue-600 dark:bg-blue-500 rounded-xl shadow-lg shadow-blue-500/20">
+                                            <AppLogoIcon className="h-6 w-6 fill-white text-white" />
+                                        </div>
+                                        <span className="font-black text-xl tracking-tight text-slate-900 dark:text-white uppercase">Pitulungan</span>
+                                    </div>
                                 </SheetHeader>
-                                <div className="flex h-full flex-1 flex-col space-y-4 p-4">
+                                <div className="flex h-full flex-1 flex-col space-y-2 p-4 pt-6">
                                     <div className="flex h-full flex-col justify-between text-sm">
-                                        <div className="flex flex-col space-y-4">
-                                            {mainNavItems.map((item) => (
-                                                <Link
-                                                    key={item.title}
-                                                    href={item.href}
-                                                    className="flex items-center space-x-2 font-medium"
-                                                >
-                                                    {item.icon && (
-                                                        <Icon
-                                                            iconNode={item.icon}
-                                                            className="h-5 w-5"
-                                                        />
-                                                    )}
-                                                    <span>{item.title}</span>
-                                                </Link>
-                                            ))}
+                                        <div className="flex flex-col space-y-1">
+                                            {mainNavItems.map((item) => {
+                                                const isActive = isSameUrl(page.url, item.href);
+                                                const IconNode = item.icon;
+                                                return (
+                                                    <Link
+                                                        key={item.title}
+                                                        href={item.href}
+                                                        className={cn(
+                                                            "flex items-center gap-3 px-4 py-3 font-bold rounded-xl transition-all duration-200",
+                                                            isActive
+                                                                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                                                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900"
+                                                        )}
+                                                    >
+                                                        {IconNode && (
+                                                            <Icon
+                                                                iconNode={IconNode}
+                                                                className={cn("h-5 w-5", isActive ? "stroke-[2.5px]" : "stroke-2")}
+                                                            />
+                                                        )}
+                                                        <span className="tracking-tight">{item.title}</span>
+                                                    </Link>
+                                                );
+                                            })}
                                         </div>
 
-                                        <div className="flex flex-col space-y-4">
+                                        <div className="flex flex-col space-y-1 pb-6">
+                                            <div className="px-4 py-2">
+                                                <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Eksternal</span>
+                                            </div>
                                             {rightNavItems.map((item) => (
                                                 <a
                                                     key={item.title}
                                                     href={resolveUrl(item.href)}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center space-x-2 font-medium"
+                                                    className="flex items-center gap-3 px-4 py-3 font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 rounded-xl transition-all"
                                                 >
                                                     {item.icon && (
                                                         <Icon
                                                             iconNode={item.icon}
-                                                            className="h-5 w-5"
+                                                            className="h-5 w-5 opacity-70"
                                                         />
                                                     )}
-                                                    <span>{item.title}</span>
+                                                    <span className="tracking-tight italic">{item.title}</span>
                                                 </a>
                                             ))}
                                         </div>
@@ -194,6 +212,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             >
                                 <Search className="!size-5 opacity-80 group-hover:opacity-100" />
                             </Button>
+                            <AppearanceToggleDropdown className="inline-flex" />
                             <div className="hidden lg:flex">
                                 {rightNavItems.map((item) => (
                                     <TooltipProvider

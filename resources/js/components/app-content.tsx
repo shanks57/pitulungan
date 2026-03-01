@@ -12,7 +12,7 @@ export function AppContent({
 }: AppContentProps) {
     if (variant === 'sidebar') {
         return (
-            <SidebarInset className="pb-20 md:pb-0" {...props}>
+            <SidebarInset className="pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0" {...props}>
                 {children}
             </SidebarInset>
         );
@@ -20,7 +20,7 @@ export function AppContent({
 
     return (
         <main
-            className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl pb-20 md:pb-0"
+            className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0"
             {...props}
         >
             {children}
