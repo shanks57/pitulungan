@@ -44,6 +44,7 @@ class TicketCreatedWebPush extends Notification implements ShouldQueue
             'data' => [
                 'ticket_id' => (string) $this->ticket->id,
                 'type' => 'ticket.created',
+                'url' => route('admin.tickets.show', $this->ticket->id),
             ],
         ];
     }

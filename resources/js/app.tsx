@@ -5,6 +5,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+import { onMessageListener } from './lib/firebase';
+import { toast } from 'sonner';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
@@ -32,6 +34,21 @@ createInertiaApp({
 
         // Register service worker for PWA (works on localhost & production)
         initializeServiceWorker();
+
+        // Handle foreground messages from FCM
+        onMessageListener().then((payload: any) => {
+            console.log('[APP] Foreground message received:', payload);
+            if (payload.notification) {
+                toast.success(payload.notification.title, {
+                    description: payload.notification.body,
+                    action: payload.data?.url ? {
+                        label: 'Lihat',
+                        onClick: () => window.location.href = payload.data.url
+                    } : undefined,
+                    duration: 8000
+                });
+            }
+        });
 
         // Set light/dark mode on load
         initializeTheme();

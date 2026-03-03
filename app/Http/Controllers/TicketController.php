@@ -203,10 +203,21 @@ class TicketController extends Controller
             }
         }
 
-        // Notify all technicians
-        $technicians = User::where('role', 'technician')->get();
+        // Notify technicians assigned to this category
+        $category = TicketCategory::find($request->category_id);
+        $technicians = $category ? $category->technicians : collect();
+
+        // Fallback to all technicians if none assigned specifically to category
+        if ($technicians->isEmpty()) {
+            $technicians = User::where('role', 'technician')->get();
+        }
+
         foreach ($technicians as $technician) {
-            $technician->notify(new TicketCreatedWebPush($ticket));
+            try {
+                $technician->notify(new TicketCreatedWebPush($ticket));
+            } catch (\Exception $e) {
+                Log::error("Failed to notify technician {$technician->id}: " . $e->getMessage());
+            }
         }
 
         return redirect()->route('dashboard')->with('success', 'Tiket berhasil dibuat. Nomor tiket: ' . $ticket->ticket_number);
